@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>The Tale of Two Interfaces for the Lean Theorem Prover</title>
+<meta name="author" content="((link (:type http :path //www.cs.cmu.edu/~soonhok :raw-link http://www.cs.cmu.edu/~soonhok :application nil :search-option nil :begin 1 :end 49 :contents-begin 35 :contents-end 46 :post-blank 1 :parent #0) Soonho Kong) /  (link (:type http :path //leodemoura.github.io :raw-link http://leodemoura.github.io :application nil :search-option nil :begin 51 :end 101 :contents-begin 82 :contents-end 99 :post-blank 0 :parent #0) Leonardo de Moura))"/>
+
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/theme/soonho.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '//leanprover.github.io/presentations/reveal.js-3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script type="text/javascript" src="///cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+<script type="text/javascript">MathJax.Hub.Config({"HTML-CSS": {scale: 80 }})</script>
+</script><script src="///cdn.jsdelivr.net/polymer.platform/0.4.2/platform.js"></script>
+<link rel="import" href="./juicy-ace-editor.html">
+<link rel="stylesheet" href="./css/code.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<h1 id='title-name'>The Tale of Two Interfaces for the Lean Theorem Prover</h1>
+<h2 id='author-list'><a href="http://www.cs.cmu.edu/~soonhok">Soonho Kong</a> / <a href="http://leodemoura.github.io">Leonardo de Moura</a></h2>
+<h2 id='date'>Microsoft Research, 2014/10/24</h2>
+</section>
+
+<section id="sec-1" >
+
+<h2>Introduction: <b>Lean</b></h2>
+<ul class="org-ul">
+<li>New <b>automated</b> &amp; <b>interactive</b> theorem prover
+</li>
+</ul>
+
+</section>
+<section id="sec-2" >
+
+<h2>Introduction: <b>Lean</b></h2>
+<ul class="org-ul">
+<li>New <b>automated</b> &amp; <b>interactive</b> theorem prover
+</li>
+<li>Powerful system for
+<ul class="org-ul">
+<li>reasoning about <b>complex systems</b>
+</li>
+<li>reasoning about <b>mathematics</b>
+</li>
+<li>proving claims about <b>both</b>
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-3" >
+
+<h2>Introduction: <b>Lean</b></h2>
+<ul class="org-ul">
+<li>New <b>automated</b> &amp; <b>interactive</b> theorem prover
+</li>
+<li>Powerful system for <b>complex systems</b> and <b>mathematics</b>
+</li>
+<li>Automated <b>+</b> Interactive Theorem Proving
+</li>
+</ul>
+
+</section>
+<section id="sec-4" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+</li>
+</ul>
+
+</section>
+<section id="sec-5" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+<img src="./img/curry-howard.jpg" alt="curry-howard.jpg" />
+</li>
+</ul>
+
+</section>
+<section id="sec-6" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+</li>
+<li>Lean as a <b>new engine</b> for <b>software verification</b> tools
+<ul class="org-ul">
+<li>much <b>richer</b> language
+</li>
+<li><b>multiple APIs</b> (C/C++, Lua, Lean, Javascript)
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-7" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+</li>
+<li>Lean as a <b>new engine</b> for <b>software verification</b> tools
+</li>
+<li>Impact on <b>education</b>
+</li>
+</ul>
+
+</section>
+<section id="sec-8" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+</li>
+<li>Lean as a <b>new engine</b> for <b>software verification</b> tools
+</li>
+<li>Impact on <b>education</b>
+<ul class="org-ul">
+<li><b>Live</b> and <b>formalized</b> version of Euclid's Elements (book 1)
+<img src="./img/euclid.jpg" alt="euclid.jpg" />
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-9" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>[<a href="#Coquand1988">Coquand1988</a>]
+</li>
+<li>Lean as a <b>new engine</b> for <b>software verification</b> tools
+</li>
+<li>Impact on <b>education</b>
+<ul class="org-ul">
+<li><b>Live</b> and <b>formalized</b> version of Euclid's Elements (book 1)
+</li>
+<li>Natural deduction style proof = flowchart (<b>BAD</b>)
+</li>
+</ul>
+</li>
+</ul>
+
+<img src="./img/natural_deduction.png" alt="natural_deduction.png" />
+
+</section>
+<section id="sec-10" >
+
+<h2>Big Picture</h2>
+<ul class="org-ul">
+<li><b>Proving</b> should be as easy as <b>programming</b>
+</li>
+<li>Lean as a <b>new engine</b> for <b>software verification</b> tools
+</li>
+<li>Impact on <b>education</b>
+</li>
+<li><b>Revolutionize</b> mathematics.
+</li>
+</ul>
+
+<br/><br/>
+
+<p>
+"Develop <b>software</b> that <b>mathematicians could</b>
+</p>
+
+<p>
+<b>use in their everyday work</b>, to do <b>proofs</b>."
+</p>
+<br/>
+
+<p>
+&#x2013; Vladimir Voevodsky (Fields Medalist)
+</p>
+
+</section>
+<section id="sec-11" >
+
+<h2>The Logical Framework</h2>
+<ul class="org-ul">
+<li>A version of the <b>Calculus of Constructions</b> with:
+<ul class="org-ul">
+<li>an impredicative, proof irrelevant type <b>Prop</b> of propositions.
+</li>
+<li>a non-cumulative hierarchy of universes: <b>Type 1</b>, <b>Type 2</b>, &#x2026; above <b>Prop</b>
+</li>
+<li>universe polymorphism
+</li>
+<li>inductively defined types
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-12" >
+
+<h2>The Logical Framework</h2>
+<ul class="org-ul">
+<li>A version of the <b>Calculus of Constructions</b> with:
+<ul class="org-ul">
+<li>an impredicative, proof irrelevant type <b>Prop</b> of propositions.
+</li>
+<li>a non-cumulative hierarchy of universes: <b>Type 1</b>, <b>Type 2</b>, &#x2026; above <b>Prop</b>
+</li>
+<li>universe polymorphism
+</li>
+<li>inductively defined types
+</li>
+</ul>
+</li>
+
+<li>Features
+<ul class="org-ul">
+<li>Kernel is <b>constructive</b>
+</li>
+<li>Smooth support for <b>classical</b> logic
+</li>
+<li>Support for <b>HoTT</b> (Homotopy Type Theory)
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-13" >
+
+<h2>Reasoning about Abstractions</h2>
+<ul class="org-ul">
+<li>At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+<b>Category theory</b> and <b>Homotopy type theory</b> using <b>Lean</b>.
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+	  {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : !assoc
+		  ... = (η b ∘ G f) ∘ θ a : {naturality η f}
+		  ... = η b ∘ (G f ∘ θ a) : !assoc⁻¹
+		  ... = η b ∘ (θ b ∘ F f) : {naturality θ f}
+		  ... = (η b ∘ θ b) ∘ F f : !assoc)
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-14" >
+
+<h2>Reasoning about Abstractions</h2>
+<ul class="org-ul">
+<li>At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+<b>Category theory</b> and <b>Homotopy type theory</b> using <b>Lean</b>.
+</li>
+
+<li>Why this relevant?
+</li>
+</ul>
+
+</section>
+<section id="sec-15" >
+
+<h2>Reasoning about Abstractions</h2>
+<ul class="org-ul">
+<li>At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+<b>Category theory</b> and <b>Homotopy type theory</b> using <b>Lean</b>.
+</li>
+
+<li>Why this relevant?
+<ul class="org-ul">
+<li><b>Stressing</b> all lean major components
+</li>
+<li>"If we can do it, then we can do anything."
+</li>
+<li><b>Test</b> if we can reason about <b>higher-level</b> abstractions
+</li>
+<li>In CS, we also want to reason about <b>higher-level</b> abstractions.
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-16" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>Almost everything we do is <b>constructive</b>, but we want to support <b>classical</b> users smoothly.
+</li>
+</ul>
+
+</section>
+<section id="sec-17" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>Almost everything we do is <b>constructive</b>, but we want to support <b>classical</b> users smoothly.
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">inductive decidable [class] (p : Prop) : Type :=
+inl : p  → decidable p,
+inr : ¬p → decidable p
+</juicy-ace-editor>
+</div>
+</li>
+
+<li>"decidable" is the <b>type class</b> of decidable propositions.
+</li>
+</ul>
+
+</section>
+<section id="sec-18" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>The excluded middle is a theorem for decidable propositions.
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">theorem em (p : Prop) [H : decidable p] : p ∨ ¬p :=
+induction_on H (assume Hp, or.inl Hp) (assume Hnp, or.inr Hnp)
+</juicy-ace-editor>
+</div>
+</li>
+
+<li>"[H : decidable p]" instructs Lean that <b>H : decidable p</b> is an
+<b>implicit argument</b>, and it should be <b>synthesized</b> automatically
+using type-class instantiation
+</li>
+</ul>
+
+</section>
+<section id="sec-19" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>We have populated the lean standard library with many decidability results.
+</li>
+
+<li>Example: the conjunction of two decidable propositions is decidable
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">variables p q : Prop
+definition and_decidable [instance] (Hp : decidable p) (Hq : decidable q)
+: decidable (p ∧ q) :=
+rec_on Hp
+  (assume Hp  : p, rec_on Hq
+    (assume Hq  : q,  inl (and.intro Hp Hq))
+    (assume Hnq : ¬q, inr (and.not_right p Hnq)))
+  (assume Hnp : ¬p, inr (and.not_left q Hnp))
+</juicy-ace-editor>
+</div>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">definition decidable_eq (A : Type) := Π (a b : A), decidable (a = b)
+
+protected definition nat.has_decidable_eq [instance] : decidable_eq ℕ :=
+take n m : ℕ,
+...
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-20" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>We define `if-then-else` expressions as
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">definition ite (c : Prop) [H : decidable c] {A : Type} (t e : A) : A :=
+decidable.rec_on H (assume Hc,  t) (assume Hnc, e)
+
+notation `if` c `then` t:45 `else` e:45 := ite c t e
+</juicy-ace-editor>
+</div>
+</li>
+<li>Lean will only allow us to use `if-then-else` for decidable propositions.
+</li>
+<li>By default, Lean will try to prove decidability using type-class resolution. If we write
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">import standard
+open nat decidable
+
+variables a b : nat
+check if a = b ∧ a &gt; 0 then a else b
+</juicy-ace-editor>
+</div>
+</li>
+<li>Lean automatically synthesizes the implicit argument `H : decidable c`.
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">(and_decidable (nat.has_decidable_eq a b) (ge_decidable a (succ 0)))
+</juicy-ace-editor>
+</div>
+</li>
+</ul>
+
+</section>
+<section id="sec-21" >
+
+<h2>Constructive and Classical Logic</h2>
+<ul class="org-ul">
+<li>When we import the classical axioms, then we can prove that <b>all propositions are decidable</b>.
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">theorem prop_decidable [instance] (a : Prop) : decidable a
+</juicy-ace-editor>
+</div>
+<p>
+Moreover, we can write arbitrary `if-then-else` expressions.
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">if riemman_hypothesis then t else e
+</juicy-ace-editor>
+</div>
+</section>
+<section id="sec-22" >
+
+<h2>User Interfaces of Lean</h2>
+<ul class="org-ul">
+<li>Why?
+<ul class="org-ul">
+<li>Lean Library Developers
+<ul class="org-ul">
+<li>From <b>basics</b> (logic connectives, int, nat, &#x2026;) to <b>advanced</b> (category theory, HoTT).
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-23" >
+
+<h2>User Interfaces of Lean</h2>
+<ul class="org-ul">
+<li>Why?
+<ul class="org-ul">
+<li>Lean Library Developers
+</li>
+<li>CMU 15-815 "Interactive Theorem Proving", Spring 2015
+<ul class="org-ul">
+<li>Graduate Course
+</li>
+<li>by <a href="http://www.cs.cmu.edu/~emc">Prof. Edmund Clarke</a> and <a href="http://www.andrew.cmu.edu/user/avigad/">Prof. Jeremy Avigad</a>
+</li>
+<li>We will use <b>Lean</b>!
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-24" >
+
+<h2>User Interfaces of Lean</h2>
+<ul class="org-ul">
+<li>Why?
+<ul class="org-ul">
+<li>Lean Library Developers
+</li>
+<li>CMU 15-815 "Interactive Theorem Proving", Spring 2015
+</li>
+<li>Tutorial on Lean (<b>CADE</b>, August 2015)
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-25" >
+
+<h2>Two Interfaces of Lean</h2>
+<ul class="org-ul">
+<li><b>Web</b> user interface and <b>Native</b> user interface
+</li>
+</ul>
+
+</section>
+<section id="sec-26" >
+
+<h2>Web Interface</h2>
+<ul class="org-ul">
+<li>Works <b>everywhere</b> (desktop, mobild, tablet, etc)
+</li>
+<li>No need to install
+</li>
+<li><b>Interactive</b> Manual, Slides, Tutorial, IDE, &#x2026;
+</li>
+</ul>
+
+<img src="./img/browsers.jpg" alt="browsers.jpg" width="300px" />
+
+</section>
+<section id="sec-27" >
+
+<h2>Web Interface</h2>
+<ul class="org-ul">
+<li>Works <b>everywhere</b> (desktop, mobild, tablet, etc)
+</li>
+<li>No need to install
+</li>
+<li><b>Interactive</b> Manual, Slides, Tutorial, IDE, &#x2026;
+</li>
+<li>100% <b>Javascript</b>!
+</li>
+</ul>
+
+<img src="./img/js-logo.png" alt="js-logo.png" height="200px" />
+<img src="./img/emscripten-logo.jpg" alt="emscripten-logo.jpg" height="200px" />
+
+</section>
+<section id="sec-28" >
+
+<h2>Web Interface</h2>
+<ul class="org-ul">
+<li>Works <b>everywhere</b> (desktop, mobild, tablet, etc)
+</li>
+<li>No need to install
+</li>
+<li><b>Interactive</b> Manual, Slides, Tutorial, IDE, &#x2026;
+</li>
+<li>100% <b>Javascript</b>!
+<ul class="org-ul">
+<li>Running on <b>your webbrowser</b>
+</li>
+<li><b>No server</b> is required
+</li>
+<li><b>Lean.JS API</b> is available
+</li>
+<li><b>Logical reasoning engine</b> for many applications
+</li>
+</ul>
+</li>
+</ul>
+<img src="./img/js-logo.png" alt="js-logo.png" height="200px" />
+<img src="./img/emscripten-logo.jpg" alt="emscripten-logo.jpg" height="200px" />
+
+</section>
+<section id="sec-29" >
+
+<h2>Web Interface</h2>
+<ul class="org-ul">
+<li>Live Demo: <a href="http://leanprover.github.com/live">http://leanprover.github.com/live</a>
+</li>
+</ul>
+
+</section>
+<section id="sec-30" >
+
+<h2>Web Interface</h2>
+<ul class="org-ul">
+<li>Live Demo: <a href="http://leanprover.github.com/live">http://leanprover.github.com/live</a>
+</li>
+<li>Functionalities
+<ul class="org-ul">
+<li>Executing Lean
+</li>
+<li>Input Method (\(\lambda\), \(\alpha\), &#x2026;)
+</li>
+<li>Syntax Check
+</li>
+<li>Auto Completion
+</li>
+<li>Cloud Support (Dropbox, &#x2026;)
+</li>
+<li>Sharing
+</li>
+<li>More to come!
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-31" >
+
+<h2>Native Interface</h2>
+<ul class="org-ul">
+<li><b>Richer</b> functionalities: showing typing, coersion, overloading, jump to definition, &#x2026;
+</li>
+<li>Multi-core support, incremental compilation.
+</li>
+<li><b>Lean Server</b>: General protocol using asynchronous communication
+<ul class="org-ul">
+<li>Load File, Visit File, Synchronize, Replace Line, Insert Line, Info, Set Option, Eval, &#x2026;
+</li>
+<li>Documentation is <a href="https://github.com/leanprover/lean/blob/master/doc/server.org">available</a>.
+</li>
+</ul>
+</li>
+</ul>
+<img src="./img/lean-server.svg" alt="lean-server.svg" />
+
+</section>
+<section id="sec-32" >
+
+<h2>Native Interface</h2>
+<ul class="org-ul">
+<li><b>Richer</b> functionalities: showing typing, coersion, overloading, jump to definition, &#x2026;
+</li>
+<li>Multi-core support, incremental compilation.
+</li>
+<li><b>Lean Server</b>: General protocol using asynchronous communication
+</li>
+<li>For now, we support emacs
+</li>
+</ul>
+
+<img src="./img/emacs.png" alt="emacs.png" width="200px" />
+
+</section>
+<section id="sec-33" >
+
+<h2>Native Interface</h2>
+<ul class="org-ul">
+<li>Live Demo!
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+	  {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : !assoc
+		  ... = (η b ∘ G f) ∘ θ a : {naturality η f}
+		  ... = η b ∘ (G f ∘ θ a) : !assoc⁻¹
+		  ... = η b ∘ (θ b ∘ F f) : {naturality θ f}
+		  ... = (η b ∘ θ b) ∘ F f : !assoc)
+print definition nt_compose
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-34" >
+
+<h2>Native Interface</h2>
+<ul class="org-ul">
+<li>Live Demo!
+</li>
+<li>Functionalities
+<ul class="org-ul">
+<li>Show type information, overloading, coersion
+</li>
+<li>Context-aware auto-completion
+</li>
+<li>On-the-fly compilation
+</li>
+<li>Jump to the definition
+</li>
+<li>Show the synthesized term for placeholders
+</li>
+<li>More to come!
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-35" >
+
+<h2>Future Work</h2>
+<ul class="org-ul">
+<li>Definitional package: convert <b>recursive equations</b> into <b>recursors</b>.
+</li>
+</ul>
+
+<p>
+The user wants to write
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">append : list A → list A → list A
+append nil      t = t
+append (x :: l) t = x :: (append l t)
+</juicy-ace-editor>
+</div>
+
+<p>
+instead of
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean">definition append (s t : list A) : list A :=
+rec_on s
+  t
+  (λx l r, x::r)
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-36" >
+
+<h2>Future Work</h2>
+<ul class="org-ul">
+<li>More <b>automation</b>
+<ul class="org-ul">
+<li>Simplifier
+</li>
+<li>SMT-like engines
+</li>
+<li>Arithmetic
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-37" >
+
+<h2>Future Work</h2>
+<ul class="org-ul">
+<li><b>Lecture notes</b> and <b>tutorial</b>
+<ul class="org-ul">
+<li>Course on interactive theorem proving at CMU
+</li>
+<li>Tutorial at CADE'15
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-38" >
+
+<h2>Thank you</h2>
+</section>
+</div>
+</div>
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-59814431-1', 'auto');ga('send', 'pageview');</script>
+
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/head.min.js"></script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: false,
+slideNumber: true,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+width: 1000,
+height: 800,
+margin: 0.10,
+minScale: 0.50,
+maxScale: 2.50,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+]
+});
+</script>
+</body>
+</html>
