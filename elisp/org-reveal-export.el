@@ -10,12 +10,10 @@
 (require 'f)
 (require 'org)
 (require 'ox-reveal)
-(require 'ox-bibtex)
 (require 'dash)
 (require 'dash-functional)
 (add-to-list 'load-path (f-join working-dir ".." "elisp"))
 (setq org-reveal-root "//leanprover.github.io/presentations/reveal.js-3.0.0/")
-;; (setq org-reveal-root "./reveal.js-3.0.0/")
 
 (setq org-reveal-title-slide-template
 "<h1 id='title-name'>%t</h1>
