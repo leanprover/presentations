@@ -1,0 +1,400 @@
+#+Title: The Tale of Two Interfaces for the Lean Theorem Prover
+#+Author: [[http://www.cs.cmu.edu/~soonhok][Soonho Kong]] / [[http://leodemoura.github.io][Leonardo de Moura]]
+#+Date: Microsoft Research, 2014/10/24
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MARGIN: 0.1
+#+REVEAL_MIN_SCALE: 0.5
+#+REVEAL_MAX_SCALE: 2.5
+
+* Introduction: *Lean*
+
+- New *automated* & *interactive* theorem prover
+
+* Introduction: *Lean*
+
+- New *automated* & *interactive* theorem prover
+- Powerful system for
+  - reasoning about *complex systems*
+  - reasoning about *mathematics*
+  - proving claims about *both*
+
+* Introduction: *Lean*
+
+- New *automated* & *interactive* theorem prover
+- Powerful system for *complex systems* and *mathematics*
+- Automated *+* Interactive Theorem Proving
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+  # - We can teach logic to any kid that knows how to program.
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+  # - We can teach logic to any kid that knows how to program.
+
+  [[./img/curry-howard.jpg]]
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+- Lean as a *new engine* for *software verification* tools
+  - much *richer* language
+  - *multiple APIs* (C/C++, Lua, Lean, Javascript)
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+- Lean as a *new engine* for *software verification* tools
+- Impact on *education*
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+- Lean as a *new engine* for *software verification* tools
+- Impact on *education*
+  - *Live* and *formalized* version of Euclid's Elements (book 1)
+    [[./img/euclid.jpg]]
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*\cite{Coquand1988}
+- Lean as a *new engine* for *software verification* tools
+- Impact on *education*
+  - *Live* and *formalized* version of Euclid's Elements (book 1)
+  - Natural deduction style proof = flowchart (*BAD*)
+
+[[./img/natural_deduction.png]]
+
+* Big Picture
+
+- *Proving* should be as easy as *programming*
+- Lean as a *new engine* for *software verification* tools
+- Impact on *education*
+- *Revolutionize* mathematics.
+
+#+REVEAL_HTML:<br/><br/>
+
+"Develop *software* that *mathematicians could*
+
+*use in their everyday work*, to do *proofs*."
+#+REVEAL_HTML:<br/>
+
+-- Vladimir Voevodsky (Fields Medalist)
+
+* The Logical Framework
+
+- A version of the *Calculus of Constructions* with:
+  - an impredicative, proof irrelevant type *Prop* of propositions.
+  - a non-cumulative hierarchy of universes: *Type 1*, *Type 2*, ... above *Prop*
+  - universe polymorphism
+  - inductively defined types
+
+* The Logical Framework
+
+- A version of the *Calculus of Constructions* with:
+  - an impredicative, proof irrelevant type *Prop* of propositions.
+  - a non-cumulative hierarchy of universes: *Type 1*, *Type 2*, ... above *Prop*
+  - universe polymorphism
+  - inductively defined types
+
+- Features
+  - Kernel is *constructive*
+  - Smooth support for *classical* logic
+  - Support for *HoTT* (Homotopy Type Theory)
+
+* Reasoning about Abstractions
+
+- At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+  *Category theory* and *Homotopy type theory* using *Lean*.
+
+#+BEGIN_SRC lean
+import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+          {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : !assoc
+                  ... = (η b ∘ G f) ∘ θ a : {naturality η f}
+                  ... = η b ∘ (G f ∘ θ a) : !assoc⁻¹
+                  ... = η b ∘ (θ b ∘ F f) : {naturality θ f}
+                  ... = (η b ∘ θ b) ∘ F f : !assoc)
+#+END_SRC
+
+* Reasoning about Abstractions
+
+- At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+  *Category theory* and *Homotopy type theory* using *Lean*.
+
+- Why this relevant?
+
+* Reasoning about Abstractions
+
+- At CMU, Jeremy Avigad, Floris van Doorn, and Jakob von Raumer are formalizing
+  *Category theory* and *Homotopy type theory* using *Lean*.
+
+- Why this relevant?
+  - *Stressing* all lean major components
+  - "If we can do it, then we can do anything."
+  - *Test* if we can reason about *higher-level* abstractions
+  - In CS, we also want to reason about *higher-level* abstractions.
+
+* Constructive and Classical Logic
+
+- Almost everything we do is *constructive*, but we want to support *classical* users smoothly.
+
+* Constructive and Classical Logic
+
+- Almost everything we do is *constructive*, but we want to support *classical* users smoothly.
+
+    #+BEGIN_SRC lean
+inductive decidable [class] (p : Prop) : Type :=
+inl : p  → decidable p,
+inr : ¬p → decidable p
+    #+END_SRC
+
+- "decidable" is the *type class* of decidable propositions.
+
+* Constructive and Classical Logic
+
+- The excluded middle is a theorem for decidable propositions.
+
+    #+BEGIN_SRC lean
+theorem em (p : Prop) [H : decidable p] : p ∨ ¬p :=
+induction_on H (assume Hp, or.inl Hp) (assume Hnp, or.inr Hnp)
+    #+END_SRC
+
+- "[H : decidable p]" instructs Lean that *H : decidable p* is an
+  *implicit argument*, and it should be *synthesized* automatically
+  using type-class instantiation
+
+* Constructive and Classical Logic
+
+- We have populated the lean standard library with many decidability results.
+
+- Example: the conjunction of two decidable propositions is decidable
+#+BEGIN_SRC lean
+variables p q : Prop
+definition and_decidable [instance] (Hp : decidable p) (Hq : decidable q)
+: decidable (p ∧ q) :=
+rec_on Hp
+  (assume Hp  : p, rec_on Hq
+    (assume Hq  : q,  inl (and.intro Hp Hq))
+    (assume Hnq : ¬q, inr (and.not_right p Hnq)))
+  (assume Hnp : ¬p, inr (and.not_left q Hnp))
+#+END_SRC
+
+#+BEGIN_SRC lean
+definition decidable_eq (A : Type) := Π (a b : A), decidable (a = b)
+
+protected definition nat.has_decidable_eq [instance] : decidable_eq ℕ :=
+take n m : ℕ,
+...
+#+END_SRC
+
+* Constructive and Classical Logic
+
+- We define `if-then-else` expressions as
+    #+BEGIN_SRC lean
+definition ite (c : Prop) [H : decidable c] {A : Type} (t e : A) : A :=
+decidable.rec_on H (assume Hc,  t) (assume Hnc, e)
+
+notation `if` c `then` t:45 `else` e:45 := ite c t e
+    #+END_SRC
+- Lean will only allow us to use `if-then-else` for decidable propositions.
+- By default, Lean will try to prove decidability using type-class resolution. If we write
+    #+BEGIN_SRC lean
+import standard
+open nat decidable
+
+variables a b : nat
+check if a = b ∧ a > 0 then a else b
+    #+END_SRC
+- Lean automatically synthesizes the implicit argument `H : decidable c`.
+    #+BEGIN_SRC lean
+(and_decidable (nat.has_decidable_eq a b) (ge_decidable a (succ 0)))
+    #+END_SRC
+
+# Note: we can see this argument by setting options
+# set_option pp.notation false
+# set_option pp.implicit true
+
+* Constructive and Classical Logic
+
+- When we import the classical axioms, then we can prove that *all propositions are decidable*.
+#+BEGIN_SRC lean
+theorem prop_decidable [instance] (a : Prop) : decidable a
+#+END_SRC
+Moreover, we can write arbitrary `if-then-else` expressions.
+#+BEGIN_SRC lean
+if riemman_hypothesis then t else e
+#+END_SRC
+* User Interfaces of Lean
+- Why?
+ - Lean Library Developers
+   - From *basics* (logic connectives, int, nat, ...) to *advanced* (category theory, HoTT).
+
+* User Interfaces of Lean
+- Why?
+ - Lean Library Developers
+ - CMU 15-815 "Interactive Theorem Proving", Spring 2015
+   - Graduate Course
+   - by [[http://www.cs.cmu.edu/~emc][Prof. Edmund Clarke]] and [[http://www.andrew.cmu.edu/user/avigad/][Prof. Jeremy Avigad]]
+   - We will use *Lean*!
+
+* User Interfaces of Lean
+- Why?
+ - Lean Library Developers
+ - CMU 15-815 "Interactive Theorem Proving", Spring 2015
+ - Tutorial on Lean (*CADE*, August 2015)
+
+* Two Interfaces of Lean
+
+ - *Web* user interface and *Native* user interface
+
+* Web Interface
+ - Works *everywhere* (desktop, mobild, tablet, etc)
+ - No need to install
+ - *Interactive* Manual, Slides, Tutorial, IDE, ...
+
+#+attr_html: :width 300px
+[[./img/browsers.jpg]]
+
+* Web Interface
+ - Works *everywhere* (desktop, mobild, tablet, etc)
+ - No need to install
+ - *Interactive* Manual, Slides, Tutorial, IDE, ...
+ - 100% *Javascript*!
+
+#+attr_html: :height 200px
+[[./img/js-logo.png]]
+#+attr_html: :height 200px
+[[./img/emscripten-logo.jpg]]
+
+* Web Interface
+ - Works *everywhere* (desktop, mobild, tablet, etc)
+ - No need to install
+ - *Interactive* Manual, Slides, Tutorial, IDE, ...
+ - 100% *Javascript*!
+   - Running on *your webbrowser*
+   - *No server* is required
+   - *Lean.JS API* is available
+   - *Logical reasoning engine* for many applications
+#+attr_html: :height 200px
+[[./img/js-logo.png]]
+#+attr_html: :height 200px
+[[./img/emscripten-logo.jpg]]
+
+* Web Interface
+
+ - Live Demo: http://leanprover.github.com/live
+
+* Web Interface
+
+ - Live Demo: http://leanprover.github.com/live
+ - Functionalities
+   - Executing Lean
+   - Input Method ($\lambda$, $\alpha$, ...)
+   - Syntax Check
+   - Auto Completion
+   - Cloud Support (Dropbox, ...)
+   - Sharing
+   - More to come!
+
+* Native Interface
+ - *Richer* functionalities: showing typing, coersion, overloading, jump to definition, ...
+ - Multi-core support, incremental compilation.
+ - *Lean Server*: General protocol using asynchronous communication
+   - Load File, Visit File, Synchronize, Replace Line, Insert Line, Info, Set Option, Eval, ...
+   - Documentation is [[https://github.com/leanprover/lean/blob/master/doc/server.org][available]].
+[[./img/lean-server.svg]]
+
+
+# #+attr_html: :width 300px
+# [[./img/emacs.png]]
+
+* Native Interface
+ - *Richer* functionalities: showing typing, coersion, overloading, jump to definition, ...
+ - Multi-core support, incremental compilation.
+ - *Lean Server*: General protocol using asynchronous communication
+ - For now, we support emacs
+
+#+attr_html: :width 200px
+[[./img/emacs.png]]
+
+* Native Interface
+  - Live Demo!
+#+BEGIN_SRC lean
+import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+          {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : !assoc
+                  ... = (η b ∘ G f) ∘ θ a : {naturality η f}
+                  ... = η b ∘ (G f ∘ θ a) : !assoc⁻¹
+                  ... = η b ∘ (θ b ∘ F f) : {naturality θ f}
+                  ... = (η b ∘ θ b) ∘ F f : !assoc)
+print definition nt_compose
+#+END_SRC
+
+* Native Interface
+  - Live Demo!
+  - Functionalities
+   - Show type information, overloading, coersion
+   - Context-aware auto-completion
+   - On-the-fly compilation
+   - Jump to the definition
+   - Show the synthesized term for placeholders
+   - More to come!
+
+* Future Work
+
+- Definitional package: convert *recursive equations* into *recursors*.
+
+The user wants to write
+
+#+BEGIN_SRC lean
+append : list A → list A → list A
+append nil      t = t
+append (x :: l) t = x :: (append l t)
+#+END_SRC
+
+instead of
+
+#+BEGIN_SRC lean
+definition append (s t : list A) : list A :=
+rec_on s
+  t
+  (λx l r, x::r)
+#+END_SRC
+
+* Future Work
+
+- More *automation*
+  - Simplifier
+  - SMT-like engines
+  - Arithmetic
+
+* Future Work
+
+- *Lecture notes* and *tutorial*
+  - Course on interactive theorem proving at CMU
+  - Tutorial at CADE'15
+
+* Thank you
