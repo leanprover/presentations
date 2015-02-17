@@ -25,7 +25,7 @@
 <script type=\"text/javascript\">MathJax.Hub.Config({\"HTML-CSS\": {scale: 80 }})</script>
 </script><script src=\"///cdn.jsdelivr.net/polymer.platform/0.4.2/platform.js\"></script>
 <link rel=\"import\" href=\"./juicy-ace-editor.html\">
-<link rel=\"stylesheet\" href=\"./css/code.css\">
+<link rel=\"stylesheet\" href=\"../css/code.css\">
 ")
 
 (setq org-reveal-postamble
