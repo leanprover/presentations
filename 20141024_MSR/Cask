@@ -11,4 +11,4 @@
  (depends-on "s")
  (depends-on "org-plus-contrib")
  (depends-on "htmlize")
- (depends-on "ox-reveal" :git "git@github.com:soonhokong/org-reveal.git" :branch "master"))
+ (depends-on "ox-reveal" :git "https://github.com/soonhokong/org-reveal.git" :branch "master"))
