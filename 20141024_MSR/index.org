@@ -4,7 +4,8 @@
 #+REVEAL_HLEVEL: 3
 #+REVEAL_TRANS: none
 #+REVEAL_THEME: soonho
-
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
 #+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
 #+OPTIONS: reveal_rolling_links:nil
 #+OPTIONS: reveal_width:1000 reveal_height:800
