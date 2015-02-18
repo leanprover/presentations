@@ -18,7 +18,7 @@ clean:
 
 watch-on:
 	$(WATCHMAN_BIN) watch $(CWD)
-	$(WATCHMAN_BIN) -- trigger $(CWD) org-files '*.org' -- make all
+	$(WATCHMAN_BIN) -- trigger $(CWD) org-files '*.org' -- make -C $(CWD) all EMACS_BIN=$(shell which $(EMACS_BIN)) LEAN_BIN=$(shell which $(LEAN_BIN))
 
 watch-off:
 	$(WATCHMAN_BIN) -- trigger-del $(CWD) org-files
