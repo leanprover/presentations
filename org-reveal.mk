@@ -2,7 +2,7 @@ CASK_BIN ?= cask
 EMACS_BIN ?= emacs
 LEAN_BIN ?= lean
 CWD   := $(shell pwd)
-WATCHMAN_BIN ?= $(CWD)/watchman/watchman
+WATCHMAN_BIN ?= $(CWD)/watchman/bin/watchman
 TMPDIR := $(shell mktemp -d /tmp/lean-tutorial.XXXX)
 
 %.html: %.org .cask ../elisp/org-reveal-export.el
@@ -29,6 +29,6 @@ install-cask:
 
 install-watchman:
 	git clone https://github.com/facebook/watchman.git
-	cd watchman &&./autogen.sh && ./configure && make
+	cd watchman &&./autogen.sh && ./configure --prefix $(CWD)/watchman && make install
 
 .PHONY: all clean install-cask install-watchman watch-on watch-off
