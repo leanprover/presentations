@@ -45,19 +45,12 @@
 }
 
 juicy-ace-editor {
-    line-height:normal;
-    margin-top:10px;
-    margin-bottom:10px;
-    margin-left:80px;
+    margin: 15px;
+    margin-left: 30px;
     text-align:left;
-    width:830px;
-    background: #272827;
-    padding: 1px;
+    width:90%;
 }
 
 #juicy-ace-editor-container {
     font-family: 'FreeMono-lean', 'DejaVuSansMono-lean', Monaco, Menlo, 'Ubuntu Mono', 'Arial Unicode MS', Consolas, source-code-pro, monospace;
-    line-height: inherit;
-    margin-top:20px;
-    margin-bottom:20px;
 }
