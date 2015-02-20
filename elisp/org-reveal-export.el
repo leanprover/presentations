@@ -21,9 +21,9 @@
 <h2 id='date'>%d</h2>")
 
 (setq org-reveal-head-preamble "
-<script type=\"text/javascript\" src=\"///cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js\"></script>
+<script type=\"text/javascript\" src=\"//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js\"></script>
 <script type=\"text/javascript\">MathJax.Hub.Config({\"HTML-CSS\": {scale: 80 }})</script>
-</script><script src=\"///cdn.jsdelivr.net/polymer.platform/0.4.2/platform.js\"></script>
+<script src=\"//cdn.jsdelivr.net/polymer.platform/0.4.2/platform.js\"></script>
 <link rel=\"import\" href=\"./juicy-ace-editor.html\">
 <link rel=\"stylesheet\" href=\"../css/code.css\">
 ")
