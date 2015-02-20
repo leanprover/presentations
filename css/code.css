@@ -44,6 +44,10 @@
     font-style: normal;
 }
 
+.ace_scrollbar {
+    display: none !important;
+}
+
 juicy-ace-editor {
     margin: 15px;
     margin-left: 30px;
@@ -53,4 +57,10 @@ juicy-ace-editor {
 
 #juicy-ace-editor-container {
     font-family: 'FreeMono-lean', 'DejaVuSansMono-lean', Monaco, Menlo, 'Ubuntu Mono', 'Arial Unicode MS', Consolas, source-code-pro, monospace;
+    padding-top:5px;
+}
+
+.ace_bracket {
+    border: 0px;
+    display: none !important;
 }
