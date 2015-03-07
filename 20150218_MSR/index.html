@@ -458,8 +458,8 @@ rfl -- reflexivity
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive vector (A : Type) : nat → Type :=
-nil  : vector A zero,
-cons : Π {n : nat}, A → vector A n → vector A (succ n)
+| nil  : vector A zero
+| cons : Π {n : nat}, A → vector A n → vector A (succ n)
 </juicy-ace-editor>
 </div>
 </li>
@@ -474,8 +474,8 @@ cons : Π {n : nat}, A → vector A n → vector A (succ n)
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive nat : Type :=
-zero : nat,
-succ : nat → nat
+| zero : nat
+| succ : nat → nat
 </juicy-ace-editor>
 </div>
 </li>
@@ -535,8 +535,8 @@ inductive and (a b : Prop) : Prop :=
 intro : a → b → and a b
 
 inductive or (a b : Prop) : Prop :=
-inl : a → or a b,
-inr : b → or a b
+| inl : a → or a b
+| inr : b → or a b
 
 inductive Exists (A : Type) (P : A → Prop) : Prop :=
 intro : Π (a : A), P a → Exists P
@@ -869,10 +869,10 @@ list.rec (default A) (λ h t r, h) l
 
 <div class="org-src-container">
 
-<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">definition fib : nat → nat,
-fib 0     := 1,
-fib 1     := 1,
-fib (a+2) := fib (a+1) + fib a
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">definition fib : nat → nat
+| fib 0     := 1
+| fib 1     := 1
+| fib (a+2) := fib (a+1) + fib a
 
 example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
 rfl
@@ -890,14 +890,14 @@ rfl
 
 <div class="org-src-container">
 
-<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">theorem fib_pos : ∀ n, 0 &lt; fib n,
-fib_pos 0     := show 0 &lt; 1, from zero_lt_succ 0,
-fib_pos 1     := show 0 &lt; 1, from zero_lt_succ 0,
-fib_pos (a+2) := calc
-   0 = 0 + 0             : rfl
- ... &lt; fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
- ... &lt; fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
- ... = fib (a+2)         : rfl
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">theorem fib_pos : ∀ n, 0 &lt; fib n
+| fib_pos 0     := show 0 &lt; 1, from zero_lt_succ 0
+| fib_pos 1     := show 0 &lt; 1, from zero_lt_succ 0
+| fib_pos (a+2) := calc
+    0 = 0 + 0             : rfl
+  ... &lt; fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
+  ... &lt; fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
+  ... = fib (a+2)         : rfl
 </juicy-ace-editor>
 </div>
 
@@ -913,14 +913,14 @@ fib_pos (a+2) := calc
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">definition map {A B C : Type} (f : A → B → C)
-     : Π {n : nat}, vector A n → vector B n → vector C n,
-map nil     nil     := nil,
-map (a::va) (b::vb) := f a b :: map va vb
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
 
 definition zip {A B : Type}
-     : Π {n}, vector A n → vector B n → vector (A × B) n,
-zip nil nil         := nil,
-zip (a::va) (b::vb) := (a, b) :: zip va vb
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
 </juicy-ace-editor>
 </div>
 
