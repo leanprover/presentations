@@ -219,8 +219,8 @@ a
   - We "believe" in recursion
   #+BEGIN_SRC lean
   inductive vector (A : Type) : nat → Type :=
-  nil  : vector A zero,
-  cons : Π {n : nat}, A → vector A n → vector A (succ n)
+  | nil  : vector A zero
+  | cons : Π {n : nat}, A → vector A n → vector A (succ n)
   #+END_SRC
 
 * Inductive families
@@ -228,8 +228,8 @@ a
 - Given
   #+BEGIN_SRC lean
   inductive nat : Type :=
-  zero : nat,
-  succ : nat → nat
+  | zero : nat
+  | succ : nat → nat
   #+END_SRC
 - Produces
   #+BEGIN_SRC lean
@@ -275,8 +275,8 @@ a
   intro : a → b → and a b
 
   inductive or (a b : Prop) : Prop :=
-  inl : a → or a b,
-  inr : b → or a b
+  | inl : a → or a b
+  | inr : b → or a b
 
   inductive Exists (A : Type) (P : A → Prop) : Prop :=
   intro : Π (a : A), P a → Exists P
@@ -500,10 +500,10 @@ a
   - Two compilation strategies: *structural* and *well-founded* recursion
 
   #+BEGIN_SRC lean
-  definition fib : nat → nat,
-  fib 0     := 1,
-  fib 1     := 1,
-  fib (a+2) := fib (a+1) + fib a
+  definition fib : nat → nat
+  | fib 0     := 1
+  | fib 1     := 1
+  | fib (a+2) := fib (a+1) + fib a
 
   example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
   rfl
@@ -514,14 +514,14 @@ a
   - Proofs by induction
 
   #+BEGIN_SRC lean
-  theorem fib_pos : ∀ n, 0 < fib n,
-  fib_pos 0     := show 0 < 1, from zero_lt_succ 0,
-  fib_pos 1     := show 0 < 1, from zero_lt_succ 0,
-  fib_pos (a+2) := calc
-     0 = 0 + 0             : rfl
-   ... < fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
-   ... < fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
-   ... = fib (a+2)         : rfl
+  theorem fib_pos : ∀ n, 0 < fib n
+  | fib_pos 0     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos 1     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos (a+2) := calc
+      0 = 0 + 0             : rfl
+    ... < fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
+    ... < fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
+    ... = fib (a+2)         : rfl
   #+END_SRC
 
 * Recursive equations
@@ -530,14 +530,14 @@ a
 
 #+BEGIN_SRC lean
 definition map {A B C : Type} (f : A → B → C)
-     : Π {n : nat}, vector A n → vector B n → vector C n,
-map nil     nil     := nil,
-map (a::va) (b::vb) := f a b :: map va vb
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
 
 definition zip {A B : Type}
-     : Π {n}, vector A n → vector B n → vector (A × B) n,
-zip nil nil         := nil,
-zip (a::va) (b::vb) := (a, b) :: zip va vb
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
 #+END_SRC
 
 * Human-readable proofs
