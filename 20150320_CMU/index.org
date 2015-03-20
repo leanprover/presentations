@@ -1,0 +1,378 @@
+#+Title: Elaboration and Higher-order unification
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura]]
+#+Date:  CMU, 2015/03/20
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1150 reveal_height:700
+#+OPTIONS: tex:t
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* Why do we need elaboration?
+
+"By relieving the brain of all unnecessary work, a good notation sets it free to
+ concentrate on more advanced problems, and in effect increases the mental power of the
+ race." A. N. Whitehead
+
+#+BEGIN_SRC lean
+  variables {C D E : Precategory} {F G H I : C ⇒ D} {F' G' : D ⇒ E}
+
+  definition compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+  nat_trans.mk
+    (λ a, η a ∘ θ a)
+    (λ a b f,
+      calc
+        H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : assoc
+                      ... = (η b ∘ G f) ∘ θ a : naturality
+                      ... = η b ∘ (G f ∘ θ a) : assoc
+                      ... = η b ∘ (θ b ∘ F f) : naturality
+                      ... = (η b ∘ θ b) ∘ F f : assoc)
+#+END_SRC
+
+* Why do we need elaboration?
+
+"We could, of course, use any notation we want; do not laugh at notations;
+invent them, they are powerful. In fact, mathematics is, to a large extent,
+inventions of better notations." Richard P. Feynman
+
+#+BEGIN_SRC lean
+inductive vector (A : Type) : nat → Type :=
+| nil  : vector A zero
+| cons : Π {n}, A → vector A n → vector A (succ n)
+
+notation a :: b := cons a b
+notation []     := nil _
+variable {A : Type}
+definition zip : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip []      []      := []
+| zip (a::va) (b::vb) := ((a, b) :: zip va vb)
+#+END_SRC
+
+* Why do we use a minimalistic kernel?
+
+* Elaboration: main ingredients
+
+- Unification constraints
+- Definition package
+- Coercions
+- Overloading
+- Type classes
+- Tactics
+
+* Unification constraints
+
+#+BEGIN_SRC lean
+zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check zip v w
+#+END_SRC
+
+* Unification constraints
+
+#+BEGIN_SRC lean
+zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check @zip ?A ?n v w
+#+END_SRC
+
+* Unification constraints
+
+#+BEGIN_SRC lean
+zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check @zip ?A ?n v w
+#+END_SRC
+
+by typing constraints, we have
+
+#+BEGIN_SRC lean
+vector ?A ?n ≈ vector int 10
+#+END_SRC
+
+* Higher-order unification constraints
+
+#+BEGIN_SRC lean
+subst : ∀ {A : Type} {a b : A} {P : A → Prop}, a = b → P a → P b
+n m : nat
+f   : nat → nat
+g   : nat → nat → Prop
+H₁  : n = m
+H₂  : g (f n) (f (f n))
+check subst H₁ H₂
+#+END_SRC
+
+* Higher-order unification constraints
+
+#+BEGIN_SRC lean
+subst : ∀ {A : Type} {a b : A} {P : A → Prop}, @eq A a b → P a → P b
+n m : nat
+f   : nat → nat
+g   : nat → nat → Prop
+H₁  : @eq nat n m
+H₂  : g (f n) (f (f n))
+check @subst ?A ?a ?b ?P H₁ H₂
+#+END_SRC
+
+
+by typing constraints, we have
+
+#+BEGIN_SRC lean
+@eq ?A ?a ?b ≈ @eq nat n m
+?P ?a        ≈ g (f n) (f (f n))
+#+END_SRC
+
+
+* First-order unification procedure
+
+- State: S (substitution), C (constraints)
+#+BEGIN_SRC lean
+delete:    S, {t ≈ t} ∪ C  ⇒  S, C
+
+decompose: S, {f a₁...aₙ ≈ f b₁...bₙ} ∪ C  ⇒  S, {a₁ ≈ b₁, ..., aₙ ≈ bₙ} ∪ C
+
+assign:    S, {?m ≈ t} ∪ C  ⇒  S ∪ {?m ↦ t}, C  if  ?m ∉ S
+
+replace:   S ∪ {?m ↦ t}, {r[?m] ≈ s[?m]} ∪ C  ⇒  S ∪ {?m ↦ t}, {r[t] ≈ s[t]} ∪ C
+
+conflict₁: S, {f a₁...aₙ ≈ g b₁...bₙ} ∪ C ⇒ fail
+
+conflict₂:  S, {?m ≈ t} ∪ C ⇒ fail  if  ?m occurs in t
+#+END_SRC
+
+* Simply typed lambda calculus
+
+#+BEGIN_SRC lean
+A, B :=  A → B | α
+t, s :=  c | x | t s | λx : A, t
+#+END_SRC
+
+* Reduction
+
+- Beta
+#+BEGIN_SRC lean
+  (λx, t) s ⇒  t[x:=s]
+#+END_SRC
+
+- Eta
+#+BEGIN_SRC lean
+(λx, f x) ⇒  f
+#+END_SRC
+
+- Alpha equivalence
+#+BEGIN_SRC lean
+  (λx, t[x]) = (λy, t[y])
+#+END_SRC
+
+* Simply typed lambda calculus
+
+#+BEGIN_SRC lean
+A, B :=  A → B | α
+t, s :=  c | x | ℓ | ?m | t s | λx : A, t
+#+END_SRC
+
+* Substitution and reduction
+
+#+BEGIN_SRC lean
+{},  {(λx, ?m) a ≈ a,  (λx, ?m) b ≈ b}
+⇒
+{},  {?m ≈ a,  ?m ≈ b}
+⇒
+{?m ↦ a},  {?m ≈ b}
+⇒
+{?m ↦ a},  {a ≈ b}
+⇒
+fail
+#+END_SRC
+
+- We want: substitution and beta-reduction commute
+
+* Substitution and beta-reduction
+
+- Possible solution: only closed terms can be assigned to metavariables
+
+#+BEGIN_SRC lean
+{},  {(λx, ?m x) a ≈ a,  (λx, ?m x) b ≈ b}
+⇒
+{},  {?m a ≈ a,  ?m b ≈ b}
+#+END_SRC
+
+
+* Higher-order unification is semi-decidable
+
+
+* Higher-order unification is undecidable
+
+- Infinite number of solutions
+
+#+BEGIN_SRC lean
+(λz, ?m z (λy, y)) ≈ (λz, z)
+#+END_SRC
+
+solutions:
+
+#+BEGIN_SRC lean
+?m ↦ λx f, x
+?m ↦ λx f, f x
+?m ↦ λx f, f (f x)
+?m ↦ λx f, f (f (f x))
+...
+#+END_SRC
+
+* Higher-order unification is undecidable
+
+#+BEGIN_SRC lean
+-- Church number  λx f, f (f (f ... (f x) ...))
+constant i : Type₁
+definition Num := i → (i → i) → i
+definition add (n : Num) (m : Num) : Num :=
+λx f, n (m x f) f
+
+definition mul (n : Num) (m : Num) : Num :=
+λx f, n x (λz, (m z f))
+#+END_SRC
+
+* Higher-order unification is undecidable
+
+- Reduction to Hilbert's 10th Problem
+- Diophantine equations
+
+* Huet's procedure
+
+- Simply typed lambda calculus
+- Normal form
+#+BEGIN_SRC lean
+λx₁ ... xₘ, (y u₁ ... uₚ)
+- y is a constant or variable
+#+END_SRC
+- All types are inhabited, and there is a constant in each atomic type
+- If there is a solution, there is
+  - *a closed one*, and
+  - *in long normal form*
+- Key idea: enumerate all the normal terms of a given type by
+  - *enumerating all possible head symbols*, and then
+  - *recursively doing the same for the arguments*
+
+* Huet's procedure
+
+- Elementary substitutions
+#+BEGIN_SRC lean
+?m ↦ λy₁ ... yₚ, h (?m₁ y₁ ... yₚ) ... (?mᵣ y₁ ... yₚ)
+#+END_SRC
+
+* Huet's procedure : rigid-rigid equations
+
+#+BEGIN_SRC lean
+decompose₁: S, { f a₁ ... aₙ ≈ f b₁ ... bₙ } ∪ C ⇒  S, { a₁ ≈ b₁, ..., aₙ ≈ bₙ } ∪ C
+conflict  : S, { f a₁ ... aₙ ≈ g b₁ ... bₙ } ∪ C ⇒ fail
+#+END_SRC
+
+#+BEGIN_SRC lean
+decompose₂: S, { λx, t ≈ λy, s } ∪ C ⇒ S, { t[x := ℓ] ≈ s[x := ℓ] } ∪ C
+decompose₃: S, { t ≈ λy, s } ∪ C     ⇒ S, { t ℓ ≈ s[x := ℓ] } ∪ C
+#+END_SRC
+
+* Huet's procedure : flex-rigid equations
+
+Given,
+#+BEGIN_SRC lean
+?m s₁ ... sₙ ≈ f t₁ ... tₘ
+#+END_SRC
+consider
+#+BEGIN_SRC lean
+?m ↦ λy₁ ... yₚ, h (?m₁ y₁ ... yₚ) ... (?mᵣ y₁ ... yₚ)
+#+END_SRC
+case-split:
+- =h= is among =y₁ ... yₚ f=
+- Projections
+- Imitation
+
+* Huet's procedure : flex-flex equations
+
+Postpone
+#+BEGIN_SRC lean
+?m₁ s₁ ... sₙ ≈ ?m₂ t₁ ... tₘ
+#+END_SRC
+
+* Huet's procedure : example 1
+
+#+BEGIN_SRC lean
+{}, { ?P n  ≈ g (f n) n }
+⇒
+{ ?P ↦ λy, g (?m₁ y) (?m₂ y) },
+{ g (?m₁ n) (?m₂ n) ≈ g (f n) n }
+⇒
+{ ?P ↦ λy, g (?m₁ y) (?m₂ y) },
+{ ?m₁ n ≈ f n,  ?m₂ n ≈ n }
+  ⇒  -- projection
+  { ?P ↦ λy, g (?m₁ y) (?m₂ y), ?m₂ ↦ λy, y },
+  { ?m₁ n ≈ f n }
+  ⇒  -- imitation
+  { ?P ↦ λy, g (?m₁ y) (?m₂ y), ?m₂ ↦ λy, n },
+  { ?m₁ n ≈ f n }
+#+END_SRC
+
+* Huet's procedure : example 2
+
+#+BEGIN_SRC lean
+{}, { ?m ℓ (λy, y) ≈ ℓ }
+  ⇒ -- projection 1
+  { ?m ↦ λx f, x }, {}
+  ⇒ -- projection 2
+  { ?m ↦ λx f, f (?m₁ x f) }, { ?m₁ ℓ (λy, y) ≈ ℓ }
+    ⇒ -- projection 1
+    { ?m₁ ↦ λx f, x }, {}   ?m ↦ λx f, f x
+    ⇒ -- projection 2
+    { ?m₁ ↦ λx f, f (?m₂ x f) }, { ?m₂ ℓ (λy, y) ≈ ℓ }
+      ⇒ -- projection 1
+      { ?m₂ ↦ λx f, x }, {}   ?m ↦ λx f, f (f x)
+      ⇒ -- projection 2
+      { ?m₂ ↦ λx f, f (?m₃ x f) }, { ?m₃ ℓ (λy, y) ≈ ℓ }
+      ...
+#+END_SRC
+
+* Huet's procedure : decidable for second-order matching
+
+- Projections steps are always of the form
+#+BEGIN_SRC lean
+?m ↦ λx₁...xₙ, xᵢ
+#+END_SRC
+
+* HOU (decidable fragment): Miller patterns
+
+#+BEGIN_SRC lean
+?m ℓ₁ ... ℓₙ ≈ t
+#+END_SRC
+
+* Huet's procedure in dependent type theory
+
+- Empty types
+- δ-reduction
+- ι-reduction
+
+* HOU and δ-reduction
+
+#+BEGIN_SRC lean
+definition sub (a b : int) := a + -b
+
+?m (-b) ≈ sub 0 b
+#+END_SRC
+
+- If we do not unfold =sub=, we will miss the solution
+
+#+BEGIN_SRC lean
+?m ↦ λx, add 0 x
+#+END_SRC
+
+* HOU and ι-reduction
+
+#+BEGIN_SRC lean
+{ ?m zero ≈ tt, ?m (succ zero) ≈ ff }
+#+END_SRC
+
+* Definition package

@@ -1,0 +1,139 @@
+λ (A : Type) (B : Type) {n : nat} (a : vector A n) (a_1 : vector B n),
+  @nat.brec_on (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) n
+    (λ {n : nat} (b : @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) n) (a : vector A n)
+     (a_1 : vector B n),
+       @nat.cases_on
+         (λ {n : nat},
+            @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) n →
+            vector A n → vector B n → vector (prod A B) n)
+         n
+         (λ (b : @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) zero) (a : vector A zero)
+          (a_1 : vector B zero),
+            (λ (t_1 : nat) (a_2 : vector A t_1),
+               @vector.cases_on A
+                 (λ (t_1 : nat) (a_2 : vector A t_1),
+                    @eq nat t_1 zero → @heq (vector A t_1) a_2 (vector A zero) a → vector (prod A B) zero)
+                 t_1
+                 a_2
+                 (λ (H_1 : @eq nat zero zero) (H_2 : @heq (vector A zero) (@nil A) (vector A zero) a),
+                    (λ (t_1 : nat) (a_1_1 : vector B t_1),
+                       @vector.cases_on B
+                         (λ (t_1 : nat) (a_1_1 : vector B t_1),
+                            @eq nat t_1 zero → @heq (vector B t_1) a_1_1 (vector B zero) a_1 → vector (prod A B) zero)
+                         t_1
+                         a_1_1
+                         (λ (H_1 : @eq nat zero zero) (H_2 : @heq (vector B zero) (@nil B) (vector B zero) a_1), @nil (prod A B))
+                         (λ (n : nat) (a : B) (a_2 : vector B n) (H_1 : @eq nat (succ n) zero),
+                            @nat.no_confusion
+                              (@heq (vector B (succ n)) (@cons B n a a_2) (vector B zero) a_1 → vector (prod A B) zero)
+                              (succ n)
+                              zero
+                              H_1))
+                      zero
+                      a_1
+                      (@eq.refl nat zero)
+                      (@heq.refl (vector B zero) a_1))
+                 (λ (n : nat) (a_2 : A) (a_3 : vector A n) (H_1 : @eq nat (succ n) zero),
+                    @nat.no_confusion (@heq (vector A (succ n)) (@cons A n a_2 a_3) (vector A zero) a → vector (prod A B) zero)
+                      (succ n)
+                      zero
+                      H_1))
+              zero
+              a
+              (@eq.refl nat zero)
+              (@heq.refl (vector A zero) a))
+         (λ (a : nat) (b : @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) (succ a))
+          (a_1 : vector A (succ a)) (a_2 : vector B (succ a)),
+            (λ (t_1 : nat) (a_1_1 : vector A t_1),
+               @vector.cases_on A
+                 (λ (t_1 : nat) (a_1_1 : vector A t_1),
+                    @eq nat t_1 (succ a) → @heq (vector A t_1) a_1_1 (vector A (succ a)) a_1 → vector (prod A B) (succ a))
+                 t_1
+                 a_1_1
+                 (λ (H_1 : @eq nat zero (succ a)),
+                    @nat.no_confusion (@heq (vector A zero) (@nil A) (vector A (succ a)) a_1 → vector (prod A B) (succ a)) zero
+                      (succ a)
+                      H_1)
+                 (λ (n : nat) (a_3 : A) (a_4 : vector A n) (H_1 : @eq nat (succ n) (succ a)),
+                    @nat.no_confusion
+                      (@heq (vector A (succ n)) (@cons A n a_3 a_4) (vector A (succ a)) a_1 → vector (prod A B) (succ a))
+                      (succ n)
+                      (succ a)
+                      H_1
+                      (λ (a_eq : @eq nat n a),
+                         @eq.rec nat n
+                           (λ (a : nat),
+                              @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) (succ a) →
+                              (Π (a_1 : vector A (succ a)),
+                                 vector B (succ a) →
+                                 @heq (vector A (succ n)) (@cons A n a_3 a_4) (vector A (succ a)) a_1 → vector (prod A B) (succ a)))
+                           (λ (b : @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n) (succ n))
+                            (a_1 : vector A (succ n)) (a_2 : vector B (succ n))
+                            (H_2 : @heq (vector A (succ n)) (@cons A n a_3 a_4) (vector A (succ n)) a_1),
+                              (λ (t_1 : nat) (a_2_1 : vector B t_1),
+                                 @vector.cases_on B
+                                   (λ (t_1 : nat) (a_2_1 : vector B t_1),
+                                      @eq nat t_1 (succ n) →
+                                      @heq (vector B t_1) a_2_1 (vector B (succ n)) a_2 → vector (prod A B) (succ n))
+                                   t_1
+                                   a_2_1
+                                   (λ (H_1 : @eq nat zero (succ n)),
+                                      @nat.no_confusion
+                                        (@heq (vector B zero) (@nil B) (vector B (succ n)) a_2 → vector (prod A B) (succ n))
+                                        zero
+                                        (succ n)
+                                        H_1)
+                                   (λ (n_1 : nat) (a_1 : B) (a_5 : vector B n_1) (H_1 : @eq nat (succ n_1) (succ n)),
+                                      @nat.no_confusion
+                                        (@heq (vector B (succ n_1)) (@cons B n_1 a_1 a_5) (vector B (succ n)) a_2 →
+                                         vector (prod A B) (succ n))
+                                        (succ n_1)
+                                        (succ n)
+                                        H_1
+                                        (λ (a_eq : @eq nat n_1 n),
+                                           @eq.rec nat n_1
+                                             (λ (n : nat),
+                                                vector A n →
+                                                @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n)
+                                                  (succ n) →
+                                                (Π (a_2 : vector B (succ n)),
+                                                   @heq (vector B (succ n_1)) (@cons B n_1 a_1 a_5) (vector B (succ n)) a_2 →
+                                                   vector (prod A B) (succ n)))
+                                             (λ (a_4 : vector A n_1)
+                                              (b :
+                                                @nat.below (λ {n : nat}, vector A n → vector B n → vector (prod A B) n)
+                                                  (succ n_1)) (a_2 : vector B (succ n_1))
+                                              (H_2 : @heq (vector B (succ n_1)) (@cons B n_1 a_1 a_5) (vector B (succ n_1)) a_2),
+                                                @cons (prod A B) n_1 (@mk A B a_3 a_1)
+                                                  (@pr1 (@(λ {n : nat}, vector A n → vector B n → vector (prod A B) n) n_1)
+                                                     (@nat.rec (λ (n : nat), Type) unit
+                                                        (λ (a : nat) (v_0 : Type),
+                                                           prod (@(λ {n : nat}, vector A n → vector B n → vector (prod A B) n) a)
+                                                             v_0)
+                                                        n_1)
+                                                     b
+                                                     a_4
+                                                     a_5))
+                                             n
+                                             a_eq
+                                             a_4
+                                             b
+                                             a_2)))
+                                (succ n)
+                                a_2
+                                (@eq.refl nat (succ n))
+                                (@heq.refl (vector B (succ n)) a_2))
+                           a
+                           a_eq
+                           b
+                           a_1
+                           a_2)))
+              (succ a)
+              a_1
+              (@eq.refl nat (succ a))
+              (@heq.refl (vector A (succ a)) a_1))
+         b
+         a
+         a_1)
+    a
+    a_1
