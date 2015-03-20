@@ -1,0 +1,669 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Elaboration and Higher-order unification</title>
+<meta name="author" content="((link (:type http :path //leodemoura.github.io :raw-link http://leodemoura.github.io :application nil :search-option nil :begin 1 :end 51 :contents-begin 32 :contents-end 49 :post-blank 0 :parent #0) Leonardo de Moura))"/>
+
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/theme/soonho.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '//leanprover.github.io/presentations/reveal.js-3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+<script type="text/javascript">MathJax.Hub.Config({"HTML-CSS": {scale: 80 }})</script>
+<script src="//cdn.jsdelivr.net/polymer.platform/0.4.2/platform.js"></script>
+<link rel="import" href="./juicy-ace-editor.html">
+<link rel="stylesheet" href="../css/code.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section>
+<h1 id='title-name'>Elaboration and Higher-order unification</h1>
+<h2 id='author-list'><a href="http://leodemoura.github.io">Leonardo de Moura</a></h2>
+<h2 id='date'>CMU, 2015/03/20</h2>
+</section>
+
+<section id="sec-1" >
+
+<h2>Why do we need elaboration?</h2>
+<p>
+"By relieving the brain of all unnecessary work, a good notation sets it free to
+ concentrate on more advanced problems, and in effect increases the mental power of the
+ race." A. N. Whitehead
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">variables {C D E : Precategory} {F G H I : C ⇒ D} {F' G' : D ⇒ E}
+
+definition compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+nat_trans.mk
+  (λ a, η a ∘ θ a)
+  (λ a b f,
+    calc
+      H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : assoc
+		    ... = (η b ∘ G f) ∘ θ a : naturality
+		    ... = η b ∘ (G f ∘ θ a) : assoc
+		    ... = η b ∘ (θ b ∘ F f) : naturality
+		    ... = (η b ∘ θ b) ∘ F f : assoc)
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-2" >
+
+<h2>Why do we need elaboration?</h2>
+<p>
+"We could, of course, use any notation we want; do not laugh at notations;
+invent them, they are powerful. In fact, mathematics is, to a large extent,
+inventions of better notations." Richard P. Feynman
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive vector (A : Type) : nat → Type :=
+| nil  : vector A zero
+| cons : Π {n}, A → vector A n → vector A (succ n)
+
+notation a :: b := cons a b
+notation []     := nil _
+variable {A : Type}
+definition zip : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip []      []      := []
+| zip (a::va) (b::vb) := ((a, b) :: zip va vb)
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-3" >
+
+<h2>Why do we use a minimalistic kernel?</h2>
+
+</section>
+<section id="sec-4" >
+
+<h2>Elaboration: main ingredients</h2>
+<ul class="org-ul">
+<li>Unification constraints
+</li>
+<li>Definition package
+</li>
+<li>Coercions
+</li>
+<li>Overloading
+</li>
+<li>Type classes
+</li>
+<li>Tactics
+</li>
+</ul>
+
+</section>
+<section id="sec-5" >
+
+<h2>Unification constraints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check zip v w
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-6" >
+
+<h2>Unification constraints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check @zip ?A ?n v w
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-7" >
+
+<h2>Unification constraints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">zip : Π {A : nat} {n : nat}, vector A n → vector B n → vector (A × B) n
+v w : vector int 10
+check @zip ?A ?n v w
+</juicy-ace-editor>
+</div>
+
+<p>
+by typing constraints, we have
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">vector ?A ?n ≈ vector int 10
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-8" >
+
+<h2>Higher-order unification constraints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">subst : ∀ {A : Type} {a b : A} {P : A → Prop}, a = b → P a → P b
+n m : nat
+f   : nat → nat
+g   : nat → nat → Prop
+H₁  : n = m
+H₂  : g (f n) (f (f n))
+check subst H₁ H₂
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-9" >
+
+<h2>Higher-order unification constraints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">subst : ∀ {A : Type} {a b : A} {P : A → Prop}, @eq A a b → P a → P b
+n m : nat
+f   : nat → nat
+g   : nat → nat → Prop
+H₁  : @eq nat n m
+H₂  : g (f n) (f (f n))
+check @subst ?A ?a ?b ?P H₁ H₂
+</juicy-ace-editor>
+</div>
+
+
+<p>
+by typing constraints, we have
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">@eq ?A ?a ?b ≈ @eq nat n m
+?P ?a        ≈ g (f n) (f (f n))
+</juicy-ace-editor>
+</div>
+
+
+</section>
+<section id="sec-10" >
+
+<h2>First-order unification procedure</h2>
+<ul class="org-ul">
+<li>State: S (substitution), C (constraints)
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">delete:    S, {t ≈ t} ∪ C  ⇒  S, C
+
+decompose: S, {f a₁...aₙ ≈ f b₁...bₙ} ∪ C  ⇒  S, {a₁ ≈ b₁, ..., aₙ ≈ bₙ} ∪ C
+
+assign:    S, {?m ≈ t} ∪ C  ⇒  S ∪ {?m ↦ t}, C  if  ?m ∉ S
+
+replace:   S ∪ {?m ↦ t}, {r[?m] ≈ s[?m]} ∪ C  ⇒  S ∪ {?m ↦ t}, {r[t] ≈ s[t]} ∪ C
+
+conflict₁: S, {f a₁...aₙ ≈ g b₁...bₙ} ∪ C ⇒ fail
+
+conflict₂:  S, {?m ≈ t} ∪ C ⇒ fail  if  ?m occurs in t
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-11" >
+
+<h2>Simply typed lambda calculus</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">A, B :=  A → B | α
+t, s :=  c | x | t s | λx : A, t
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-12" >
+
+<h2>Reduction</h2>
+<ul class="org-ul">
+<li>Beta
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">(λx, t) s ⇒  t[x:=s]
+</juicy-ace-editor>
+</div>
+
+<ul class="org-ul">
+<li>Eta
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">(λx, f x) ⇒  f
+</juicy-ace-editor>
+</div>
+
+<ul class="org-ul">
+<li>Alpha equivalence
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">(λx, t[x]) = (λy, t[y])
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-13" >
+
+<h2>Simply typed lambda calculus</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">A, B :=  A → B | α
+t, s :=  c | x | ℓ | ?m | t s | λx : A, t
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-14" >
+
+<h2>Substitution and reduction</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">{},  {(λx, ?m) a ≈ a,  (λx, ?m) b ≈ b}
+⇒
+{},  {?m ≈ a,  ?m ≈ b}
+⇒
+{?m ↦ a},  {?m ≈ b}
+⇒
+{?m ↦ a},  {a ≈ b}
+⇒
+fail
+</juicy-ace-editor>
+</div>
+
+<ul class="org-ul">
+<li>We want: substitution and beta-reduction commute
+</li>
+</ul>
+
+</section>
+<section id="sec-15" >
+
+<h2>Substitution and beta-reduction</h2>
+<ul class="org-ul">
+<li>Possible solution: only closed terms can be assigned to metavariables
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">{},  {(λx, ?m x) a ≈ a,  (λx, ?m x) b ≈ b}
+⇒
+{},  {?m a ≈ a,  ?m b ≈ b}
+</juicy-ace-editor>
+</div>
+
+
+</section>
+<section id="sec-16" >
+
+<h2>Higher-order unification is semi-decidable</h2>
+
+
+</section>
+<section id="sec-17" >
+
+<h2>Higher-order unification is undecidable</h2>
+<ul class="org-ul">
+<li>Infinite number of solutions
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">(λz, ?m z (λy, y)) ≈ (λz, z)
+</juicy-ace-editor>
+</div>
+
+<p>
+solutions:
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ↦ λx f, x
+?m ↦ λx f, f x
+?m ↦ λx f, f (f x)
+?m ↦ λx f, f (f (f x))
+...
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-18" >
+
+<h2>Higher-order unification is undecidable</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">-- Church number  λx f, f (f (f ... (f x) ...))
+constant i : Type₁
+definition Num := i → (i → i) → i
+definition add (n : Num) (m : Num) : Num :=
+λx f, n (m x f) f
+
+definition mul (n : Num) (m : Num) : Num :=
+λx f, n x (λz, (m z f))
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-19" >
+
+<h2>Higher-order unification is undecidable</h2>
+<ul class="org-ul">
+<li>Reduction to Hilbert's 10th Problem
+</li>
+<li>Diophantine equations
+</li>
+</ul>
+
+</section>
+<section id="sec-20" >
+
+<h2>Huet's procedure</h2>
+<ul class="org-ul">
+<li>Simply typed lambda calculus
+</li>
+<li>Normal form
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">λx₁ ... xₘ, (y u₁ ... uₚ)
+- y is a constant or variable
+</juicy-ace-editor>
+</div>
+<ul class="org-ul">
+<li>All types are inhabited, and there is a constant in each atomic type
+</li>
+<li>If there is a solution, there is
+<ul class="org-ul">
+<li><b>a closed one</b>, and
+</li>
+<li><b>in long normal form</b>
+</li>
+</ul>
+</li>
+<li>Key idea: enumerate all the normal terms of a given type by
+<ul class="org-ul">
+<li><b>enumerating all possible head symbols</b>, and then
+</li>
+<li><b>recursively doing the same for the arguments</b>
+</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section id="sec-21" >
+
+<h2>Huet's procedure</h2>
+<ul class="org-ul">
+<li>Elementary substitutions
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ↦ λy₁ ... yₚ, h (?m₁ y₁ ... yₚ) ... (?mᵣ y₁ ... yₚ)
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-22" >
+
+<h2>Huet's procedure : rigid-rigid equations</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">decompose₁: S, { f a₁ ... aₙ ≈ f b₁ ... bₙ } ∪ C ⇒  S, { a₁ ≈ b₁, ..., aₙ ≈ bₙ } ∪ C
+conflict  : S, { f a₁ ... aₙ ≈ g b₁ ... bₙ } ∪ C ⇒ fail
+</juicy-ace-editor>
+</div>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">decompose₂: S, { λx, t ≈ λy, s } ∪ C ⇒ S, { t[x := ℓ] ≈ s[x := ℓ] } ∪ C
+decompose₃: S, { t ≈ λy, s } ∪ C     ⇒ S, { t ℓ ≈ s[x := ℓ] } ∪ C
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-23" >
+
+<h2>Huet's procedure : flex-rigid equations</h2>
+<p>
+Given,
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m s₁ ... sₙ ≈ f t₁ ... tₘ
+</juicy-ace-editor>
+</div>
+<p>
+consider
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ↦ λy₁ ... yₚ, h (?m₁ y₁ ... yₚ) ... (?mᵣ y₁ ... yₚ)
+</juicy-ace-editor>
+</div>
+<p>
+case-split:
+</p>
+<ul class="org-ul">
+<li><code>h</code> is among <code>y₁ ... yₚ f</code>
+</li>
+<li>Projections
+</li>
+<li>Imitation
+</li>
+</ul>
+
+</section>
+<section id="sec-24" >
+
+<h2>Huet's procedure : flex-flex equations</h2>
+<p>
+Postpone
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m₁ s₁ ... sₙ ≈ ?m₂ t₁ ... tₘ
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-25" >
+
+<h2>Huet's procedure : example 1</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">{}, { ?P n  ≈ g (f n) n }
+⇒
+{ ?P ↦ λy, g (?m₁ y) (?m₂ y) },
+{ g (?m₁ n) (?m₂ n) ≈ g (f n) n }
+⇒
+{ ?P ↦ λy, g (?m₁ y) (?m₂ y) },
+{ ?m₁ n ≈ f n,  ?m₂ n ≈ n }
+  ⇒  -- projection
+  { ?P ↦ λy, g (?m₁ y) (?m₂ y), ?m₂ ↦ λy, y },
+  { ?m₁ n ≈ f n }
+  ⇒  -- imitation
+  { ?P ↦ λy, g (?m₁ y) (?m₂ y), ?m₂ ↦ λy, n },
+  { ?m₁ n ≈ f n }
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-26" >
+
+<h2>Huet's procedure : example 2</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">{}, { ?m ℓ (λy, y) ≈ ℓ }
+  ⇒ -- projection 1
+  { ?m ↦ λx f, x }, {}
+  ⇒ -- projection 2
+  { ?m ↦ λx f, f (?m₁ x f) }, { ?m₁ ℓ (λy, y) ≈ ℓ }
+    ⇒ -- projection 1
+    { ?m₁ ↦ λx f, x }, {}   ?m ↦ λx f, f x
+    ⇒ -- projection 2
+    { ?m₁ ↦ λx f, f (?m₂ x f) }, { ?m₂ ℓ (λy, y) ≈ ℓ }
+      ⇒ -- projection 1
+      { ?m₂ ↦ λx f, x }, {}   ?m ↦ λx f, f (f x)
+      ⇒ -- projection 2
+      { ?m₂ ↦ λx f, f (?m₃ x f) }, { ?m₃ ℓ (λy, y) ≈ ℓ }
+      ...
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-27" >
+
+<h2>Huet's procedure : decidable for second-order matching</h2>
+<ul class="org-ul">
+<li>Projections steps are always of the form
+</li>
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ↦ λx₁...xₙ, xᵢ
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-28" >
+
+<h2>HOU (decidable fragment): Miller patterns</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ℓ₁ ... ℓₙ ≈ t
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-29" >
+
+<h2>Huet's procedure in dependent type theory</h2>
+<ul class="org-ul">
+<li>Empty types
+</li>
+<li>δ-reduction
+</li>
+<li>ι-reduction
+</li>
+</ul>
+
+</section>
+<section id="sec-30" >
+
+<h2>HOU and δ-reduction</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">definition sub (a b : int) := a + -b
+
+?m (-b) ≈ sub 0 b
+</juicy-ace-editor>
+</div>
+
+<ul class="org-ul">
+<li>If we do not unfold <code>sub</code>, we will miss the solution
+</li>
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">?m ↦ λx, add 0 x
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-31" >
+
+<h2>HOU and ι-reduction</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">{ ?m zero ≈ tt, ?m (succ zero) ≈ ff }
+</juicy-ace-editor>
+</div>
+
+</section>
+<section id="sec-32" >
+
+<h2>Definition package</h2>
+</section>
+</div>
+</div>
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-59814431-1', 'auto');ga('send', 'pageview');</script>
+
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/head.min.js"></script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: false,
+slideNumber: true,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+width: 1150,
+height: 700,
+minScale: 1.00,
+maxScale: 1.00,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+]
+});
+</script>
+</body>
+</html>
