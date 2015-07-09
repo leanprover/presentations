@@ -1,0 +1,660 @@
+#+Title: The Lean Theorem Prover
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura]] (joint work with Soonho Kong, Jeremy Avigad, Floris van Doorn, Jakob von Raumer, Rob Lewis, Haitao Zhang, Daniel Selsam)
+#+Date:  NASA, 2015/07/09
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* Introduction: *Lean*
+
+- New *automated* & *interactive* theorem prover
+- Powerful system for
+  - reasoning about *complex systems*
+  - reasoning about *mathematics*
+  - proving claims about *both*
+- de Bruijn's Principle: *small trusted kernel*
+
+* Introduction: *Lean*
+
+- *Proving* should be as easy as *programming*
+- Expressive logic
+- Partial constructions: automation fills the "holes"
+
+* Introduction: *Lean*
+
+- Platform for
+  - *Software* verification & development
+  - Formalized *mathematics*
+  - *Education* (mathematics, logic, computer science)
+  - *Synthesis* (proofs & programs)
+
+* Introduction: *Lean*
+
+- It is an ongoing and *long term* effort
+- At CMU, it is already being used for formalizing
+  - Homotopy Type Theory
+  - Category Theory
+  - Algebraic Hierarchy
+- [[http://leanprover.github.io/tutorial][Interactive theory proving course]] at CMU
+- Haitao Zhang is formalizing [[https://github.com/htzh/leanproved][Group Theory]]
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+  - Higher-order unification
+  - Definitional reductions
+  - Coercions
+  - Ad-hoc polymorphism (aka overloading)
+  - Type classes
+  - Tactics (the automation gateway)
+  - *in an integrated way*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+  - It does *not* contain
+    - Termination checker
+    - Fixpoint operators
+    - Pattern matching
+  - Daniel Selsam is implementing a [[https://github.com/leanprover/tc][reference type checker]] in Haskell
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+  - Proof irrelevance is optional
+  - Extensible (e.g., Quotient types and HITs)
+  - We have two kernel instances and libraries: standard & HoTT
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+  - Process theorems in parallel
+  - Execute/try tactics (automation) in parallel
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+- Fast *incremental compilation*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+- *Incremental compilation*
+- Universe polymorphism
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+- *Incremental compilation*
+- Universe polymorphism
+- *Freedom to trust*
+  - Support for "macros" (procedural attachments to kernel)
+  - Every "macro" can be *eliminated*
+  - Faster type checking and reduction
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+- *Incremental compilation*
+- Universe polymorphism
+- *Freedom to trust*
+- Support for *mixed* declarative and tactic *proof style*
+- Future: *powerful automation*
+
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- *Flexible* kernel
+- Multi-core support
+- *Incremental compilation*
+- Universe polymorphism
+- *Freedom to trust*
+- Support for *mixed* declarative and tactic *proof style*
+- Future: *powerful automation*
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+
+#+BEGIN_SRC lean
+Type                      -- Sort
+nat                       -- Constant
+λ x : nat, x              -- Lambda abstraction
+vector bool 3             -- Application
+Π (n : nat), vector nat n -- Function Space
+nat → bool                -- Function Space (no dependency)
+#+END_SRC
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+
+#+BEGIN_SRC lean
+definition f (A B : Type) : A → B → A :=
+λ (a : A) (b : B), a
+
+definition f (A B : Type) (a : A) (b : B) : A :=
+a
+#+END_SRC
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+- Hierarchy of universes
+
+#+BEGIN_SRC lean
+set_option pp.universes true
+check Type.{0}  -- Prop     : Type.{1}
+check Type.{1}  -- Type.{1} : Type.{2}
+check Type.{2}  -- Type.{2} : Type.{3}
+#+END_SRC
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+- Hierarchy of universes
+- *Prop* is the type of all *propositions*
+
+#+BEGIN_SRC lean
+theorem f (A B : Prop) : A → B → A :=
+λ (a : A) (b : B), a
+
+theorem f (A B : Prop) (a : A) (b : B) : A :=
+a
+#+END_SRC
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+- Hierarchy of universes
+- *Prop* is the type of all *propositions*
+- *Configurable*
+  - Impredicative *Prop*
+  #+BEGIN_SRC lean
+  Π (x : nat), x = x  -- is a Proposition
+  ∀ (x : nat), x = x  -- Alternative notation
+  #+END_SRC
+  - Proof irrelevance
+  #+BEGIN_SRC lean
+  example (p : Prop) (H₁ : p) (H₂ : p) : H₁ = H₂ :=
+  rfl -- reflexivity
+  #+END_SRC
+
+- We have *two flavors*
+  - Standard (CoC): uses an impredicative and proof irrelevant *Prop*
+  - HoTT: proof relevant, and *no Prop*
+
+* The Logical Framework
+
+- *First layer*: dependent lambda calculus
+- Hierarchy of universes
+- *Prop* is the type of all *propositions*
+- *Configurable*
+- We have *two flavors*
+- *Second layer*: inductive families
+  - We "believe" in recursion
+  #+BEGIN_SRC lean
+  inductive vector (A : Type) : nat → Type :=
+  | nil  : vector A zero
+  | cons : Π {n : nat}, A → vector A n → vector A (succ n)
+  #+END_SRC
+
+* Inductive families
+
+- Given
+  #+BEGIN_SRC lean
+  inductive nat : Type :=
+  | zero : nat
+  | succ : nat → nat
+  #+END_SRC
+- Produces
+  #+BEGIN_SRC lean
+  -- 1) A new type
+  check nat
+  -- 2) Introduction rules (aka Constructors)
+  check nat.zero
+  check nat.succ
+  -- 3) Eliminator (aka Recursor)
+  check @nat.rec
+  -- 4) Computational rule
+  variable C : nat → Type
+  variable Hz : C nat.zero
+  variable Hs : Π (a : nat), C a → C (nat.succ a)
+  eval nat.rec Hz Hs nat.zero     -- Hz
+  variable  a : nat
+  eval nat.rec Hz Hs (nat.succ a) -- Hs a (nat.rec Hz Hs a)
+  #+END_SRC
+
+* Inductive families
+
+  #+BEGIN_SRC lean
+  definition pred (a : nat) : nat :=
+  nat.rec nat.zero (λ (a₁ : nat) (r : nat), a₁) a
+
+  eval pred (nat.succ (nat.succ nat.zero))
+  -- => nat.succ nat.zero
+  #+END_SRC
+
+* Inductive families
+
+- It is possible to *construct* a substantial *edifice of mathematics* based
+  on nothing more than the *type universes*, *function spaces*, and
+  *inductive types*; everything else follows from those.
+
+  #+BEGIN_SRC lean
+  inductive true : Prop :=
+  intro : true
+
+  inductive false : Prop  -- empty type
+
+  inductive and (a b : Prop) : Prop :=
+  intro : a → b → and a b
+
+  inductive or (a b : Prop) : Prop :=
+  | inl : a → or a b
+  | inr : b → or a b
+
+  inductive Exists (A : Type) (P : A → Prop) : Prop :=
+  intro : Π (a : A), P a → Exists P
+
+  inductive eq (A : Type) (a : A) : A → Prop :=
+  refl : eq A a a
+  #+END_SRC
+
+* Inductive families
+
+  #+BEGIN_SRC lean
+  theorem and_comm (p q : Prop) (H : p ∧ q) : q ∧ p :=
+  and.rec (λ Hp Hq, and.intro Hq Hp) H
+
+  theorem and_comm (p q : Prop) (H : p ∧ q) : q ∧ p :=
+  match H with
+    and.intro Hp Hq := and.intro Hq Hp
+  end
+
+  definition swap (A B : Type) (p : A × B) : B × A :=
+  match p with
+    (a, b) := (b, a)
+  end
+  #+END_SRC
+
+* Universe polymorphism
+
+  #+BEGIN_SRC lean
+  definition id.{u} (A : Type.{u}) (a : A) : A :=
+  a
+
+  definition arrow.{u₁ u₂} (A : Type.{u₁}) (B : Type.{u₂}) :
+                   Type.{imax u₁ u₂} :=
+  A → B
+
+  check arrow.{0 0} true false
+  check arrow.{1 1} nat nat
+  check arrow.{1 0} nat true
+
+  definition arrow (A : Type) (B : Type) : Type :=
+  A → B
+
+  check arrow nat true
+  #+END_SRC
+
+* Elaboration
+
+  "By relieving the brain of all unnecessary work, a good notation sets it free to
+   concentrate on more advanced problems, and in effect increases the mental power of the
+   race." A. N. Whitehead
+
+  - We want a *convenient system*
+  - The following features are implemented *outside of the kernel*
+    - Implicit arguments
+    - Coercions
+    - Namespace management
+    - Ad-hoc polymorphism (overloading)
+    - Type classes
+    - Recursive equations
+    - Dependent pattern matching
+    - Human-readable proofs
+    - Structures
+    - Tactics (gateway to decision procedures, rewriters, ...)
+
+* Implicit arguments
+
+  - *Curly braces* indicate that argument should be *inferred* rather
+    than entered explicitly.
+
+  #+BEGIN_SRC lean
+  definition id {A : Type} (a : A) : A :=
+  a
+
+  check id 10      -- @id num 10
+  check @id num 10
+  #+END_SRC
+
+* Implicit arguments
+
+  #+BEGIN_SRC lean
+  check @eq.subst
+  -- eq.subst : ∀ {A : Type} {a b : A} {P : A → Prop},
+  --            a = b → P a → P b
+  variables (A : Type)  (R : A → A → Prop)
+  variables (a b c : A) (f : A → A → A)
+
+  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
+          R (f a b) (f b a) :=
+  eq.subst H₂ H₁
+
+  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
+          R (f a b) (f b a) :=
+  @eq.subst A a b (λ x : A, R (f a x) (f x a)) H₂ H₁
+  #+END_SRC
+
+* Definitional Reductions
+
+  - Elaborator must respect the computational interpretation of terms
+  #+BEGIN_SRC lean
+  example (A : Type) (a b : A) : (a, b).1 = a :=
+  rfl
+
+  example (A B : Type) (f : A → A → B) (a : A) :
+          (λ x, f x x) a = f a a :=
+  rfl
+  #+END_SRC
+
+* Coercions
+
+  - In Lean, we can associate *attributes* to definitions.
+  - *Coercion* is one of the available attributes.
+
+  #+BEGIN_SRC lean
+  definition to_list [coercion]
+             {A : Type} {n : nat} (v : vector A n) : list A :=
+  vector.rec list.nil (λ n h t r, list.cons h r) v
+
+  variable f : list nat → Prop
+  variable v : vector nat 10
+  check f v  -- f (@to_list nat 10 v)
+  #+END_SRC
+
+* Namespaces
+
+  - We can group definitions, metadata (e.g., notation declarations and attributes) into namespaces.
+  - We can *open* namespaces
+
+  #+BEGIN_SRC lean
+  namespace foo
+    definition f (a : nat) := nat.succ a
+    eval f nat.zero
+  end foo
+
+  eval foo.f nat.zero
+  open foo
+  eval f nat.zero
+
+  open nat
+  check 1 + 2
+
+  open nat (hiding add sub)
+  open nat (renaming add → nadd)
+  open nat (rec_on)
+  open [notations] nat
+  open -[classes] nat
+  #+END_SRC
+
+* Ad-hoc polymorphism
+
+  #+BEGIN_SRC lean
+  notation a + b := add a b
+  notation a + b := bor a b
+
+  eval 1 + 2
+  eval tt + ff
+  #+END_SRC
+
+  - We can use namespaces to avoid unwanted ambiguity.
+  - We can *override* ad-hoc polymorphism
+
+  #+BEGIN_SRC lean
+  check (#nat a + b)
+  #+END_SRC
+
+* Recursive equations
+
+  - *Recursors* are *inconvenient* to use.
+  - Compiler from *recursive equations* to *recursors*.
+  - Two compilation strategies: *structural* and *well-founded* recursion
+
+  #+BEGIN_SRC lean
+  definition fib : nat → nat
+  | fib 0     := 1
+  | fib 1     := 1
+  | fib (a+2) := fib (a+1) + fib a
+
+  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+  rfl
+  #+END_SRC
+
+* Recursive equations
+
+  - Proofs by induction
+
+  #+BEGIN_SRC lean
+  theorem fib_pos : ∀ n, 0 < fib n
+  | fib_pos 0     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos 1     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos (a+2) := calc
+      0 = 0 + 0             : rfl
+    ... < fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
+    ... < fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
+    ... = fib (a+2)         : rfl
+  #+END_SRC
+
+* Recursive equations
+
+ - Dependent pattern matching
+
+#+BEGIN_SRC lean
+definition map {A B C : Type} (f : A → B → C)
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
+
+definition zip {A B : Type}
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
+#+END_SRC
+
+
+* Type classes
+
+  - *Synthesis* procedure based on *lambda-Prolog*
+
+  - Big picture
+    - Mark some inductive families as *classes*
+    - Mark some definitions as (generators of) *instances*
+    - Indicate that some implicit arguments must be synthesized using type classes
+
+  - *Instances* are treated as *Horn clauses*
+
+* Inhabited Type Class
+
+  #+BEGIN_SRC lean
+  inductive inhabited [class] (A : Type) : Type :=
+  mk : A → inhabited A
+
+  definition default (A : Type) [h : inhabited A] : A :=
+  inhabited.rec (λ a, a) h
+
+  definition prop_inhabited [instance] : inhabited Prop :=
+  inhabited.mk true
+
+  definition nat_inhabited [instance] : inhabited nat :=
+  inhabited.mk nat.zero
+
+  definition fun_inhabited [instance]
+     (A B : Type) (h : inhabited B) : inhabited (A → B) :=
+  inhabited.mk (λ x : A, default B)
+
+  definition prod_inhabited [instance]
+        (A B : Type) (ha : inhabited A) (hb : inhabited B) :
+        inhabited (A × B) :=
+  inhabited.mk (default A, default B)
+
+  eval default (nat → nat × Prop)
+  #+END_SRC
+
+* Inhabited Type Class (Applications)
+
+- Some propositions only hold for inhabited types
+    #+BEGIN_SRC lean
+    theorem ex_trivial (A : Type) [h : inhabited A] : ∃ x : A, x = x :=
+    exists.intro (default A) rfl
+    #+END_SRC
+
+* Decidable Type Class
+
+- An element of =Prop= is said to be
+decidable if we can decide whether it is true or false.
+
+#+BEGIN_SRC lean
+inductive decidable [class] (p : Prop) : Type :=
+| inl :  p → decidable p
+| inr : ¬p → decidable p
+#+END_SRC
+
+- Having an element =t : decidable p= is stronger than having an element =t : p ∨ ¬p=
+
+- The expression =if c then t else e= contains an implicit argument =[d : decidable c]=.
+
+- If Hilbert's choice is imported, then all propositions are decidable (smooth transition to classical reasoning).
+
+* Decidable Type Class
+
+#+BEGIN_SRC lean
+definition ball (n : nat) (P : nat → Prop) : Prop :=
+∀ x, x < n → P x
+
+definition dec_ball [instance] (H : decidable_pred P)
+           : Π (n : nat), decidable (ball n P)
+| dec_ball 0     := inl (ball_zero P)
+| dec_ball (a+1) :=
+  match dec_ball a with
+  | inl iH  :=
+      match H a with
+      | inl Pa  := inl (ball_succ_of_ball iH Pa)
+      | inr nPa := inr (not_ball_of_not nPa)
+      end
+  | inr niH := inr (not_ball_succ_of_not_ball niH)
+  end
+
+definition is_constant_range (f : nat → nat) (n : nat) : bool :=
+if ∀ i, i < n → f i = f 0 then tt else ff
+#+END_SRC
+
+* Tactics
+
+  - Automation such as rewrite engined, simplifiers and decision procedures are integrated into
+    the system as tactics.
+  - A placeholder/hole can be viewed as a *goal*
+  - A *proof state* is a sequence of goals, substitution (already solved holes), and postponed constraints.
+  - A *tactic* is a function from proof state to a *lazy stream of proof states*.
+  - *Tacticals* are tactic combinadors: *andthen*, *orelse*, *par*, ...
+
+* Tactics
+
+  - We can switch to *tactic mode* using *begin ... end* or *by ...*
+
+  #+BEGIN_SRC lean
+  example (p q : Prop) (Hp : p) (Hq : q) : p ∧ q ∧ p :=
+  begin
+    apply and.intro, exact Hp,
+    apply and.intro, exact Hq, exact Hp
+  end
+
+  example (H₁ : a + 0 = 0) (H₂ : b + 0 = 0)
+          : a + b + 0 = 0 :=
+  begin
+    rewrite add_zero at *,
+    rewrite [H₁, H₂]
+  end
+  #+END_SRC
+
+* Structures
+
+  - Special kind of inductive datatype (only one constructor)
+  - Projections are generated automatically
+  - "Inheritance"
+  - Extensively used to formalize the algebraic hierarchy
+  - We can view them as *parametric modules*
+
+  #+BEGIN_SRC lean
+  structure has_mul [class] (A : Type) :=
+  (mul : A → A → A)
+
+  structure semigroup [class] (A : Type) extends has_mul A :=
+  (mul_assoc : ∀a b c, mul (mul a b) c = mul a (mul b c))
+
+  ...
+
+  structure group [class] (A : Type)
+            extends monoid A, has_inv A :=
+  (mul_left_inv : ∀a, mul (inv a) a = one)
+  #+END_SRC
+
+* Structures
+
+#+BEGIN_SRC lean
+structure ring [class] (A : Type)
+     extends add_comm_group A, monoid A,
+             distrib A, zero_ne_one_class A
+
+theorem ring.mul_zero [s : ring A] (a : A) : a * 0 = 0 :=
+have H : a * 0 + 0 = a * 0 + a * 0, from calc
+ a * 0 + 0 = a * 0      : by rewrite add_zero
+    ... = a * (0 + 0)   : by rewrite add_zero
+    ... = a * 0 + a * 0 : by rewrite ring.left_distrib,
+show a * 0 = 0,
+by rewrite -(add.left_cancel H)
+#+END_SRC
+
+* Future work
+
+  - *Auto* tactic based on equational reasoning, matching, heuristic instantiation, ...
+  - *Decision procedures* for arithmetic
+  - Efficient evaluator
+  - Better support for *proof by reflection*
+  - Better libraries (ongoing work)
+
+* Thank you
+
+  - Website: http://leanprover.github.io/
+  - Source code: https://github.com/leanprover/lean
+  - Theorem proving in Lean: https://leanprover.github.io/tutorial/index.html
