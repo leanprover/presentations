@@ -369,6 +369,53 @@ inductive vector (A : Type) : nat → Type :=
   on nothing more than the *type universes*, *function spaces*, and
   *inductive types*; everything else follows from those.
 
+* Recursive equations
+
+  - *Recursors* are *inconvenient* to use.
+  - Compiler from *recursive equations* to *recursors*.
+  - Two compilation strategies: *structural* and *well-founded* recursion
+
+  #+BEGIN_SRC lean
+  definition fib : nat → nat
+  | fib 0     := 1
+  | fib 1     := 1
+  | fib (a+2) := fib (a+1) + fib a
+
+  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+  rfl
+  #+END_SRC
+
+* Recursive equations
+
+  - Proofs by induction
+
+  #+BEGIN_SRC lean
+  theorem fib_pos : ∀ n, 0 < fib n
+  | fib_pos 0     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos 1     := show 0 < 1, from zero_lt_succ 0
+  | fib_pos (a+2) := calc
+      0 = 0 + 0             : rfl
+    ... < fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
+    ... < fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
+    ... = fib (a+2)         : rfl
+  #+END_SRC
+
+* Recursive equations
+
+ - Dependent pattern matching
+
+#+BEGIN_SRC lean
+definition map {A B C : Type} (f : A → B → C)
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
+
+definition zip {A B : Type}
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
+#+END_SRC
+
 * Elaboration
 
   "By relieving the brain of all unnecessary work, a good notation sets it free to
@@ -437,9 +484,11 @@ inductive vector (A : Type) : nat → Type :=
   - *Coercion* is one of the available attributes.
 
   #+BEGIN_SRC lean
-  definition to_list [coercion]
-             {A : Type} {n : nat} (v : vector A n) : list A :=
-  vector.rec list.nil (λ n h t r, list.cons h r) v
+  variable {A : Type}
+
+  definition to_list [coercion] : ∀ {n : nat}, vector A n → list A
+  | 0      nil    := nil
+  | (n+1)  (a::v) := a::(to_list v)
 
   variable f : list nat → Prop
   variable v : vector nat 10
@@ -487,53 +536,6 @@ inductive vector (A : Type) : nat → Type :=
   #+BEGIN_SRC lean
   check (#nat a + b)
   #+END_SRC
-
-* Recursive equations
-
-  - *Recursors* are *inconvenient* to use.
-  - Compiler from *recursive equations* to *recursors*.
-  - Two compilation strategies: *structural* and *well-founded* recursion
-
-  #+BEGIN_SRC lean
-  definition fib : nat → nat
-  | fib 0     := 1
-  | fib 1     := 1
-  | fib (a+2) := fib (a+1) + fib a
-
-  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
-  rfl
-  #+END_SRC
-
-* Recursive equations
-
-  - Proofs by induction
-
-  #+BEGIN_SRC lean
-  theorem fib_pos : ∀ n, 0 < fib n
-  | fib_pos 0     := show 0 < 1, from zero_lt_succ 0
-  | fib_pos 1     := show 0 < 1, from zero_lt_succ 0
-  | fib_pos (a+2) := calc
-      0 = 0 + 0             : rfl
-    ... < fib (a+1) + 0     : lt_right (fib_pos (a+1)) 0
-    ... < fib (a+1) + fib a : lt_left  (fib_pos a) (fib (a+1))
-    ... = fib (a+2)         : rfl
-  #+END_SRC
-
-* Recursive equations
-
- - Dependent pattern matching
-
-#+BEGIN_SRC lean
-definition map {A B C : Type} (f : A → B → C)
-     : Π {n : nat}, vector A n → vector B n → vector C n
-| map nil     nil     := nil
-| map (a::va) (b::vb) := f a b :: map va vb
-
-definition zip {A B : Type}
-     : Π {n}, vector A n → vector B n → vector (A × B) n
-| zip nil nil         := nil
-| zip (a::va) (b::vb) := (a, b) :: zip va vb
-#+END_SRC
 
 * Human-readable proofs
 
@@ -696,20 +698,68 @@ if ∀ i, i < n → f i = f 0 then tt else ff
 structure ring [class] (A : Type)
    extends add_comm_group A, monoid A, distrib A
 
+variable {A : Type}
+
 theorem ring.mul_zero [s : ring A] (a : A) : a * 0 = 0 :=
 have H : a * 0 + 0 = a * 0 + a * 0, from calc
  a * 0 + 0 = a * 0      : by rewrite add_zero
     ... = a * (0 + 0)   : by rewrite add_zero
     ... = a * 0 + a * 0 : by rewrite left_distrib,
-show a * 0 = 0,
-by rewrite -(add.left_cancel H)
+show a * 0 = 0,   by rewrite -(add.left_cancel H)
+#+END_SRC
+
+* Structures (additional instances)
+
+#+BEGIN_SRC lean
+structure ring [class] (A : Type)
+   extends add_comm_group A, monoid A, distrib A
+
+variable {A : Type}
+
+theorem ring.mul_zero [s : ring A] (a : A) : a * 0 = 0 := ...
+theorem ring.zero_mul [s : ring A] (a : A) : 0 * a = 0 := ...
+
+definition ring.to_semiring [instance] [s : ring A] : semiring A :=
+⦃ semiring, s,
+  mul_zero := ring.mul_zero,
+  zero_mul := ring.zero_mul ⦄
+#+END_SRC
+
+* Structures (concrete instances)
+
+#+BEGIN_SRC lean
+  protected definition int.linear_ordered_comm_ring [instance] :
+    algebra.linear_ordered_comm_ring int :=
+  ⦃algebra.linear_ordered_comm_ring, int.integral_domain,
+    le               := int.le,
+    le_refl          := int.le.refl,
+    le_trans         := int.le.trans,
+    le_antisymm      := int.le.antisymm,
+    lt               := int.lt,
+    le_of_lt         := int.le_of_lt,
+    lt_irrefl        := int.lt.irrefl,
+    ...
+    le_iff_lt_or_eq  := int.le_iff_lt_or_eq,
+    le_total         := int.le.total,
+    zero_ne_one      := int.zero_ne_one,
+    zero_lt_one      := int.zero_lt_one,
+    add_lt_add_left  := int.add_lt_add_left⦄
+#+END_SRC
+
+- Is =int= a =add_group=? *Yes*
+
+#+BEGIN_SRC lean
+int.linear_ordered_comm_ring   :  algebra.linear_ordered_comm_ring int
+linear_ordered_comm_ring int   → comm_ring int
+comm_ring int                  → ring int
+ring int                       → add_comm_group int
+add_comm_group int             → add_group int
 #+END_SRC
 
 * Sylow theorem
 
 - [[http://htzh.github.io/problemdriven/posts/Sylow.html][Developed by Haitao Zhang]]
-- [[https://github.com/htzh/leanproved][Available on github]]
-- To be moved to the standard library
+- [[https://github.com/leanprover/lean/blob/master/library/theories/group_theory/group_theory.md][Available in the standard library]]
 
 #+BEGIN_SRC lean
 variables {A : Type} [ambA : group A] [finA : fintype A]
