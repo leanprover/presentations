@@ -47,7 +47,7 @@
   - [[https://github.com/javra/msc-thesis][Nonabelian Algebraic Topology]]
   - Number Theory
 - [[http://leanprover.github.io/tutorial][Interactive theory proving course]] at CMU
-- Haitao Zhang is formalizing [[https://github.com/htzh/leanproved][Group Theory]]
+- Haitao Zhang is formalizing [[https://github.com/leanprover/lean/blob/master/library/theories/group_theory/group_theory.md][Group Theory]]
 
 * Main Goal
 
@@ -79,7 +79,7 @@
 
 * Software verification and @@html:<br>@@ Formalized Mathematics
 
-- Microsoft Research works actively in both of them
+- Some projects at Microsoft Research
   - [[http://link.springer.com/chapter/10.1007%2F978-3-642-05089-3_51][Verifying the Microsoft Hyper-V Hypervisor using VCC]]
   - [[https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-hawblitzel.pdf][Ironclad: automated full-system verification]]
   - [[http://delivery.acm.org/10.1145/2050000/2043197/p123-yang.pdf?ip=38.100.136.98&id=2043197&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&CFID=693556887&CFTOKEN=63174865&__acm__=1437010868_4af7dfc020206ac3436fa61ca1c3ff9c][Automated Verification of a Type-Safe Operating System]]
@@ -94,6 +94,7 @@
   - *Proof stability*
   - Libraries are big
   - *Scalability* issues
+  - Finding existing functions/theorems
 
 - Common problems in software engineering:
   - Every attempt to create a single unified language failed (ADA?)
@@ -112,6 +113,13 @@
   - Ad-hoc polymorphism (aka overloading)
   - Type classes
   - Tactics
+
+#+BEGIN_QUOTE
+  "By relieving the brain of all unnecessary work, a good notation sets it free to
+   concentrate on more advanced problems, and in effect increases the mental power of the
+   race."
+       -- A. N. Whitehead
+#+END_QUOTE
 
 * What is new?
 
@@ -224,7 +232,22 @@ Type.{0} : Type.{1} : Type.{2} : Type.{3} : ...
 
 - The inhabitants/elements of a proposition =P= are the proofs of =P=
 
-- We can optionally have =Prop= the type of all propositions
+- =Prop= is the type of all propositions
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework1.png]]
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework2.png]]
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework3.png]]
 
 * Kernel
 
@@ -314,6 +337,16 @@ Type.{0} : Type.{1} : Type.{2} : Type.{3} : ...
 
   - Daniel Selsam is implementing a [[https://github.com/leanprover/tc][reference type checker]] in Haskell
 
+* Exporting libraries
+
+- All Lean files can be exported in a very simple format
+
+- [[https://github.com/leanprover/lean/blob/master/doc/export_format.md][Documentation is available on github]]
+
+- Communicate with other tools
+
+- Interface with the [[https://github.com/leanprover/tc][Lean reference type checker]]
+
 * Inductive families
 
 #+BEGIN_SRC lean
@@ -322,18 +355,17 @@ Type.{0} : Type.{1} : Type.{2} : Type.{3} : ...
     | succ : nat → nat
 #+END_SRC
 
-#+attr_html: :height 300px
+#+attr_html: :height 260px
 [[./img/inductive.png]]
 
 #+BEGIN_SRC lean
 nat       : Type
-nat.zero  : nat
-nat.succ  : nat → nat
-nat.rec   : Π (C : nat → Type),
-   C nat.zero →
-   (Π (a : nat), C a → C (nat.succ a)) →
+nat.zero  : nat                  -- constructor
+nat.succ  : nat → nat            -- constructor
+nat.rec   : Π (C : nat → Type),  -- recursor
+   C nat.zero → (Π (a : nat), C a → C (nat.succ a)) →
    n → C n
-
+-- Computational rules
 nat.rec C v f nat.zero      ==> v
 nat.rec C v f (nat.succ n)  ==> f n (nat.rec C v f n)
 #+END_SRC
@@ -368,6 +400,40 @@ inductive vector (A : Type) : nat → Type :=
 - It is possible to *construct* a substantial *edifice of mathematics* based
   on nothing more than the *type universes*, *function spaces*, and
   *inductive types*; everything else follows from those.
+
+* Implicit arguments
+
+  - *Curly braces* indicate that argument should be *inferred* rather
+    than entered explicitly.
+
+  #+BEGIN_SRC lean
+  definition id {A : Type} (a : A) : A :=
+  a
+
+  check id 10      -- @id num 10
+  check @id num 10
+  #+END_SRC
+
+* Implicit arguments
+
+  - Elaborator uses *higher-order unification*.
+
+  #+BEGIN_SRC lean
+  check @eq.subst
+  -- eq.subst : ∀ {A : Type} {a b : A} {P : A → Prop},
+  --            a = b → P a → P b
+  variables (A : Type)  (R : A → A → Prop)
+  variables (a b c : A) (f : A → A → A)
+
+  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
+          R (f a b) (f b a) :=
+  eq.subst H₂ H₁
+
+  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
+          R (f a b) (f b a) :=
+  @eq.subst A a b (λ x : A, R (f a x) (f x a)) H₂ H₁
+  #+END_SRC
+
 
 * Recursive equations
 
@@ -415,56 +481,6 @@ definition zip {A B : Type}
 | zip nil nil         := nil
 | zip (a::va) (b::vb) := (a, b) :: zip va vb
 #+END_SRC
-
-* Elaboration
-
-  "By relieving the brain of all unnecessary work, a good notation sets it free to
-   concentrate on more advanced problems, and in effect increases the mental power of the
-   race." A. N. Whitehead
-
-  - We want a *convenient system*
-  - The following features are implemented *outside of the kernel*
-    - Implicit arguments
-    - Coercions
-    - Namespace management
-    - Ad-hoc polymorphism (overloading)
-    - Type classes
-    - Recursive equations
-    - Dependent pattern matching
-    - Human-readable proofs
-    - Structures
-    - Tactics (gateway to decision procedures, rewriters, ...)
-
-* Implicit arguments
-
-  - *Curly braces* indicate that argument should be *inferred* rather
-    than entered explicitly.
-
-  #+BEGIN_SRC lean
-  definition id {A : Type} (a : A) : A :=
-  a
-
-  check id 10      -- @id num 10
-  check @id num 10
-  #+END_SRC
-
-* Implicit arguments
-
-  #+BEGIN_SRC lean
-  check @eq.subst
-  -- eq.subst : ∀ {A : Type} {a b : A} {P : A → Prop},
-  --            a = b → P a → P b
-  variables (A : Type)  (R : A → A → Prop)
-  variables (a b c : A) (f : A → A → A)
-
-  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
-          R (f a b) (f b a) :=
-  eq.subst H₂ H₁
-
-  example (H₁ : R (f a a) (f a a)) (H₂ : a = b) :
-          R (f a b) (f b a) :=
-  @eq.subst A a b (λ x : A, R (f a x) (f x a)) H₂ H₁
-  #+END_SRC
 
 * Definitional Reductions
 
@@ -531,7 +547,7 @@ definition zip {A B : Type}
   #+END_SRC
 
   - We can use namespaces to avoid unwanted ambiguity.
-  - We can *override* ad-hoc polymorphism and overloading
+  - We can *override* overloading
 
   #+BEGIN_SRC lean
   check (#nat a + b)
@@ -583,24 +599,17 @@ natural_transformation.mk
   inhabited.mk nat.zero
 
   definition fun_inhabited [instance]
-     (A B : Type) (h : inhabited B) : inhabited (A → B) :=
+     (A B : Type) [h : inhabited B] : inhabited (A → B) :=
   inhabited.mk (λ x : A, default B)
 
   definition prod_inhabited [instance]
-        (A B : Type) (ha : inhabited A) (hb : inhabited B) :
+        (A B : Type) [ha : inhabited A] [hb : inhabited B] :
         inhabited (A × B) :=
   inhabited.mk (default A, default B)
 
   eval default (nat → nat × Prop)
+  -- ⇒ λ (a : ℕ), (0, true)
   #+END_SRC
-
-* Inhabited Type Class (Applications)
-
-- Some propositions only hold for inhabited types
-    #+BEGIN_SRC lean
-    theorem ex_trivial (A : Type) [h : inhabited A] : ∃ x : A, x = x :=
-    exists.intro (default A) rfl
-    #+END_SRC
 
 * Decidable Type Class
 
@@ -625,7 +634,7 @@ inductive decidable [class] (p : Prop) : Type :=
 definition ball (n : nat) (P : nat → Prop) : Prop :=
 ∀ x, x < n → P x
 
-definition dec_ball [instance] (H : decidable_pred P)
+definition dec_ball [instance] [H : decidable_pred P]
            : Π (n : nat), decidable (ball n P)
 | dec_ball 0     := inl (ball_zero P)
 | dec_ball (a+1) :=
@@ -687,8 +696,7 @@ if ∀ i, i < n → f i = f 0 then tt else ff
 
   ...
 
-  structure group [class] (A : Type)
-            extends monoid A, has_inv A :=
+  structure group [class] (A : Type) extends monoid A, has_inv A :=
   (mul_left_inv : ∀a, mul (inv a) a = one)
   #+END_SRC
 
@@ -769,8 +777,9 @@ include ambA deceqA finA
 theorem cauchy_theorem
 : ∀ p, prime p → p ∣ card(A) → ∃ g : A, order(g) = p
 
-theorem first_sylow_theorem : ∀ p, prime p →
-∀ n, p^n ∣ card(A) → ∃ (H : finset A) (sg : is_finsubg H), card(H) = p^n
+theorem first_sylow_theorem :
+∀ p, prime p → ∀ n, p^n ∣ card(A) →
+  ∃ (H : finset A) (sg : is_finsubg H), card(H) = p^n
 #+END_SRC
 
 * Bundled structures
@@ -779,7 +788,8 @@ theorem first_sylow_theorem : ∀ p, prime p →
 structure Semigroup : Type :=
 (carrier : Type)
 (mul : carrier → carrier → carrier)
-(mul_assoc : ∀ a b c : carrier, mul (mul a b) c = mul a (mul b c))
+(infix * := mul)
+(mul_assoc : ∀ a b c : carrier, (a * b) * c = a * (b * c))
 
 notation a `*` b := Semigroup.mul _ a b
 
