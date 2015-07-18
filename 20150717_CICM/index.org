@@ -808,6 +808,17 @@ calc
             ... = f a * f a * f a : morphism.resp_mul f
 #+END_SRC
 
+* Category Theory
+
+- Developed by Floris van Doorn and Jakob von Raumer
+- [[https://github.com/leanprover/lean/blob/master/hott/algebra/category/category.md][In the HoTT library]]
+
+#+BEGIN_SRC lean
+theorem yoneda_embedding (C : Precategory) : C ⇒ set ^c Cᵒᵖ
+
+theorem contravariant_yoneda_embedding (C : Precategory) : Cᵒᵖ ⇒ set ^c C
+#+END_SRC
+
 * Future work
 
   - *Auto* tactic based on equational reasoning, matching, heuristic instantiation, ...
