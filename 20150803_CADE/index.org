@@ -215,7 +215,7 @@ Type.{0} : Type.{1} : Type.{2} : Type.{3} : ...
 - In ordinary situations you can ignore the universe parameters and simply write =Type=,
   leaving the "universe management" to Lean
 
-- =examples/ex1.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex1.lean][examples/ex1.lean]]
 
 * Propositions as types
 
@@ -313,7 +313,7 @@ Type.{0} : Type.{1} : Type.{2} : Type.{3} : ...
 
 * Example 2
 
-- =examples/ex2.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex2.lean][examples/ex2.lean]]
 
 * Agnostic Mathematics
 
@@ -475,7 +475,7 @@ abbreviation f := λ n r : nat, succ r
                 ...   = s (s (s z))
 #+END_SRC
 
-- =examples/ex3.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex3.lean][examples/ex3.lean]]
 
 * Inductive families
 
@@ -496,7 +496,7 @@ inductive vector (A : Type) : nat → Type :=
 - Lean automatically generates several auxiliary definitions whenever
   a new inductive family is declared.
 
-- =examples/ex4.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex4.lean][examples/ex4.lean]]
 
 * Recursive equations
 
@@ -529,7 +529,7 @@ inductive vector (A : Type) : nat → Type :=
     ... = fib (a+2)         : rfl
   #+END_SRC
 
-  - =examples/ex5.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex5.lean][examples/ex5.lean]]
 
 * Recursive equations
 
@@ -719,7 +719,7 @@ subtype.tag p (and.intro this `prime p`)
   -- ⇒ λ (a : ℕ), (0, true)
   #+END_SRC
 
-- =examples/ex6.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex6.lean][examples/ex6.lean]]
 
 * Decidable Type Class
 
@@ -761,7 +761,7 @@ definition is_constant_range (f : nat → nat) (n : nat) : bool :=
 if ∀ i, i < n → f i = f 0 then tt else ff
 #+END_SRC
 
-- =examples/ex7.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex7.lean][examples/ex7.lean]]
 
 * Tactics
 
@@ -791,7 +791,7 @@ if ∀ i, i < n → f i = f 0 then tt else ff
   end
   #+END_SRC
 
-  - =examples/ex8.lean=
+  - [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex8.lean][examples/ex8.lean]]
 
 * Structures
 
@@ -983,14 +983,14 @@ theorem contravariant_yoneda_embedding (C : Precategory) : Cᵒᵖ ⇒ set ^c C
 - Lean provides a Lua API
 - We can access terms, create definitions and tactics, type check terms etc
 - Lua scripts can be embedded in Lean files
-- =example/lua.lean=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/lua.lean][examples/lua.lean]]
 
 * Javascript
 
 - Lean has been compiled as a Javascript library
 - We have used this library to implement the interactive tutorial
 - We can use it to write other applications (e.g., a fancier web IDE)
-- =examples/ex.html=
+- [[https://github.com/leanprover/presentations/blob/master/20150803_CADE/examples/ex.html][examples/ex.html]]
 
 * Future work
 
