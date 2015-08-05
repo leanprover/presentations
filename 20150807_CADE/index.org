@@ -1,0 +1,302 @@
+#+Title: The Lean Theorem Prover
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ Soonho Kong (CMU), Jeremy Avigad (CMU), @@html:<br>@@ Floris van Doorn (CMU), Jakob von Raumer (KIT), @@html:<br>@@ Rob Lewis (CMU), Haitao Zhang, @@html:<br>@@ Daniel Selsam (Stanford)
+#+Date:  CADE, 2015/08/07 @@html:<br>@@ http://leanprover.github.io
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* Many thanks to
+
+- Cody Roux
+- Georges Gonthier
+- Grant Passmore
+- Nikhil Swamy
+- Assia Mahboubi
+- Bas Spitters
+- Steve Awodey
+- Ulrik Buchholtz
+- Tom Ball
+- Parikshit Khanna
+
+* Introduction: *Lean*
+
+- New *open source* theorem prover
+- Platform for
+  - *Software* verification & development
+  - Formalized *mathematics*
+  - *Education* (mathematics, logic, computer science)
+  - *Synthesis* (proofs & programs)
+- de Bruijn's Principle: *small trusted kernel*
+- Expressive logic based on *dependent type theory*
+- Partial constructions: automation fills the "holes"
+
+* Introduction: *Lean*
+
+- It is an ongoing and *long long term* effort
+- At CMU, it is already being used for formalizing
+  - Homotopy Type Theory
+  - Category Theory
+  - Algebraic Hierarchy
+  - [[https://github.com/javra/msc-thesis][Nonabelian Algebraic Topology]]
+  - Number Theory
+- [[http://leanprover.github.io/tutorial][Interactive theory proving course]] at CMU
+- Haitao Zhang is formalizing [[https://github.com/leanprover/lean/blob/master/library/theories/group_theory/group_theory.md][Group Theory]]
+- Floris van Doorn implemented [[https://github.com/fpvandoorn/leansnippets/blob/master/propositional_truncation.hlean][propositional truncation as a non-recursive HIT]]
+
+* Main Goal
+
+*Lean aims to bring two worlds together*
+
+- An interactive theorem prover with powerful automation
+- An automated reasoning tool that
+  - produces (detailed) proofs,
+  - has a rich language,
+  - can be used interactively, and
+  - is built on a verified mathematical library
+
+* Secondary Goals
+
+- *Minimalist* and *high-performace* kernel
+
+- *Experiment* with different flavors of type theory
+  - Proof irrelevant vs Proof relevant
+  - Impredicative vs Predicative
+  - Higher Inductive Types
+  - Quotient Types
+  - Observational Type Theory
+
+- *Have Fun*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+  - Higher-order unification
+  - Definitional reductions
+  - Coercions
+  - Ad-hoc polymorphism (aka overloading)
+  - Type classes
+  - Tactics
+
+#+BEGIN_QUOTE
+  "By relieving the brain of all unnecessary work, a good notation sets it free to
+   concentrate on more advanced problems, and in effect increases the mental power of the
+   race."
+       -- A. N. Whitehead
+#+END_QUOTE
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+  - It does *not* contain
+    - Termination checker
+    - Fixpoint operators
+    - Pattern matching
+    - Module management
+  - [[https://github.com/leanprover/tc][Reference type checker]]
+    - Implemented by Daniel Selsam
+    - < 2000 lines of Haskell code
+    - Code is easy to read and understand
+    - Type check the whole standard library (35K lines) under 2 mins
+  - All Lean files can be exported in a very simple format
+    - [[https://github.com/leanprover/lean/blob/master/doc/export_format.md][Documentation is available on github]]
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+  - Process theorems in parallel
+  - Execute/try tactics (automation) in parallel
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+- Support for mixed *declarative* and *tactic* proof style
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+- Support for mixed *declarative* and *tactic* proof style
+- *Quotient types*
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework2.png]]
+
+
+* Two official libraries
+
+- *Standard*
+  - Proof irrelevant and impredicative Prop
+  - Smooth transition to classical logic
+  - Inductive Families
+  - Quotient Types
+
+- *HoTT*
+  - Proof relevant and no impredicative Prop
+  - Univalence axiom
+  - Inductive Families
+  - HIT
+
+- Easy to implement experimental versions,
+  Example: [[https://github.com/leanprover/lean/issues/523][Steve Awodey asked for proof relevant and impredicative universe]]
+
+
+* Recursive equations
+
+  - *Recursors* are *inconvenient* to use.
+  - Compiler from *recursive equations* into *recursors*.
+  - Two compilation strategies: *structural* and *well-founded* recursion
+
+  #+BEGIN_SRC lean
+  definition fib : nat → nat
+  | fib 0     := 1
+  | fib 1     := 1
+  | fib (a+2) := fib (a+1) + fib a
+
+  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+  rfl
+  #+END_SRC
+
+* Recursive equations
+
+ - Dependent pattern matching
+
+#+BEGIN_SRC lean
+definition map {A B C : Type} (f : A → B → C)
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
+
+definition zip {A B : Type}
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
+#+END_SRC
+
+* Human-readable proofs
+
+#+BEGIN_SRC lean
+import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+          {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : assoc
+                  ... = (η b ∘ G f) ∘ θ a : naturality
+                  ... = η b ∘ (G f ∘ θ a) : assoc
+                  ... = η b ∘ (θ b ∘ F f) : naturality
+                  ... = (η b ∘ θ b) ∘ F f : assoc
+#+END_SRC
+
+* Human-readable proofs
+
+#+BEGIN_SRC lean
+definition infinite_primes (n : nat) : {p | p ≥ n ∧ prime p} :=
+let m := fact (n + 1) in
+have m ≥ 1,     from le_of_lt_succ (succ_lt_succ (fact_pos _)),
+have m + 1 ≥ 2, from succ_le_succ this,
+obtain p `prime p` `p ∣ m + 1`, from sub_prime_and_dvd this,
+have p ≥ 2,     from ge_two_of_prime `prime p`,
+have p > 0,     from lt_of_succ_lt (lt_of_succ_le `p ≥ 2`),
+have p ≥ n,     from by_contradiction
+  (suppose ¬ p ≥ n,
+    have p < n,     from lt_of_not_ge this,
+    have p ≤ n + 1, from le_of_lt (lt.step this),
+    have p ∣ m,      from dvd_fact `p > 0` this,
+    have p ∣ 1,      from dvd_of_dvd_add_right (!add.comm ▸ `p ∣ m + 1`) this,
+    have p ≤ 1,     from le_of_dvd zero_lt_one this,
+    absurd (le.trans `2 ≤ p` `p ≤ 1`) dec_trivial),
+subtype.tag p (and.intro this `prime p`)
+#+END_SRC
+
+* Structures
+
+  - Special kind of inductive datatype (only one constructor)
+  - Projections are generated automatically
+  - "Inheritance"
+  - Extensively used to formalize the algebraic hierarchy
+  - We can view them as *parametric modules*
+
+  #+BEGIN_SRC lean
+  structure has_mul [class] (A : Type) :=
+  (mul : A → A → A)
+
+  structure semigroup [class] (A : Type) extends has_mul A :=
+  (mul_assoc : ∀a b c, mul (mul a b) c = mul a (mul b c))
+
+  ...
+
+  structure group [class] (A : Type) extends monoid A, has_inv A :=
+  (mul_left_inv : ∀a, mul (inv a) a = one)
+  #+END_SRC
+
+* Sylow theorem
+
+- [[http://htzh.github.io/problemdriven/posts/Sylow.html][Developed by Haitao Zhang]]
+- [[https://github.com/leanprover/lean/blob/master/library/theories/group_theory/group_theory.md][Available in the standard library]]
+
+#+BEGIN_SRC lean
+variables {A : Type} [ambA : group A] [finA : fintype A]
+          [deceqA : decidable_eq A]
+include ambA deceqA finA
+
+theorem cauchy_theorem
+: ∀ p, prime p → p ∣ card(A) → ∃ g : A, order(g) = p
+
+theorem first_sylow_theorem :
+∀ p, prime p → ∀ n, p^n ∣ card(A) →
+  ∃ (H : finset A) (sg : is_finsubg H), card(H) = p^n
+#+END_SRC
+
+* Category Theory
+
+- Developed by Floris van Doorn and Jakob von Raumer
+- [[https://github.com/leanprover/lean/blob/master/hott/algebra/category/category.md][In the HoTT library]]
+
+#+BEGIN_SRC lean
+theorem yoneda_embedding (C : Precategory) : C ⇒ set ^c Cᵒᵖ
+
+theorem contravariant_yoneda_embedding (C : Precategory) : Cᵒᵖ ⇒ set ^c C
+#+END_SRC
+
+* Future work
+
+  - *Auto* tactic based on equational reasoning, matching, heuristic instantiation, ...
+  - *Decision procedures* for arithmetic
+  - Efficient evaluator
+  - Better support for *proof by reflection*
+  - Better libraries (ongoing work)
+  - Machine learning
+
+* Thank you
+
+  - Website: http://leanprover.github.io/
+  - Source code: https://github.com/leanprover/lean
+  - Theorem proving in Lean: https://leanprover.github.io/tutorial/index.html
