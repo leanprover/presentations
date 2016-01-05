@@ -11,6 +11,7 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 /*********************************************
  * GLOBAL STYLES
  *********************************************/
+html { background-color: inherit; }
 body {
   background: #f7fbfc;;
   background-color: #f7fbfc;
