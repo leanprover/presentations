@@ -162,7 +162,7 @@
 - *Dependent type theory* is really *beautiful*
 
 - Some advantages
-  - Bultin computational interpretation
+  - Built-in computational interpretation
   - Same data-structure for representing proofs and terms
   - Reduce code duplication, example:
     - We implemented a compiler for Haskell-like recursive equations,
