@@ -86,7 +86,7 @@
   - [[http://delivery.acm.org/10.1145/2050000/2043197/p123-yang.pdf?ip=38.100.136.98&id=2043197&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&CFID=693556887&CFTOKEN=63174865&__acm__=1437010868_4af7dfc020206ac3436fa61ca1c3ff9c][Automated Verification of a Type-Safe Operating System]]
   - [[http://www.ams.org/notices/200811/tx081101382p.pdf][Four-color theorem]]
   - [[http://www.msr-inria.fr/news/feit-thomson-proved-in-coq/][Feit Thompson theorem]]
-- Disclaimer: *this projects were developed before Lean existed*
+- Disclaimer: *these projects were developed before Lean existed*
 - They used Boogie/Z3 and Coq.
 
 * Software verification and @@html:<br>@@ Formalized Mathematics
