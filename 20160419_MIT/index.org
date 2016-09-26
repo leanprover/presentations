@@ -1,0 +1,805 @@
+#+Title: The Lean Theorem Prover @@html:<br>@@ and @@html:<br>@@ Automation
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]]
+#+Date:  MIT, 2016/04/19 @@html:<br>@@ http://leanprover.github.io
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* The Lean Theorem Prover Team
+
+- Soonho Kong (CMU),
+- Jeremy Avigad (CMU)
+- Floris van Doorn (CMU),
+- Rob Lewis (CMU),
+- Jakob von Raumer (KIT),
+- Daniel Selsam (Stanford)
+
+* Many thanks to
+
+- Cody Roux
+- Georges Gonthier
+- Grant Passmore
+- Nikhil Swamy
+- Assia Mahboubi
+- Bas Spitters
+- Steve Awodey
+- Ulrik Buchholtz
+- Tom Ball
+- Parikshit Khanna
+- Haitao Zhang
+
+* Introduction: *Lean*
+
+- New *open source* theorem prover
+- Platform for
+  - *Software* verification & development
+  - Formalized *mathematics*
+  - *Education* (mathematics, logic, computer science)
+  - *Synthesis* (proofs & programs)
+- de Bruijn's Principle: *small trusted kernel*
+- Expressive logic
+- Partial constructions: automation fills the "holes"
+
+* Introduction: *Lean*
+
+- Backend for other systems
+  - [[https://github.com/GaloisInc/lean-haskell-bindings][Haskell API for Lean]] developed by Joe Hendrix
+- [[http://leanprover.github.io/tutorial][Interactive theory proving course]] at CMU
+- [[https://leanprover.github.io/logic_and_proof/][Introduction to Logic course]] at CMU
+- It is an ongoing and *long long term* effort
+
+* Main Goal
+
+*Lean aims to bring two worlds together*
+
+- An interactive theorem prover with powerful automation
+- An automated reasoning tool that
+  - produces (detailed) proofs,
+  - has a rich language,
+  - can be used interactively, and
+  - is built on a verified mathematical library
+
+* Secondary Goals
+
+- *Robust proofs*
+
+- *Minimalist* and *high-performace* kernel
+
+- *Education*
+  - Interactive courses
+  - *Proving* should be as easy as *programming*
+
+- *Have Fun*
+
+* Software verification and @@html:<br>@@ Formalized Mathematics
+
+- Some projects at Microsoft Research
+  - [[http://link.springer.com/chapter/10.1007%2F978-3-642-05089-3_51][Verifying the Microsoft Hyper-V Hypervisor using VCC]]
+  - [[https://www.usenix.org/system/files/conference/osdi14/osdi14-paper-hawblitzel.pdf][Ironclad: automated full-system verification]]
+  - [[http://delivery.acm.org/10.1145/2050000/2043197/p123-yang.pdf?ip=38.100.136.98&id=2043197&acc=OPEN&key=4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35%2E6D218144511F3437&CFID=693556887&CFTOKEN=63174865&__acm__=1437010868_4af7dfc020206ac3436fa61ca1c3ff9c][Automated Verification of a Type-Safe Operating System]]
+  - [[http://www.ams.org/notices/200811/tx081101382p.pdf][Four-color theorem]]
+  - [[http://www.msr-inria.fr/news/feit-thomson-proved-in-coq/][Feit Thompson theorem]]
+- Disclaimer: *this projects were developed before Lean existed*
+- They used Boogie/Z3 and Coq.
+
+* Software verification and @@html:<br>@@ Formalized Mathematics
+
+- Similar problems
+  - *Proof stability*
+  - Libraries are big
+  - *Scalability* issues
+  - Finding existing functions/theorems
+
+- Common problems in software engineering:
+  - Every attempt to create a single unified language failed (ADA?)
+  - We keep reimplementing the same libraries over and over again
+  - Mixing libraries from different languages is usually a mess
+  - *Bit rotting*
+
+- These problems also affect formalized mathematics
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+  - Higher-order unification
+  - Definitional reductions
+  - Coercions
+  - Ad-hoc polymorphism (aka overloading)
+  - Type classes
+  - Tactics
+
+#+BEGIN_QUOTE
+  "By relieving the brain of all unnecessary work, a good notation sets it free to
+   concentrate on more advanced problems, and in effect increases the mental power of the
+   race."
+       -- A. N. Whitehead
+#+END_QUOTE
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+  - It does *not* contain
+    - Termination checker
+    - Fixpoint operators
+    - Pattern matching
+    - Module management
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+  - Process theorems in parallel
+  - Execute/try tactics (automation) in parallel
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+- Support for *mixed* declarative and tactic *proof style*
+
+* What is new?
+
+- Poweful *elaboration engine* that can handle
+- Small *trusted* kernel
+- Multi-core support
+- Fast *incremental compilation*
+- Support for *mixed* declarative and tactic *proof style*
+- *Automation*
+
+* Dependent Type Theory
+
+- Before we started Lean, we have studied different theorem
+  provers: ACL2, Agda, Automath, Coq, HOL (family), Isabelle, Mizar, PVS
+
+- *Dependent type theory* is really *beautiful*
+
+- Some advantages
+  - Bultin computational interpretation
+  - Same data-structure for representing proofs and terms
+  - Reduce code duplication, example:
+    - We implemented a compiler for Haskell-like recursive equations,
+      we can use it to construct proofs by induction
+  - Mathematical structures (such as Groups and Rings) are first-class citizens
+
+- Some references
+  - [[https://golem.ph.utexas.edu/category/2010/03/in_praise_of_dependent_types.html][In praise of dependent types]] (Mike Shulman)
+  - [[http://arxiv.org/pdf/1111.5885v2.pdf][Type inference in mathematics]] (Jeremy Avigad)
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework1.png]]
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework2.png]]
+
+* Kernel
+
+- Kernel is implemented in two layers for easy customization
+
+- 1st layer, dependent lambda calculus + options:
+  - Proof irrelevance
+  - Impredicative Prop
+  #+BEGIN_SRC lean
+  Π (x : nat), x = x  -- is a Proposition
+  ∀ (x : nat), x = x  -- Alternative notation
+  #+END_SRC
+
+- 2nd layer: Inductive families, Quotient types, HITs
+
+#+attr_html: :height 300px
+[[./img/kernel.png]]
+
+* Two official libraries
+
+- *Standard*
+  - Proof irrelevant and impredicative Prop
+  - Smooth transition to classical logic
+  - Inductive Families
+  - Quotient Types
+
+- *HoTT*
+  - Proof relevant and no impredicative Prop
+  - Univalence axiom
+  - Inductive Families
+  - HIT
+
+- Easy to implement experimental versions,
+  Example: [[https://github.com/leanprover/lean/issues/523][Steve Awodey asked for proof relevant and impredicative universe]]
+
+* Agnostic Mathematics
+
+- Support *constructive* and *classical* mathematics
+- Computation is important to mathematics
+
+- *Core* parts of the standard library are *constructive*
+
+- *Separation of concerns*:
+  - Methods to write computer programs
+  - Freedom to use a nonconstructive theories and methods to reason about them
+
+* Noncomputable Keyword
+
+- Our conjecture: most users don't care about constructivism, what they really care about is whether code can be generated our not for a definition.
+
+#+BEGIN_SRC lean
+private noncomputable definition pb {s : seq} (Hs : regular s)
+                                    (Hpos : pos s) :=
+  some (abs_pos_of_nonzero Hs (sep_zero_of_pos Hs Hpos))
+
+private noncomputable definition ps {s : seq} (Hs : regular s)
+                                    (Hsep : sep s zero) :=
+  some (abs_pos_of_nonzero Hs Hsep)
+
+noncomputable definition s_inv {s : seq} (Hs : regular s) (n : ℕ+) : ℚ :=
+  if H : sep s zero then
+      (if n < (ps Hs H) then 1 / (s ((ps Hs H) * (ps Hs H) * (ps Hs H)))
+        else 1 / (s ((ps Hs H) * (ps Hs H) * n)))
+  else 0
+#+END_SRC
+
+* *Freedom to trust*
+
+- Option: type check imported modules.
+
+- *Macros*: semantic attachments for speeding up type checking and evaluation.
+- Macros can be eliminated (expanded into pure Lean code).
+- Each macro provides a function for computing the type and evaluating an instance.
+- Each macro can be assigned a *trust level*.
+- Many applications: interface with the GNU multiprecision arithmetic (GMP) library.
+
+* Freedom to trust
+
+- *Relaxed* mode
+
+  - Trust the imported modules have not been tampered
+  - Trust all macros
+
+- *Paranoid* mode
+
+  - Retype check all imported modules (someone may have changed the binaries)
+  - Expand all macros (the developers may have made mistakes, GMP may be buggy)
+
+- *Stronger guarantee* Retype check everything using Lean reference type checker
+
+  - Daniel Selsam implemented a [[https://github.com/leanprover/tc][reference type checker]] in Haskell
+
+* Exporting libraries
+
+- All Lean files can be exported in a very simple format
+
+- [[https://github.com/leanprover/lean/blob/master/doc/export_format.md][Documentation is available on github]]
+
+- Communicate with other tools
+
+- Interface with the [[https://github.com/leanprover/tc][Lean reference type checker]]
+
+- [[https://github.com/GaloisInc/lean-haskell-bindings][Haskell API]] can be used to import libraries, browse and construct terms, parse files, etc.
+
+- [[https://github.com/leanprover/lean/tree/master/src/api][We also have a C API]]
+
+* Standard library
+
+The standard library already contains
+- datatypes: booleans, lists, tuples, finsets, sets
+- number systems: nat, int, rat, real, complex
+- the algebraic hiearachy, through ordered fields
+- "big operations": finite sums and products, etc
+- elementary number theory (e.g. primes, gcd’s, unique factorization, etc.)
+- elementary set theory
+- elementary group theory (Sylow’s theorem)
+- beginnings of analysis: topological spaces, limits, continuity,
+  the intermediate value theorem
+
+* Standard library
+
+Currently working on:
+- topology (connectedness, compactness)
+- linear algebra
+- analysis: transcendental functions, the Frechet derivative
+- measure theory (Lebesgue integration)
+- group theory
+
+* Recursive equations
+
+  - *Recursors* are *inconvenient* to use.
+  - Compiler from *recursive equations* to *recursors*.
+  - Two compilation strategies: *structural* and *well-founded* recursion
+
+  #+BEGIN_SRC lean
+  definition fib : nat → nat
+  | fib 0     := 1
+  | fib 1     := 1
+  | fib (a+2) := fib (a+1) + fib a
+
+  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+  rfl
+  #+END_SRC
+
+  - Proofs by induction
+
+* Recursive equations
+
+ - Dependent pattern matching
+
+#+BEGIN_SRC lean
+definition map {A B C : Type} (f : A → B → C)
+     : Π {n : nat}, vector A n → vector B n → vector C n
+| map nil     nil     := nil
+| map (a::va) (b::vb) := f a b :: map va vb
+
+definition zip {A B : Type}
+     : Π {n}, vector A n → vector B n → vector (A × B) n
+| zip nil nil         := nil
+| zip (a::va) (b::vb) := (a, b) :: zip va vb
+#+END_SRC
+
+* Human-readable proofs
+
+#+BEGIN_SRC lean
+import algebra.category
+open eq.ops category functor natural_transformation
+
+variables {ob₁ ob₂ : Type} {C : category ob₁}
+          {D : category ob₂} {F G H : C ⇒ D}
+definition nt_compose (η : G ⟹ H) (θ : F ⟹ G) : F ⟹ H :=
+natural_transformation.mk
+  (take a, η a ∘ θ a)
+  (take a b f, calc
+    H f ∘ (η a ∘ θ a) = (H f ∘ η a) ∘ θ a : assoc
+                  ... = (η b ∘ G f) ∘ θ a : naturality
+                  ... = η b ∘ (G f ∘ θ a) : assoc
+                  ... = η b ∘ (θ b ∘ F f) : naturality
+                  ... = (η b ∘ θ b) ∘ F f : assoc
+#+END_SRC
+
+* Tactics
+
+  - Automation such as rewrite engines, simplifiers and decision procedures are integrated into
+    the system as tactics.
+  - A placeholder/hole can be viewed as a *goal*
+  - A *proof state* is a sequence of goals, substitution (already solved holes), and postponed constraints.
+  - A *tactic* is a function from proof state to a *lazy stream of proof states* (very similar to Isabelle).
+  - *Tacticals* are tactic combinadors: *andthen*, *orelse*, *par*, ...
+
+* Structures
+
+  - Special kind of inductive datatype (only one constructor)
+  - Projections are generated automatically
+  - "Inheritance"
+  - Extensively used to formalize the algebraic hierarchy
+  - We can view them as *parametric modules*
+
+  #+BEGIN_SRC lean
+  structure has_mul [class] (A : Type) :=
+  (mul : A → A → A)
+
+  structure semigroup [class] (A : Type) extends has_mul A :=
+  (mul_assoc : ∀a b c, mul (mul a b) c = mul a (mul b c))
+
+  ...
+
+  structure group [class] (A : Type) extends monoid A, has_inv A :=
+  (mul_left_inv : ∀a, mul (inv a) a = one)
+  #+END_SRC
+
+* Type classes
+
+  - *Synthesis* procedure based on *lambda-Prolog*
+
+  - Big picture
+    - Mark some inductive families as *classes*
+    - Mark some definitions as (generators of) *instances*
+    - Indicate that some implicit arguments must be synthesized using type classes
+
+  - *Instances* are treated as *Horn clauses*
+
+* Inhabited Type Class
+
+  #+BEGIN_SRC lean
+  inductive inhabited [class] (A : Type) : Type :=
+  mk : A → inhabited A
+
+  definition default (A : Type) [h : inhabited A] : A :=
+  inhabited.rec (λ a, a) h
+
+  definition prop_inhabited [instance] : inhabited Prop :=
+  inhabited.mk true
+
+  definition nat_inhabited [instance] : inhabited nat :=
+  inhabited.mk nat.zero
+
+  definition fun_inhabited [instance]
+     (A B : Type) [inhabited B] : inhabited (A → B) :=
+  inhabited.mk (λ x : A, default B)
+
+  definition prod_inhabited [instance]
+        (A B : Type) [inhabited A] [inhabited B] :
+        inhabited (A × B) :=
+  inhabited.mk (default A, default B)
+
+  eval default (nat → nat × Prop)
+  -- λ (a : nat), (0, true)
+  #+END_SRC
+
+* Decidable Type Class
+
+- An element of =Prop= is said to be
+decidable if we can decide whether it is true or false.
+
+#+BEGIN_SRC lean
+inductive decidable [class] (p : Prop) : Type :=
+| inl :  p → decidable p
+| inr : ¬p → decidable p
+#+END_SRC
+
+- Having an element =t : decidable p= is stronger than having an element =t : p ∨ ¬p=
+
+- The expression =if c then t else e= contains an implicit argument =[d : decidable c]=.
+
+- If Hilbert's choice is imported, then all propositions are decidable (smooth transition to classical reasoning).
+
+* Decidable Type Class
+
+#+BEGIN_SRC lean
+definition ball (n : nat) (P : nat → Prop) : Prop :=
+∀ x, x < n → P x
+
+definition dec_ball [instance] (H : decidable_pred P)
+           : Π (n : nat), decidable (ball n P)
+| dec_ball 0     := inl (ball_zero P)
+| dec_ball (a+1) :=
+  match dec_ball a with
+  | inl iH  :=
+      match H a with
+      | inl Pa  := inl (ball_succ_of_ball iH Pa)
+      | inr nPa := inr (not_ball_of_not nPa)
+      end
+  | inr niH := inr (not_ball_succ_of_not_ball niH)
+  end
+
+definition is_constant_range (f : nat → nat) (n : nat) : bool :=
+if ∀ i, i < n → f i = f 0 then tt else ff
+#+END_SRC
+
+* Overloading
+
+#+BEGIN_SRC lean
+structure has_add  [class] (A : Type) := (add : A → A → A)
+
+definition add {A : Type} [has_add A]  : A → A → A
+
+set_option pp.all true
+variables a b : nat
+
+check a + b
+-- @add nat nat_has_add a b
+-- reduces to nat.add a b
+
+variables x y : real
+check x + y
+-- @add real real_has_add x y
+-- reduces to real.add a b
+#+END_SRC
+
+* Structures
+
+- Simplifier applies generic lemmas.
+
+#+BEGIN_SRC lean
+structure ring [class] (A : Type)
+   extends add_comm_group A, monoid A, distrib A
+
+variable {A : Type}
+
+theorem ring.mul_zero [ring A] (a : A) : a * 0 = 0 :=
+have H : a * 0 + 0 = a * 0 + a * 0, from calc
+ a * 0 + 0 = a * 0      : by simp
+    ... = a * (0 + 0)   : by simp
+    ... = a * 0 + a * 0 : by simp
+show a * 0 = 0,           by simp
+
+definition real.ordered_ring [instance] : ordered_ring ℝ := ...
+
+example (x : real) : x * 0 = 0 :=
+ring.mul_zero x
+#+END_SRC
+
+* Structures (additional instances)
+
+#+BEGIN_SRC lean
+structure ring [class] (A : Type)
+   extends add_comm_group A, monoid A, distrib A
+
+variable {A : Type}
+
+theorem ring.mul_zero [ring A] (a : A) : a * 0 = 0 := ...
+theorem ring.zero_mul [ring A] (a : A) : 0 * a = 0 := ...
+
+definition ring.to_semiring [instance] [s : ring A] : semiring A :=
+⦃ semiring, s,
+  mul_zero := ring.mul_zero,
+  zero_mul := ring.zero_mul ⦄
+#+END_SRC
+
+* Diamonds
+
+#+attr_html: :height 350px
+[[./img/alg.png]]
+
+#+BEGIN_SRC lean
+variables {A : Type}
+
+theorem right_comm [s : comm_semigroup A] (a b c : A) :
+        (a * b) * c = (a * c) * b :=
+
+-- In the theorem above, (a * b) is notation for
+-- @mul A (semigroup_to_has_mul A (comm_semigroup_to_semigroup A s)) a b
+#+END_SRC
+
+* Diamonds (cont.)
+
+- Now, given a =[g : comm_group A]=, suppose we want to apply the theorem =right_comm= to the following term as a rewriting rule.
+
+#+BEGIN_SRC lean
+variable [g : comm_group A]
+variables x y z : A
+
+(x * y) * (x * y)
+
+-- That is, we want to match the pattern
+(?a * ?b) * ?c
+-- with
+(x  * y)  * (x * y)
+#+END_SRC
+
+- What about the argument =[s : comm_semigroup A]=?
+
+* Diamonds (cont.)
+
+- When we expand the notation, we can see the "hidden" complexity. For simplicity, let's assume we are trying to match =?a * ?b= with =x * y=
+#+BEGIN_SRC lean
+@mul ?A (s2hm ?A (cs2s ?A ?s)) ?a ?b
+-- with
+@mul A  (s2hm A (m2s A (g2s A (cg2g A g)))) x y
+
+-- Lean finds the solution
+?A := A;  ?s := (cm2cs A (cg2cm A g));  ?a := x;  ?b := y
+#+END_SRC
+
+#+attr_html: :height 350px
+[[./img/alg2.png]]
+
+* Automation in Lean
+
+- Joint work with Daniel Selsam (Stanford)
+- *Work in Progress*
+- Collection of proof procedures
+  - Congruence closure
+  - E-matching
+  - Arithmetic
+  - Ordered rewriting
+  - Completion and superposition calculus
+- SMT/ATP procedures for dependent type theory.
+- *Indexing*
+
+* Automation (main challenges)
+
+- Many different settings
+  - Constructive vs *Classical*
+  - Semi-constructive axioms: *propext*, *quotients/funext*
+  - Proof relevant vs *proof irrelevant*
+  - *Impredicative Prop*
+
+- Dependent types
+
+- Type classes
+
+* Congruence closure
+
+- It is in the kernel of most SMT solvers (e.g., CVC4, MathSAT, Yices, Z3)
+
+- Efficient procedure for equality
+
+* Congruence closure + Heuristic instantiation
+
+- Heuristic instantiation: adds instances of lemmas to local context.
+
+- Simple and effective (used by many SMT solvers).
+
+- "Context as a black board".
+
+- *Indexing*.
+
+- Avoids many technical issues.
+
+* Congruence closure and dependent functions
+
+- Equality type
+#+BEGIN_SRC lean
+variables A : Type
+variables a b : A
+
+a = b
+-- is notation for
+eq A a b
+#+END_SRC
+
+- Congruence closure is easy for non-dependent functions.
+
+#+BEGIN_SRC lean
+lemma congr {A B : Type} {f g : A → B} {a b : A} :
+      f = g → a = b → f a = g b
+#+END_SRC
+
+- Dependent functions
+
+#+BEGIN_SRC lean
+variables (A : Type) (B : A → Type) (f : Π a : A, B a)
+variables (a b : A)
+
+-- The following equality is not type correct
+check f a = f b
+check f a : B a
+check f b : B b
+#+END_SRC
+
+* Casts
+
+- Cast operation
+#+BEGIN_SRC lean
+variables (e : a = b) (t : B a)
+check e ▸ t
+-- e ▸ t : B b
+#+END_SRC
+
+#+BEGIN_SRC lean
+lemma dcongr {A : Type} {B : A → Type} {f g : Π a : A, B a} {a b : A}
+             (e₁ : f = g) (e₂ : a = b) : e₂ ▸ (f a) = g b
+#+END_SRC
+
+* Heterogeneous equality
+
+#+BEGIN_SRC lean
+variables A B : Type
+variables a : A
+variables b : B
+
+a == b
+-- is notation for
+heq A a B b
+#+END_SRC
+
+#+BEGIN_SRC lean
+lemma dcongr {A : Type} {B : A → Type} {f g : Π a : A, B a} {a b : A}
+             (e₁ : f = g) (e₂ : a = b) : f a == g b
+#+END_SRC
+
+- Heterogeneous to Homogeneous
+
+#+BEGIN_SRC lean
+variables A : Type
+variables a b : A
+a == b → a = b
+-- We need UIP, K-axiom or proof irrelevance
+#+END_SRC
+
+* Congruence for heterogeneous equality
+
+- Next problem: following lemma is not provable without assuming another axiom.
+
+#+BEGIN_SRC lean
+lemma hcongr {A A' : Type} {B : A → Type} {B' : A' → Type}
+             {f : Π a : A, B a}
+             {g : Π a : A', B' a}
+             {a : A} {b : A'} :
+             f == g → a == b → f a == g b
+#+END_SRC
+
+* Congruence for heterogeneous equality
+
+- BUT, the following family of lemmas is
+
+#+BEGIN_SRC lean
+lemma hcongr_n
+      {A₁ : Type}
+      {A₂ : A₁ → Type}
+      ...
+      (f g: Π a_1 ... a_n, B a_1 ... a_n) :
+      f = g → a_1 == b_1 → ... → a_n == b_n →
+      f a_1 ... a_n == f b_1 ... b_n
+#+END_SRC
+
+* Example : Vectors
+
+- Induction + Congruence closure + Heuristic instantiation is
+  already quite useful.
+
+#+BEGIN_SRC lean
+inductive vector (A : Type) : nat → Type :=
+| nil {} : vector A zero
+| cons   : Π {n}, A → vector A n → vector A (succ n)
+
+definition append : Π {n m : nat}, vector A n → vector A m → vector A (n + m)
+| 0        m []     w := w
+| (succ n) m (a::v) w := a :: (append v w)
+
+notation ⟨ a ⟩ := cast (by blast) a
+
+definition reverse : Π {n : nat}, vector A n → vector A n
+| 0     []        := []
+| (succ n) (x :: xs) := ⟨ reverse xs ++ [x] ⟩
+
+theorem reverse_reverse : ∀ {n : nat} (v : vector A n),
+            reverse (reverse v) = v :=
+by blast
+
+theorem reverse_append : ∀ {n m : nat} (v : vector A n) (w : vector A m),
+        reverse (append v w) == append (reverse w) (reverse v) :=
+by blast
+#+END_SRC
+
+* Example : Vectors
+
+- In the =reverse_append= theorem, we reach the following proof state
+#+BEGIN_SRC lean
+(A : Type) (n₁ n₂ : ℕ) (x₁ x₂ : A) (v₁ : vector A n₁) (v₂ : vector A n₂)
+(IH : rev (app v₁ (x₂::v₂)) == app (rev (x₂::v₂)) (rev v₁))
+⊢ rev (app (x₁::v₁) (x₂::v₂)) == app (rev (x₂::v₂)) (rev (x₁::v₁))
+#+END_SRC
+
+- Given basic lemmas about how to push =app= and =rev= in over =cons=, a lemma stating the associativity of =app=, and a few basic lemmas about natural numbers, our congruence closure procedure together with the e-matcher can solve this goal. Once the e-matcher establishes the following ground facts:
+#+BEGIN_SRC lean
+H₁ : rev (x₁::v₁) == app (rev v₁) (x₁::nil)
+H₂ : app (x₁::v₁) (x₂::v₂) == x₁::(app v₁ (x₂::v₂))
+H₃ : rev (x₁::(app v₁ (x₂::v₂))) == app (rev (app v₁ (x₂::v₂))) (x₁::nil)
+H₄ : app (app (rev (x₂::v₂)) (rev v₁)) (x₁::nil) ==
+     app (rev (x₂::v₂)) (app (rev v₁) (x₁::nil))
+#+END_SRC
+
+
+* Congruence closure and proof relevance
+
+- In HoTT mode (proof relevant), the previous solution doesn't work.
+- No general solution so far.
+- The basic idea is the same: *generate custom congruence lemmas*.
+- We can handle many *special cases*.
+- Examples:
+   - Indices are h-Sets (nat is a hSet).
+   - Parameters that are mere propositions (h-Props) can be ignored.
+
+* Future work
+
+  - More automation
+  - Efficient evaluator
+  - Code generator
+  - Unification hints
+  - Simpler tactic framework
+  - Quotation
+  - Better libraries (ongoing work)
+
+* Thank you
+
+  - Website: http://leanprover.github.io/
+  - Source code: https://github.com/leanprover/lean
+  - Theorem proving in Lean: https://leanprover.github.io/tutorial/index.html
