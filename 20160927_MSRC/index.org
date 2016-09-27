@@ -1,0 +1,439 @@
+#+Title: The Lean Theorem Prover @@html:<br>@@ and @@html:<br>@@ Automation
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]]
+#+Date:  MSR Cambridge, 2016/09/27 @@html:<br>@@ http://leanprover.github.io
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* The Lean Theorem Prover Team
+
+- Jeremy Avigad (CMU)
+- Rob Lewis (CMU),
+- Sebastian Ullrich (CMU),
+- Gabriel Ebner (CMU),
+- Floris van Doorn (CMU),
+- Daniel Selsam (Stanford),
+- Jared Roesch (University of Washington)
+
+* Many thanks to
+
+- Soonho Kong
+- Cody Roux
+- Georges Gonthier
+- Grant Passmore
+- Nikhil Swamy
+- Joe Hendrix
+- Assia Mahboubi
+- Bas Spitters
+- Steve Awodey
+- Ulrik Buchholtz
+- Tom Ball
+- Parikshit Khanna
+- Haitao Zhang
+
+* Introduction: *Lean*
+
+- New *open source* theorem prover
+- Platform for
+  - *Software* verification & development
+  - Formalized *mathematics*
+  - *Education* (mathematics, logic, computer science)
+  - *Synthesis* (proofs & programs)
+- de Bruijn's Principle: *small trusted kernel*
+  - [[https://github.com/leanprover/tc][reference type checker]] in Haskell
+- Expressive logic
+- Meta-programming: *extend/customize* Lean using Lean
+- Partial constructions: automation fills the "holes"
+- Backend for other systems
+  - [[https://github.com/GaloisInc/lean-haskell-bindings][Haskell API for Lean]] developed by Joe Hendrix
+
+* Main Goal
+
+*Lean aims to bring two worlds together*
+
+- An interactive theorem prover with powerful automation
+
+- An automated reasoning tool that
+  - produces (detailed) proofs,
+  - has a rich language,
+  - can be used interactively, and
+  - is built on a verified mathematical library
+
+- *Proof stability*
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework1.png]]
+
+
+* Architecture
+
+#+attr_html: :height 600px
+[[./img/framework2.png]]
+
+
+* Past
+
+- Lean has been used to formalize basic data-structures (lists, finite sets, bags, etc),
+  real numbers, abstract algebra, analysis, homotopy type theory, and category theory.
+
+- The standard library (50k lines), HoTT library (40k lines)
+
+- Lean has been used to teach courses at CMU
+  - [[http://leanprover.github.io/tutorial][Interactive theory proving course]] at CMU
+  - [[https://leanprover.github.io/logic_and_proof/][Introduction to Logic course]] at CMU
+
+* Present
+
+- *New version* (=lean3= branch) being developed.
+
+- *Meta-programming*: extend/customize Lean using Lean.
+
+- New elaboration engine
+  - New type inference
+  - New type class resolution procedure.
+  - Unification hints.
+  - New recursive equation compiler.
+
+- More general inductive datatypes (Daniel Selsam).
+
+- Text book: "Programming in Lean" (Jeremy Avigad).
+
+- Flexible resolution prover implemented in Lean (Gabriel Ebner).
+
+- C++ code generation (Jared Roesch).
+
+* Lean by Examples
+
+  #+BEGIN_SRC lean
+  universe variables u v
+  variables {A : Type u} {B : Type v}
+
+  def append : list A → list A → list A
+  | []       l := l
+  | (h :: s) t := h :: (append s t)
+
+  def map (f : A → B) : list A → list B
+  | []       := []
+  | (a :: l) := f a :: map l
+
+  def join : list (list A) → list A
+  | []        := []
+  | (l :: ls) := append l (join ls)
+  #+END_SRC
+
+* Dependent pattern matching
+
+  #+BEGIN_SRC lean
+  def map (f : A → B → C) : Π {n}, vector A n → vector B n → vector C n
+  | 0     nil     nil     := nil
+  | (n+1) (a::va) (b::vb) := f a b :: map va vb
+  #+END_SRC
+
+* Type classes
+
+  #+BEGIN_SRC lean
+  class has_sizeof (A : Type u) :=
+  (sizeof : A → nat)
+
+  variables {A : Type u} {B : Type v}
+
+  def sizeof [has_sizeof A] : A → nat
+
+  instance : has_sizeof nat := ⟨λ a : nat, a⟩
+  -- ⟨...⟩ is the anonymous constructor
+
+  instance [has_sizeof A] [has_sizeof B] : has_sizeof (prod A B) :=
+  ⟨λ p, match p with
+        | (a, b) := sizeof a + sizeof b + 1
+        end⟩
+
+  instance [has_sizeof A] [has_sizeof B] : has_sizeof (sum A B) :=
+  ⟨λ s, match s with
+        | inl a := sizeof a + 1
+        | inr b := sizeof b + 1
+        end⟩
+
+  vm_eval sizeof (10, 20)
+  -- 31
+  #+END_SRC
+
+* Type classes
+
+  #+BEGIN_SRC lean
+  class inhabited (A : Type u) := (default : A)
+
+  class inductive decidable (p : Prop)
+  | is_false : ¬p → decidable
+  | is_true :  p → decidable
+
+  class has_one (A : Type u) := (one : A)
+  class has_add (A : Type u) := (add : A → A → A)
+  class has_mul (A : Type u) := (mul : A → A → A)
+
+  class semigroup (A : Type) extends has_mul A :=
+  (mul_assoc : ∀ a b c : A, a * b * c = a * (b * c))
+
+  class monoid (A : Type) extends semigroup A, has_one A :=
+  (one_mul : ∀ a : A, 1 * a = a) (mul_one : ∀ a : A, a * 1 = a)
+
+  class functor (F : Type u → Type v) :=
+  (map : Π {A B : Type u}, (A → B) → F A → F B)
+
+  class monad (M : Type u → Type v) extends functor M :=
+  (ret  : Π {A : Type u}, A → M A)
+  (bind : Π {A B : Type u}, M A → (A → M B) → M B)
+  #+END_SRC
+
+* Coercions as type classes
+
+  #+BEGIN_SRC lean
+  class has_coe (A : Type u) (B : Type v) :=
+  (coe : A → B)
+
+  instance coe_bool_to_Prop : has_coe bool Prop :=
+  ⟨λ b, b = tt⟩
+
+  structure subtype {A : Type u} (p : A → Prop) :=
+  (elt_of : A) (has_property : p elt_of)
+
+  instance coe_subtype {A : Type u} {p : A → Prop} : has_coe (subtype p) A :=
+  ⟨λ s : subtype, elt_of s⟩
+
+  def below (n : nat) : nat → Prop :=
+  λ i, i < n
+
+  def f {n : nat} (v : subtype (below n)) : nat :=
+  v + 1
+--^ Coercion used here
+  #+END_SRC
+
+* Meta-programming
+
+- *Extending Lean in Lean*
+
+  #+BEGIN_SRC lean
+  inductive expr
+  | var         : unsigned → expr
+  | sort        : level → expr
+  | const       : name → list level → expr
+  | app         : expr → expr → expr
+  ...
+
+  meta constant tactic_state : Type
+
+  inductive tactic_result (A : Type)
+  | success   : A → tactic_state → tactic_result
+  | exception : (unit → format) → tactic_state → tactic_result
+
+  meta def tactic (A : Type) :=
+  tactic_state → tactic_result A
+
+  meta instance : monad tactic := ...
+
+  meta constant infer_type : expr → tactic expr
+  meta constant subst      : expr → tactic unit
+  meta constant exact      : expr → tactic unit
+
+  meta def apply : expr → tactic unit := ...
+  #+END_SRC
+
+* Meta-programming
+
+  #+BEGIN_SRC lean
+  meta definition expr_of_nat : nat → tactic expr
+  | 0 := to_expr `(0)
+  | 1 := to_expr `(1)
+  | n :=
+    do r ← expr_of_nat (n / 2),
+    if n % 2 = 0
+    then to_expr `(bit0 %%r)
+    else to_expr `(bit1 %%r)
+
+  run_command
+    do r ← expr_of_nat 10,
+       trace r
+    -- bit0 (bit1 (bit0 one))
+  #+END_SRC
+
+* Meta-programming (decidable equality)
+
+- Building an equality predicate for each new type is very tedious.
+
+  #+BEGIN_SRC lean
+  def decidable_eq (A : Type u) :=
+  ∀ (a b : A), decidable (a = b)
+
+  instance nat_dec_eq : decidable_eq ℕ
+  | zero     zero     := is_true rfl
+  | (succ x) zero     := is_false (λ h, nat.no_confusion h)
+  | zero     (succ y) := is_false (λ h, nat.no_confusion h)
+  | (succ x) (succ y) :=
+      match nat_dec_eq x y with
+      | is_true xeqy  := is_true (xeqy ▸ eq.refl (succ x))
+      | is_false xney := is_false (λ h, nat.no_confusion h (λ xeqy, absurd xeqy xney))
+      end
+  #+END_SRC
+
+- We implemented a [[https://github.com/leanprover/lean/blob/lean3/library/init/meta/mk_dec_eq_instance.lean][tactic]] in Lean (< 100 lines) that creates these instances automatically.
+
+  #+BEGIN_SRC lean
+  variables {A : Type u} {B : Type v}
+
+  instance {p : A → Prop} [decidable_eq A] : decidable_eq (subtype p) :=
+  by mk_dec_eq_instance
+
+  instance [decidable_eq A] : decidable_eq (list A) :=
+  by mk_dec_eq_instance
+
+  instance [decidable_eq A] [decidable_eq B] : decidable_eq (sum A B) :=
+  by mk_dec_eq_instance
+  #+END_SRC
+
+* Meta-programming (examples)
+
+- [[https://github.com/gebner/resolution.lean][Resolution prover]] (Gabriel Ebner)
+
+  #+BEGIN_SRC lean
+  structure resolution_prover_state :=
+  (active : rb_map name active_cls)
+  (passive : rb_map name cls)
+  (newly_derived : list cls)
+  (prec : list expr)
+  (age : nat)
+
+  meta def resolution_prover :=
+  stateT resolution_prover_state tactic
+  #+END_SRC
+
+- Isabelle's [[https://github.com/avigad/auto][auto]] tactic (Jeremy Avigad)
+
+* Unification hints
+
+  #+BEGIN_SRC lean
+  structure unification_constraint :=
+  {A : Type u} (lhs : A) (rhs : A)
+
+  infix `=?=`:50 := unification_constraint.mk
+
+  structure unification_hint :=
+  (pattern     : unification_constraint)
+  (constraints : list unification_constraint)
+  #+END_SRC
+
+- Example
+
+  #+BEGIN_SRC lean
+  structure S :=
+  (carrier : Type) (op : carrier → carrier)
+
+  def nat_S : S :=
+  { carrier := nat, op := succ }
+
+  def op {s : S} (a : s~>carrier) : s~>carrier :=
+  s~>op a
+
+  vm_eval op 1
+  -- Need to solve unification constraint
+  -- (?s)~>carrier =?= nat
+
+  @[unify] def hint (s : S) : unification_hint :=
+  { pattern := s~>carrier =?= nat, constraints := [s =?= nat_S] }
+
+  vm_eval op 1
+  -- 2
+  #+END_SRC
+
+* More general inductive types
+
+- Daniel Selsam.
+
+- Supporting more general inductive datatypes without increasing the trusted code base.
+
+- Simplifies the translation F* => Lean.
+
+- Example: user writes
+  #+BEGIN_SRC lean
+  inductive tree (A : Type u)
+  | leaf : A → tree
+  | node : list tree → tree
+  #+END_SRC
+
+- First step: eliminate nested recursion
+  #+BEGIN_SRC lean
+  mutual tree, tree_list (A : Type u)
+  with tree
+  | leaf : A → tree
+  | node : tree_list → tree
+  with tree_list
+  | nil  : tree_list
+  | cons : tree → tree_list → tree
+  #+END_SRC
+
+- Bijection between =list (tree A)= and =tree_list A= is automatically generated.
+  It is used by the equation compiler.
+
+* More general inductive types
+
+- Second step: eliminate mutual recursion
+
+  #+BEGIN_SRC lean
+  mutual tree_core (A : Type u) : bool → tree
+  | leaf : A → tree ff
+  | node : tree tt → tree ff
+  | nil  : tree tt
+  | cons : tree ff → tree tt → tree ff
+  #+END_SRC
+
+- Simplified the Lean2 kernel: it is not neccessary to support mutual inductive datatypes.
+
+- Prevent nontrivial bugs in the positivity checker.
+
+* Work in progress
+
+- [[https://github.com/jroesch/lean/tree/lean3-cg-clean][C++ code generation]] (Jared Roesch - UW)
+
+- Many of the compilation steps are shared with the bytecode interpreter.
+
+- Application 1: efficient tactics
+  - Write tactic/automation in Lean
+  - Generate C++ code
+  - Build shared library and dynamically link with Lean executable
+
+- Application 2: low-level hacking
+  - Verified file system
+  - [[https://github.com/jroesch/lean/blob/lean3-cg-clean/library/system/ffi.lean][Foreign function interface]]
+
+- Porting the standard library to Lean3.
+
+- Automatically generated elimination principles for recursive functions.
+
+* Future work
+
+- AC rewriting
+
+- *SMT-like automation*
+  - Main challenge: dependent types
+  - Daniel Selsam and I have developed a congruence closure procedure and E-matching
+    for dependent type theory (IJCAR 2016).
+
+- Extending the parser using Lean
+  - Parser monad
+  - Target application: DSL development
+
+- Extending the pretty printer using Lean
+  - Target application: DSL development
+
+* Thank you
+
+  - Website: http://leanprover.github.io/
+  - Source code: https://github.com/leanprover/lean
+  - Theorem proving in Lean: https://leanprover.github.io/tutorial/index.html
