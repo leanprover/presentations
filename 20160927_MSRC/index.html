@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>The Lean Theorem Prover <br> and <br> Automation</title>
+<meta name="author" content="((link (:type http :path //leodemoura.github.io :raw-link http://leodemoura.github.io :application nil :search-option nil :begin 1 :end 72 :contents-begin 32 :contents-end 70 :post-blank 0 :parent #0) Leonardo de Moura (Microsoft Research)))"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/theme/soonho.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '//leanprover.github.io/presentations/reveal.js-3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+<script type="text/javascript">MathJax.Hub.Config({"HTML-CSS": {scale: 80 }})</script>
+<script src="//cdn.jsdelivr.net/webcomponentsjs/0.7.20/webcomponents.min.js"></script>
+<link rel="import" href="./juicy-ace-editor.html">
+<link rel="stylesheet" href="../css/code.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1 id='title-name'>The Lean Theorem Prover <br> and <br> Automation</h1>
+<h2 id='author-list'><a href="http://leodemoura.github.io/">Leonardo de Moura (Microsoft Research)</a></h2>
+<h2 id='date'>MSR Cambridge, 2016/09/27 <br> <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></h2>
+</section>
+
+<section>
+<section id="slide-orgheadline1">
+<h2 id="orgheadline1">The Lean Theorem Prover Team</h2>
+<ul>
+<li>Jeremy Avigad (CMU)</li>
+<li>Rob Lewis (CMU),</li>
+<li>Sebastian Ullrich (CMU),</li>
+<li>Gabriel Ebner (CMU),</li>
+<li>Floris van Doorn (CMU),</li>
+<li>Daniel Selsam (Stanford),</li>
+<li>Jared Roesch (University of Washington)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h2 id="orgheadline2">Many thanks to</h2>
+<ul>
+<li>Soonho Kong</li>
+<li>Cody Roux</li>
+<li>Georges Gonthier</li>
+<li>Grant Passmore</li>
+<li>Nikhil Swamy</li>
+<li>Joe Hendrix</li>
+<li>Assia Mahboubi</li>
+<li>Bas Spitters</li>
+<li>Steve Awodey</li>
+<li>Ulrik Buchholtz</li>
+<li>Tom Ball</li>
+<li>Parikshit Khanna</li>
+<li>Haitao Zhang</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline3">
+<h2 id="orgheadline3">Introduction: <b>Lean</b></h2>
+<ul>
+<li>New <b>open source</b> theorem prover</li>
+<li>Platform for
+<ul>
+<li><b>Software</b> verification &amp; development</li>
+<li>Formalized <b>mathematics</b></li>
+<li><b>Education</b> (mathematics, logic, computer science)</li>
+<li><b>Synthesis</b> (proofs &amp; programs)</li>
+
+</ul></li>
+<li>de Bruijn's Principle: <b>small trusted kernel</b>
+<ul>
+<li><a href="https://github.com/leanprover/tc">reference type checker</a> in Haskell</li>
+
+</ul></li>
+<li>Expressive logic</li>
+<li>Meta-programming: <b>extend/customize</b> Lean using Lean</li>
+<li>Partial constructions: automation fills the "holes"</li>
+<li>Backend for other systems
+<ul>
+<li><a href="https://github.com/GaloisInc/lean-haskell-bindings">Haskell API for Lean</a> developed by Joe Hendrix</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h2 id="orgheadline4">Main Goal</h2>
+<p>
+<b>Lean aims to bring two worlds together</b>
+</p>
+
+<ul>
+<li>An interactive theorem prover with powerful automation</li>
+
+<li>An automated reasoning tool that
+<ul>
+<li>produces (detailed) proofs,</li>
+<li>has a rich language,</li>
+<li>can be used interactively, and</li>
+<li>is built on a verified mathematical library</li>
+
+</ul></li>
+
+<li><b>Proof stability</b></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline5">
+<h2 id="orgheadline5">Architecture</h2>
+
+<div class="figure">
+<p><img src="./img/framework1.png" alt="framework1.png" height="600px" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h2 id="orgheadline6">Architecture</h2>
+
+<div class="figure">
+<p><img src="./img/framework2.png" alt="framework2.png" height="600px" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h2 id="orgheadline7">Past</h2>
+<ul>
+<li>Lean has been used to formalize basic data-structures (lists, finite sets, bags, etc),
+real numbers, abstract algebra, analysis, homotopy type theory, and category theory.</li>
+
+<li>The standard library (50k lines), HoTT library (40k lines)</li>
+
+<li>Lean has been used to teach courses at CMU
+<ul>
+<li><a href="http://leanprover.github.io/tutorial">Interactive theory proving course</a> at CMU</li>
+<li><a href="https://leanprover.github.io/logic_and_proof/">Introduction to Logic course</a> at CMU</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline8">
+<h2 id="orgheadline8">Present</h2>
+<ul>
+<li><b>New version</b> (<code>lean3</code> branch) being developed.</li>
+
+<li><b>Meta-programming</b>: extend/customize Lean using Lean.</li>
+
+<li>New elaboration engine
+<ul>
+<li>New type inference</li>
+<li>New type class resolution procedure.</li>
+<li>Unification hints.</li>
+<li>New recursive equation compiler.</li>
+
+</ul></li>
+
+<li>More general inductive datatypes (Daniel Selsam).</li>
+
+<li>Text book: "Programming in Lean" (Jeremy Avigad).</li>
+
+<li>Flexible resolution prover implemented in Lean (Gabriel Ebner).</li>
+
+<li>C++ code generation (Jared Roesch).</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h2 id="orgheadline9">Lean by Examples</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">universe variables u v
+variables {A : Type u} {B : Type v}
+
+def append : list A → list A → list A
+| []       l := l
+| (h :: s) t := h :: (append s t)
+
+def map (f : A → B) : list A → list B
+| []       := []
+| (a :: l) := f a :: map l
+
+def join : list (list A) → list A
+| []        := []
+| (l :: ls) := append l (join ls)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline10">
+<h2 id="orgheadline10">Dependent pattern matching</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def map (f : A → B → C) : Π {n}, vector A n → vector B n → vector C n
+| 0     nil     nil     := nil
+| (n+1) (a::va) (b::vb) := f a b :: map va vb
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h2 id="orgheadline11">Type classes</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class has_sizeof (A : Type u) :=
+(sizeof : A → nat)
+
+variables {A : Type u} {B : Type v}
+
+def sizeof [has_sizeof A] : A → nat
+
+instance : has_sizeof nat := ⟨λ a : nat, a⟩
+-- ⟨...⟩ is the anonymous constructor
+
+instance [has_sizeof A] [has_sizeof B] : has_sizeof (prod A B) :=
+⟨λ p, match p with
+      | (a, b) := sizeof a + sizeof b + 1
+      end⟩
+
+instance [has_sizeof A] [has_sizeof B] : has_sizeof (sum A B) :=
+⟨λ s, match s with
+      | inl a := sizeof a + 1
+      | inr b := sizeof b + 1
+      end⟩
+
+vm_eval sizeof (10, 20)
+-- 31
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h2 id="orgheadline12">Type classes</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class inhabited (A : Type u) := (default : A)
+
+class inductive decidable (p : Prop)
+| is_false : ¬p → decidable
+| is_true :  p → decidable
+
+class has_one (A : Type u) := (one : A)
+class has_add (A : Type u) := (add : A → A → A)
+class has_mul (A : Type u) := (mul : A → A → A)
+
+class semigroup (A : Type) extends has_mul A :=
+(mul_assoc : ∀ a b c : A, a * b * c = a * (b * c))
+
+class monoid (A : Type) extends semigroup A, has_one A :=
+(one_mul : ∀ a : A, 1 * a = a) (mul_one : ∀ a : A, a * 1 = a)
+
+class functor (F : Type u → Type v) :=
+(map : Π {A B : Type u}, (A → B) → F A → F B)
+
+class monad (M : Type u → Type v) extends functor M :=
+(ret  : Π {A : Type u}, A → M A)
+(bind : Π {A B : Type u}, M A → (A → M B) → M B)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline13">
+<h2 id="orgheadline13">Coercions as type classes</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">  class has_coe (A : Type u) (B : Type v) :=
+  (coe : A → B)
+
+  instance coe_bool_to_Prop : has_coe bool Prop :=
+  ⟨λ b, b = tt⟩
+
+  structure subtype {A : Type u} (p : A → Prop) :=
+  (elt_of : A) (has_property : p elt_of)
+
+  instance coe_subtype {A : Type u} {p : A → Prop} : has_coe (subtype p) A :=
+  ⟨λ s : subtype, elt_of s⟩
+
+  def below (n : nat) : nat → Prop :=
+  λ i, i &lt; n
+
+  def f {n : nat} (v : subtype (below n)) : nat :=
+  v + 1
+--^ Coercion used here
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h2 id="orgheadline14">Meta-programming</h2>
+<ul>
+<li><p>
+<b>Extending Lean in Lean</b>
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive expr
+| var         : unsigned → expr
+| sort        : level → expr
+| const       : name → list level → expr
+| app         : expr → expr → expr
+...
+
+meta constant tactic_state : Type
+
+inductive tactic_result (A : Type)
+| success   : A → tactic_state → tactic_result
+| exception : (unit → format) → tactic_state → tactic_result
+
+meta def tactic (A : Type) :=
+tactic_state → tactic_result A
+
+meta instance : monad tactic := ...
+
+meta constant infer_type : expr → tactic expr
+meta constant subst      : expr → tactic unit
+meta constant exact      : expr → tactic unit
+
+meta def apply : expr → tactic unit := ...
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline15">
+<h2 id="orgheadline15">Meta-programming</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta definition expr_of_nat : nat → tactic expr
+| 0 := to_expr `(0)
+| 1 := to_expr `(1)
+| n :=
+  do r ← expr_of_nat (n / 2),
+  if n % 2 = 0
+  then to_expr `(bit0 %%r)
+  else to_expr `(bit1 %%r)
+
+run_command
+  do r ← expr_of_nat 10,
+     trace r
+  -- bit0 (bit1 (bit0 one))
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline16">
+<h2 id="orgheadline16">Meta-programming (decidable equality)</h2>
+<ul>
+<li><p>
+Building an equality predicate for each new type is very tedious.
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def decidable_eq (A : Type u) :=
+∀ (a b : A), decidable (a = b)
+
+instance nat_dec_eq : decidable_eq ℕ
+| zero     zero     := is_true rfl
+| (succ x) zero     := is_false (λ h, nat.no_confusion h)
+| zero     (succ y) := is_false (λ h, nat.no_confusion h)
+| (succ x) (succ y) :=
+    match nat_dec_eq x y with
+    | is_true xeqy  := is_true (xeqy ▸ eq.refl (succ x))
+    | is_false xney := is_false (λ h, nat.no_confusion h (λ xeqy, absurd xeqy xney))
+    end
+</juicy-ace-editor>
+</div></li>
+
+<li><p>
+We implemented a <a href="https://github.com/leanprover/lean/blob/lean3/library/init/meta/mk_dec_eq_instance.lean">tactic</a> in Lean (&lt; 100 lines) that creates these instances automatically.
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">variables {A : Type u} {B : Type v}
+
+instance {p : A → Prop} [decidable_eq A] : decidable_eq (subtype p) :=
+by mk_dec_eq_instance
+
+instance [decidable_eq A] : decidable_eq (list A) :=
+by mk_dec_eq_instance
+
+instance [decidable_eq A] [decidable_eq B] : decidable_eq (sum A B) :=
+by mk_dec_eq_instance
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline17">
+<h2 id="orgheadline17">Meta-programming (examples)</h2>
+<ul>
+<li><p>
+<a href="https://github.com/gebner/resolution.lean">Resolution prover</a> (Gabriel Ebner)
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">structure resolution_prover_state :=
+(active : rb_map name active_cls)
+(passive : rb_map name cls)
+(newly_derived : list cls)
+(prec : list expr)
+(age : nat)
+
+meta def resolution_prover :=
+stateT resolution_prover_state tactic
+</juicy-ace-editor>
+</div></li>
+
+<li>Isabelle's <a href="https://github.com/avigad/auto">auto</a> tactic (Jeremy Avigad)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline18">
+<h2 id="orgheadline18">Unification hints</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">structure unification_constraint :=
+{A : Type u} (lhs : A) (rhs : A)
+
+infix `=?=`:50 := unification_constraint.mk
+
+structure unification_hint :=
+(pattern     : unification_constraint)
+(constraints : list unification_constraint)
+</juicy-ace-editor>
+</div>
+
+<ul>
+<li><p>
+Example
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">structure S :=
+(carrier : Type) (op : carrier → carrier)
+
+def nat_S : S :=
+{ carrier := nat, op := succ }
+
+def op {s : S} (a : s~&gt;carrier) : s~&gt;carrier :=
+s~&gt;op a
+
+vm_eval op 1
+-- Need to solve unification constraint
+-- (?s)~&gt;carrier =?= nat
+
+@[unify] def hint (s : S) : unification_hint :=
+{ pattern := s~&gt;carrier =?= nat, constraints := [s =?= nat_S] }
+
+vm_eval op 1
+-- 2
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h2 id="orgheadline19">More general inductive types</h2>
+<ul>
+<li>Daniel Selsam.</li>
+
+<li>Supporting more general inductive datatypes without increasing the trusted code base.</li>
+
+<li>Simplifies the translation F* =&gt; Lean.</li>
+
+<li><p>
+Example: user writes
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive tree (A : Type u)
+| leaf : A → tree
+| node : list tree → tree
+</juicy-ace-editor>
+</div></li>
+
+<li><p>
+First step: eliminate nested recursion
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">mutual tree, tree_list (A : Type u)
+with tree
+| leaf : A → tree
+| node : tree_list → tree
+with tree_list
+| nil  : tree_list
+| cons : tree → tree_list → tree
+</juicy-ace-editor>
+</div></li>
+
+<li>Bijection between <code>list (tree A)</code> and <code>tree_list A</code> is automatically generated.
+It is used by the equation compiler.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline20">
+<h2 id="orgheadline20">More general inductive types</h2>
+<ul>
+<li><p>
+Second step: eliminate mutual recursion
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">mutual tree_core (A : Type u) : bool → tree
+| leaf : A → tree ff
+| node : tree tt → tree ff
+| nil  : tree tt
+| cons : tree ff → tree tt → tree ff
+</juicy-ace-editor>
+</div></li>
+
+<li>Simplified the Lean2 kernel: it is not neccessary to support mutual inductive datatypes.</li>
+
+<li>Prevent nontrivial bugs in the positivity checker.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline21">
+<h2 id="orgheadline21">Work in progress</h2>
+<ul>
+<li><a href="https://github.com/jroesch/lean/tree/lean3-cg-clean">C++ code generation</a> (Jared Roesch - UW)</li>
+
+<li>Many of the compilation steps are shared with the bytecode interpreter.</li>
+
+<li>Application 1: efficient tactics
+<ul>
+<li>Write tactic/automation in Lean</li>
+<li>Generate C++ code</li>
+<li>Build shared library and dynamically link with Lean executable</li>
+
+</ul></li>
+
+<li>Application 2: low-level hacking
+<ul>
+<li>Verified file system</li>
+<li><a href="https://github.com/jroesch/lean/blob/lean3-cg-clean/library/system/ffi.lean">Foreign function interface</a></li>
+
+</ul></li>
+
+<li>Porting the standard library to Lean3.</li>
+
+<li>Automatically generated elimination principles for recursive functions.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline22">
+<h2 id="orgheadline22">Future work</h2>
+<ul>
+<li>AC rewriting</li>
+
+<li><b>SMT-like automation</b>
+<ul>
+<li>Main challenge: dependent types</li>
+<li>Daniel Selsam and I have developed a congruence closure procedure and E-matching
+for dependent type theory (IJCAR 2016).</li>
+
+</ul></li>
+
+<li>Extending the parser using Lean
+<ul>
+<li>Parser monad</li>
+<li>Target application: DSL development</li>
+
+</ul></li>
+
+<li>Extending the pretty printer using Lean
+<ul>
+<li>Target application: DSL development</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline23">
+<h2 id="orgheadline23">Thank you</h2>
+<ul>
+<li>Website: <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></li>
+<li>Source code: <a href="https://github.com/leanprover/lean">https://github.com/leanprover/lean</a></li>
+<li>Theorem proving in Lean: <a href="https://leanprover.github.io/tutorial/index.html">https://leanprover.github.io/tutorial/index.html</a></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-59814431-1', 'auto');ga('send', 'pageview');</script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/head.min.js"></script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: false,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+width: 1000,
+height: 800,
+minScale: 1.00,
+maxScale: 1.00,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
