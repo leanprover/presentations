@@ -230,6 +230,13 @@ check Type 1    -- Type 1 : Type 2
 check Type 2    -- Type 2 : Type 3
 #+END_SRC
 
+- Universe polymorphic definitions
+
+#+BEGIN_SRC lean
+def {u} f (A B : Type u) : A → B → A :=
+λ (a : A) (b : B), a
+#+END_SRC
+
 * The Logical Framework
 
 - We "believe" in recursion
