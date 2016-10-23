@@ -33,7 +33,7 @@
 <section id="sec-title-slide">
 <h1 id='title-name'>The Lean Theorem Prover</h1>
 <h2 id='author-list'><a href="http://leodemoura.github.io/">Leonardo de Moura (Microsoft Research)</a></h2>
-<h2 id='date'>ICTAC, Taipei, 2016/10/24 <br> <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></h2>
+<h2 id='date'>ICTAC, Taipei, 2016/10/24 <br> <a href="http://leanprover.github.io/">http://leanprover.github.io/</a> <br><br> <a href="http://leanprover.github.io/presentations/20161024_ICTAC">http://leanprover.github.io/presentations/20161024_ICTAC</a></h2>
 </section>
 
 <section>
@@ -41,8 +41,8 @@
 <h2 id="orgheadline1">The Lean Theorem Prover Team</h2>
 <ul>
 <li>Jeremy Avigad (CMU),</li>
-<li>Gabriel Ebner (CMU),</li>
-<li>Sebastian Ullrich (CMU),</li>
+<li>Gabriel Ebner (Vienna University of Technology),</li>
+<li>Sebastian Ullrich (Karlsruhe Institute of Technology),</li>
 <li>Floris van Doorn (CMU),</li>
 <li>Rob Lewis (CMU),</li>
 <li>Jared Roesch (UW),</li>
@@ -366,7 +366,139 @@ we can use it to construct proofs by induction</li>
 </section>
 <section>
 <section id="slide-orgheadline17">
-<h2 id="orgheadline17">Agnostic Mathematics</h2>
+<h2 id="orgheadline17">The Logical Framework</h2>
+<ul>
+<li>Dependent lambda calculus</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">Type                      -- Sort
+nat                       -- Constant
+λ x : nat, x              -- Lambda abstraction
+vector bool 3             -- Application
+Π (n : nat), vector nat n -- Function Space
+nat → bool                -- Function Space (no dependency)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline18">
+<h2 id="orgheadline18">The Logical Framework</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def f (A B : Type) : A → B → A :=
+λ (a : A) (b : B), a
+
+def f (A B : Type) (a : A) (b : B) : A :=
+a
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h2 id="orgheadline19">The Logical Framework</h2>
+<ul>
+<li>Hierarchy of universes</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">check Prop      -- Prop   : Type 1
+check Type 0    -- Prop   : Type 1
+check Type      -- Type 1 : Type 2
+check Type 1    -- Type 1 : Type 2
+check Type 2    -- Type 2 : Type 3
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline20">
+<h2 id="orgheadline20">The Logical Framework</h2>
+<ul>
+<li>We "believe" in recursion</li>
+<li><p>
+Inductive families
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive vector (A : Type) : nat → Type
+| nil  : vector zero
+| cons : Π {n : nat}, A → vector n → vector (succ n)
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline21">
+<h2 id="orgheadline21">Inductive families</h2>
+<ul>
+<li><p>
+Given
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive nat : Type
+| zero : nat
+| succ : nat → nat
+</juicy-ace-editor>
+</div></li>
+<li><p>
+Produces
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">-- 1) A new type
+check nat
+-- 2) Introduction rules (aka Constructors)
+check nat.zero
+check nat.succ
+-- 3) Eliminator (aka Recursor)
+check @nat.rec
+-- 4) Computational rule
+variable C : nat → Type
+variable Hz : C nat.zero
+variable Hs : Π (a : nat), C a → C (nat.succ a)
+eval nat.rec Hz Hs nat.zero     -- Hz
+variable  a : nat
+eval nat.rec Hz Hs (nat.succ a) -- Hs a (nat.rec Hz Hs a)
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline22">
+<h2 id="orgheadline22">Inductive families</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def pred (a : nat) : nat :=
+nat.rec nat.zero (λ (a₁ : nat) (r : nat), a₁) a
+
+eval pred (nat.succ (nat.succ nat.zero))
+-- =&gt; nat.succ nat.zero
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline23">
+<h2 id="orgheadline23">Agnostic Mathematics</h2>
 <ul>
 <li>Support <b>constructive</b> and <b>classical</b> mathematics</li>
 <li>Computation is important to mathematics</li>
@@ -385,8 +517,8 @@ we can use it to construct proofs by induction</li>
 </section>
 </section>
 <section>
-<section id="slide-orgheadline18">
-<h2 id="orgheadline18">Noncomputable Keyword</h2>
+<section id="slide-orgheadline24">
+<h2 id="orgheadline24">Noncomputable Keyword</h2>
 <ul>
 <li>Our conjecture: most users don't care about constructivism, what they really care about is whether code can be generated or not for a definition.</li>
 
@@ -414,8 +546,8 @@ else 0
 </section>
 </section>
 <section>
-<section id="slide-orgheadline19">
-<h2 id="orgheadline19"><b>Freedom to trust</b></h2>
+<section id="slide-orgheadline25">
+<h2 id="orgheadline25"><b>Freedom to trust</b></h2>
 <ul>
 <li>Option: type check imported modules.</li>
 
@@ -430,8 +562,8 @@ else 0
 </section>
 </section>
 <section>
-<section id="slide-orgheadline20">
-<h2 id="orgheadline20">Freedom to trust</h2>
+<section id="slide-orgheadline26">
+<h2 id="orgheadline26">Freedom to trust</h2>
 <ul>
 <li><b>Relaxed</b> mode
 
@@ -461,8 +593,8 @@ else 0
 </section>
 </section>
 <section>
-<section id="slide-orgheadline21">
-<h2 id="orgheadline21">Exporting libraries</h2>
+<section id="slide-orgheadline27">
+<h2 id="orgheadline27">Exporting libraries</h2>
 <ul>
 <li>All Lean files can be exported in a very simple format</li>
 
@@ -481,8 +613,8 @@ else 0
 </section>
 </section>
 <section>
-<section id="slide-orgheadline22">
-<h2 id="orgheadline22">Recursive equations</h2>
+<section id="slide-orgheadline28">
+<h2 id="orgheadline28">Recursive equations</h2>
 <ul>
 <li><b>Recursors</b> are <b>inconvenient</b> to use.</li>
 <li>Compiler from <b>recursive equations</b> to <b>recursors</b>.</li>
@@ -510,8 +642,8 @@ rfl
 </section>
 </section>
 <section>
-<section id="slide-orgheadline23">
-<h2 id="orgheadline23">Recursive equations</h2>
+<section id="slide-orgheadline29">
+<h2 id="orgheadline29">Recursive equations</h2>
 <ul>
 <li>Dependent pattern matching</li>
 
@@ -534,8 +666,8 @@ def zip {A B : Type}
 </section>
 </section>
 <section>
-<section id="slide-orgheadline24">
-<h2 id="orgheadline24">Human-readable proofs</h2>
+<section id="slide-orgheadline30">
+<h2 id="orgheadline30">Human-readable proofs</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">variables {ob₁ ob₂ : Type u} {C : category ob₁}
@@ -555,8 +687,8 @@ natural_transformation.mk
 </section>
 </section>
 <section>
-<section id="slide-orgheadline25">
-<h2 id="orgheadline25">Type classes</h2>
+<section id="slide-orgheadline31">
+<h2 id="orgheadline31">Type classes</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class has_sizeof (A : Type u) :=
@@ -588,8 +720,8 @@ vm_eval sizeof (10, 20)
 </section>
 </section>
 <section>
-<section id="slide-orgheadline26">
-<h2 id="orgheadline26">Type classes</h2>
+<section id="slide-orgheadline32">
+<h2 id="orgheadline32">Type classes</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class inhabited (A : Type u) := (default : A)
@@ -620,8 +752,8 @@ class monad (M : Type u → Type v) extends functor M :=
 </section>
 </section>
 <section>
-<section id="slide-orgheadline27">
-<h2 id="orgheadline27">Coercions as type classes</h2>
+<section id="slide-orgheadline33">
+<h2 id="orgheadline33">Coercions as type classes</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">  class has_coe (A : Type u) (B : Type v) :=
@@ -648,8 +780,8 @@ class monad (M : Type u → Type v) extends functor M :=
 </section>
 </section>
 <section>
-<section id="slide-orgheadline28">
-<h2 id="orgheadline28">Meta-programming</h2>
+<section id="slide-orgheadline34">
+<h2 id="orgheadline34">Meta-programming</h2>
 <ul>
 <li><b>Extending Lean in Lean</b></li>
 <li><p>
@@ -689,8 +821,8 @@ meta def apply : expr → tactic unit := ...
 </section>
 </section>
 <section>
-<section id="slide-orgheadline29">
-<h2 id="orgheadline29">Meta-programming</h2>
+<section id="slide-orgheadline35">
+<h2 id="orgheadline35">Meta-programming</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta definition expr_of_nat : nat → tactic expr
@@ -712,8 +844,8 @@ run_command
 </section>
 </section>
 <section>
-<section id="slide-orgheadline30">
-<h2 id="orgheadline30">Meta-programming (decidable equality)</h2>
+<section id="slide-orgheadline36">
+<h2 id="orgheadline36">Meta-programming (decidable equality)</h2>
 <ul>
 <li><p>
 Building an equality predicate for each new type is very tedious.
@@ -760,8 +892,8 @@ by mk_dec_eq_instance
 </section>
 </section>
 <section>
-<section id="slide-orgheadline31">
-<h2 id="orgheadline31">Meta-programming (examples)</h2>
+<section id="slide-orgheadline37">
+<h2 id="orgheadline37">Meta-programming (examples)</h2>
 <ul>
 <li><p>
 <a href="https://github.com/gebner/resolution.lean">Resolution prover</a> (Gabriel Ebner)
@@ -788,8 +920,8 @@ stateT resolution_prover_state tactic
 </section>
 </section>
 <section>
-<section id="slide-orgheadline32">
-<h2 id="orgheadline32">Simplifier</h2>
+<section id="slide-orgheadline38">
+<h2 id="orgheadline38">Simplifier</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta def simp : tactic unit :=
@@ -808,8 +940,8 @@ by simp
 </section>
 </section>
 <section>
-<section id="slide-orgheadline33">
-<h2 id="orgheadline33">Structures</h2>
+<section id="slide-orgheadline39">
+<h2 id="orgheadline39">Structures</h2>
 <ul>
 <li>Simplifier applies generic lemmas.</li>
 
@@ -841,8 +973,8 @@ ring_mul_zero x
 </section>
 </section>
 <section>
-<section id="slide-orgheadline34">
-<h2 id="orgheadline34">Structures (additional instances)</h2>
+<section id="slide-orgheadline40">
+<h2 id="orgheadline40">Structures (additional instances)</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">universe variable u
@@ -865,8 +997,8 @@ instance ring_to_semiring [s : ring A] : semiring A :=
 </section>
 </section>
 <section>
-<section id="slide-orgheadline35">
-<h2 id="orgheadline35">Diamonds</h2>
+<section id="slide-orgheadline41">
+<h2 id="orgheadline41">Diamonds</h2>
 
 <div class="figure">
 <p><img src="./img/alg.png" alt="alg.png" height="350px" />
@@ -888,8 +1020,8 @@ theorem right_comm [s : comm_semigroup A] (a b c : A) :
 </section>
 </section>
 <section>
-<section id="slide-orgheadline36">
-<h2 id="orgheadline36">Diamonds (cont.)</h2>
+<section id="slide-orgheadline42">
+<h2 id="orgheadline42">Diamonds (cont.)</h2>
 <ul>
 <li>Now, given a <code>[g : comm_group A]</code>, suppose we want to apply the theorem <code>right_comm</code> to the following term as a rewriting rule.</li>
 
@@ -917,8 +1049,8 @@ variables x y z : A
 </section>
 </section>
 <section>
-<section id="slide-orgheadline37">
-<h2 id="orgheadline37">Diamonds (cont.)</h2>
+<section id="slide-orgheadline43">
+<h2 id="orgheadline43">Diamonds (cont.)</h2>
 <ul>
 <li>When we expand the notation, we can see the "hidden" complexity. For simplicity, let's assume we are trying to match <code>?a * ?b</code> with <code>x * y</code></li>
 
@@ -943,8 +1075,8 @@ variables x y z : A
 </section>
 </section>
 <section>
-<section id="slide-orgheadline38">
-<h2 id="orgheadline38">Work in progress</h2>
+<section id="slide-orgheadline44">
+<h2 id="orgheadline44">Work in progress</h2>
 <ul>
 <li><a href="https://github.com/jroesch/lean/tree/lean3-cg-clean">C++ code generation</a> (Jared Roesch - UW)</li>
 
@@ -972,8 +1104,8 @@ variables x y z : A
 </section>
 </section>
 <section>
-<section id="slide-orgheadline39">
-<h2 id="orgheadline39">Work in progress</h2>
+<section id="slide-orgheadline45">
+<h2 id="orgheadline45">Work in progress</h2>
 <ul>
 <li>AC rewriting</li>
 
@@ -1003,8 +1135,8 @@ for dependent type theory (IJCAR 2016).</li>
 </section>
 </section>
 <section>
-<section id="slide-orgheadline40">
-<h2 id="orgheadline40">Thank you</h2>
+<section id="slide-orgheadline46">
+<h2 id="orgheadline46">Thank you</h2>
 <ul>
 <li>Website: <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></li>
 <li>Source code: <a href="https://github.com/leanprover/lean">https://github.com/leanprover/lean</a></li>
