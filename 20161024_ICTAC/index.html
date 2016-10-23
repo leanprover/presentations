@@ -418,6 +418,18 @@ check Type 2    -- Type 2 : Type 3
 </juicy-ace-editor>
 </div>
 
+<ul>
+<li>Universe polymorphic definitions</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def {u} f (A B : Type u) : A → B → A :=
+λ (a : A) (b : B), a
+</juicy-ace-editor>
+</div>
+
 </section>
 </section>
 <section>
