@@ -1,6 +1,6 @@
 #+Title: The Lean Theorem Prover
 #+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]]
-#+Date:  ICTAC, Taipei, 2016/10/24 @@html:<br>@@ http://leanprover.github.io
+#+Date:  ICTAC, Taipei, 2016/10/24 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20161024_ICTAC
 #+REVEAL_HLEVEL: 3
 #+REVEAL_TRANS: none
 #+REVEAL_THEME: soonho
@@ -15,8 +15,8 @@
 * The Lean Theorem Prover Team
 
 - Jeremy Avigad (CMU),
-- Gabriel Ebner (CMU),
-- Sebastian Ullrich (CMU),
+- Gabriel Ebner (Vienna University of Technology),
+- Sebastian Ullrich (Karlsruhe Institute of Technology),
 - Floris van Doorn (CMU),
 - Rob Lewis (CMU),
 - Jared Roesch (UW),
@@ -194,6 +194,88 @@
 
 #+attr_html: :height 600px
 [[./img/framework2.png]]
+
+* The Logical Framework
+
+- Dependent lambda calculus
+
+#+BEGIN_SRC lean
+Type                      -- Sort
+nat                       -- Constant
+λ x : nat, x              -- Lambda abstraction
+vector bool 3             -- Application
+Π (n : nat), vector nat n -- Function Space
+nat → bool                -- Function Space (no dependency)
+#+END_SRC
+
+* The Logical Framework
+
+#+BEGIN_SRC lean
+def f (A B : Type) : A → B → A :=
+λ (a : A) (b : B), a
+
+def f (A B : Type) (a : A) (b : B) : A :=
+a
+#+END_SRC
+
+* The Logical Framework
+
+- Hierarchy of universes
+
+#+BEGIN_SRC lean
+check Prop      -- Prop   : Type 1
+check Type 0    -- Prop   : Type 1
+check Type      -- Type 1 : Type 2
+check Type 1    -- Type 1 : Type 2
+check Type 2    -- Type 2 : Type 3
+#+END_SRC
+
+* The Logical Framework
+
+- We "believe" in recursion
+- Inductive families
+
+  #+BEGIN_SRC lean
+  inductive vector (A : Type) : nat → Type
+  | nil  : vector zero
+  | cons : Π {n : nat}, A → vector n → vector (succ n)
+  #+END_SRC
+
+* Inductive families
+
+- Given
+  #+BEGIN_SRC lean
+  inductive nat : Type
+  | zero : nat
+  | succ : nat → nat
+  #+END_SRC
+- Produces
+  #+BEGIN_SRC lean
+  -- 1) A new type
+  check nat
+  -- 2) Introduction rules (aka Constructors)
+  check nat.zero
+  check nat.succ
+  -- 3) Eliminator (aka Recursor)
+  check @nat.rec
+  -- 4) Computational rule
+  variable C : nat → Type
+  variable Hz : C nat.zero
+  variable Hs : Π (a : nat), C a → C (nat.succ a)
+  eval nat.rec Hz Hs nat.zero     -- Hz
+  variable  a : nat
+  eval nat.rec Hz Hs (nat.succ a) -- Hs a (nat.rec Hz Hs a)
+  #+END_SRC
+
+* Inductive families
+
+  #+BEGIN_SRC lean
+  def pred (a : nat) : nat :=
+  nat.rec nat.zero (λ (a₁ : nat) (r : nat), a₁) a
+
+  eval pred (nat.succ (nat.succ nat.zero))
+  -- => nat.succ nat.zero
+  #+END_SRC
 
 * Agnostic Mathematics
 
