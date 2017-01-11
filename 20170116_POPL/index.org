@@ -1,0 +1,584 @@
+#+Title: The Lean Theorem Prover
+#+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ [[https://gebner.org/][Gabriel Ebner (Vienna University of Technology)]], @@html:<br>@@ [[http://jroesch.github.io/][Jared Roesch (University of Washington)]], @@html:<br>@@ [[https://kha.github.io/][Sebastian Ullrich (Karlsruhe Institute of Technology)]]
+#+Date:  [[http://popl17.sigplan.org/event/popl-2017-tutorials-lean][POPL]] Paris, 2017/01/16 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20170116_POPL
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+
+* The Lean Theorem Prover Team
+
+- The presenters, and
+- Jeremy Avigad (CMU),
+- Floris van Doorn (CMU),
+- Rob Lewis (CMU),
+- Daniel Selsam (Stanford)
+
+* Many thanks to
+
+- Soonho Kong (former member)
+- Jakob von Raumer (former member)
+- Cody Roux
+- Georges Gonthier
+- Grant Passmore
+- Nikhil Swamy
+- Assia Mahboubi
+- Bas Spitters
+- Steve Awodey
+- Ulrik Buchholtz
+- Tom Ball
+- Parikshit Khanna
+- Haitao Zhang
+
+* Introduction: *Lean*
+
+- New *open source* theorem prover
+- Platform for
+  - *Software* verification & development
+  - Formalized *mathematics*
+  - *Education* (mathematics, logic, computer science)
+  - *Synthesis* (proofs & programs)
+- de Bruijn's Principle: *small trusted kernel*
+- Expressive logic
+- Partial constructions: automation fills the "holes"
+- *Meta-programming*
+
+* Introduction: *Lean*
+
+- [[https://leanprover.github.io/introduction_to_lean][Introduction to Lean]]
+- [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- [[https://leanprover.github.io/programming_in_lean][Programming in Lean]]
+- [[https://leanprover.github.io/logic_and_proof/][Introduction to Logic course]] at CMU
+- It is an ongoing and *long long term* effort
+
+* Main Goal
+
+*Lean aims to bring two worlds together*
+
+- An interactive theorem prover with powerful automation
+- An automated reasoning tool that
+  - produces (detailed) proofs,
+  - has a rich language,
+  - can be used interactively, and
+  - is built on a verified mathematical library
+
+* What is new?
+
+- *Meta-programming*
+  - Extend Lean using Lean
+  - Access Lean internal using Lean
+  - Proof/Program synthesizes
+
+- Poweful *elaboration engine* that can handle
+  - Higher-order unification
+  - Type classes
+  - Coercions
+  - Ad-hoc polymorphism (aka overloading)
+
+#+BEGIN_QUOTE
+  "By relieving the brain of all unnecessary work, a good notation sets it free to
+   concentrate on more advanced problems, and in effect increases the mental power of the
+   race."
+       -- A. N. Whitehead
+#+END_QUOTE
+
+* What is new?
+
+- Small *trusted* kernel
+  - It does *not* contain
+    - Termination checker
+    - Fixpoint operators
+    - Pattern matching
+    - Module management
+
+- [[https://github.com/leanprover/tc][Reference type checker]] in Haskell
+
+- *Multi-core support*
+  - Compile files in parallel
+  - Compile theorems in parallel
+
+* What is new?
+
+- Simple json-based protocol for communicating with editors
+  - Fast *incremental compilation*
+  - Auto completion
+  - Type information
+  - Goal visualization
+  - We already support: *Emacs* and *VS Code*.
+
+- *Profiler* and *Debugger* for Lean code
+  - We can use them to profile/debug tactics since tactics
+    are written in Lean.
+
+* What is new?
+
+- *Bytecode* and *C++* generator
+
+- Many efficient native tactics implemented in C++
+  - Simplifier
+  - Congruence closure
+  - E-matching
+  - Ground AC completion
+  - (more coming soon)
+
+* Agenda
+
+- Lean language
+
+- Tactics and Meta-programming
+
+- SMT-based tactics
+
+- Superposition prover
+
+- Profiler and Debugger
+
+- Native code generator
+
+* The Logical Framework
+
+- Dependent lambda calculus
+
+#+BEGIN_SRC lean
+Type                      -- Sort
+nat                       -- Constant
+λ x : nat, x              -- Lambda abstraction
+vector bool 3             -- Application
+Π (n : nat), vector nat n -- Function Space
+nat → bool                -- Function Space (no dependency)
+#+END_SRC
+
+* The Logical Framework
+
+#+BEGIN_SRC lean
+def f (α β : Type) : α → β → α :=
+λ (a : α) (b : β), a
+
+def f (α β : Type) (a : α) (b : β) : α :=
+a
+#+END_SRC
+
+* The Logical Framework
+
+- Hierarchy of universes
+
+#+BEGIN_SRC lean
+check Prop      -- Prop   : Type 1
+check Type 0    -- Prop   : Type 1
+check Type      -- Type 1 : Type 2
+check Type 1    -- Type 1 : Type 2
+check Type 2    -- Type 2 : Type 3
+#+END_SRC
+
+- Universe polymorphic definitions
+
+#+BEGIN_SRC lean
+def {u} f (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+universe variable u
+
+def g (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+def h (α β : Type _) : α → β → α :=
+λ (a : α) (b : β), a
+
+def r (α β : Type*) : α → β → α :=
+λ (a : α) (b : β), a
+#+END_SRC
+
+* Implicit arguments
+
+#+BEGIN_SRC lean
+def f (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+check f nat nat 0 1
+check f _ _ 0 1
+
+def g {α β : Type u} : α → β → α :=
+λ (a : α) (b : β), a
+
+check g 0 1
+set_option pp.implicit true
+check g 0 1
+#+END_SRC
+
+* The Logical Framework
+
+- Chapter 7, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+
+- Inductive families
+  #+BEGIN_SRC lean
+  inductive nat
+  | zero : nat
+  | succ : nat → nat
+
+  inductive tree (α : Type u)
+  | leaf : α → tree
+  | node : tree → tree → tree
+
+  inductive vector (α : Type) : nat → Type
+  | nil  : vector zero
+  | cons : Π {n : nat}, α → vector n → vector (succ n)
+  #+END_SRC
+
+* Inductive families
+
+#+attr_html: :height 600px
+[[./img/inductive.png]]
+
+* Inductive families
+
+  #+BEGIN_SRC lean
+  def pred (a : nat) : nat :=
+  nat.rec nat.zero (λ (a₁ : nat) (r : nat), a₁) a
+
+  eval pred (nat.succ (nat.succ nat.zero))
+  -- => nat.succ nat.zero
+  #+END_SRC
+
+* Recursive equations
+
+  - Chapter 8, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+
+  - *Recursors* are *inconvenient* to use.
+  - Compiler from *recursive equations* to *recursors*.
+  - Two compilation strategies: *structural* and *well-founded* recursion
+  - *Well-founded* recursion is coming soon.
+
+  #+BEGIN_SRC lean
+  def fib : nat → nat
+  | 0     := 1
+  | 1     := 1
+  | (a+2) := fib (a+1) + fib a
+
+  example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+  rfl
+  #+END_SRC
+
+  - Proofs by induction
+
+* Recursive equations
+
+
+#+attr_html: :height 600px
+[[./img/compilation.png]]
+
+* Recursive equations
+
+ - Dependent pattern matching
+
+#+BEGIN_SRC lean
+def map {α β δ : Type} (f : α → β → δ)
+        : Π {n : nat}, vector α n → vector β n → vector δ n
+| nil     nil     := nil
+| (a::va) (b::vb) := f a b :: map va vb
+
+def zip {α β : Type}
+        : Π {n}, vector α n → vector β n → vector (α × β) n
+| nil nil         := nil
+| (a::va) (b::vb) := (a, b) :: zip va vb
+#+END_SRC
+
+* Structures
+
+- Chapter 9, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+
+#+BEGIN_SRC lean
+structure point (α : Type) :=
+mk :: (x : α) (y : α)
+
+eval point.x (point.mk 10 20)
+eval point.y (point.mk 10 20)
+
+eval {point . x := 10, y := 20}
+
+def p : point nat :=
+{x := 10, y := 20}
+
+eval p^.x
+eval p^.y
+eval {p with x := 0}
+
+structure point3d (α : Type) extends point α :=
+(z : α)
+#+END_SRC
+
+* Type classes
+
+- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+
+#+BEGIN_SRC lean
+class has_sizeof (α : Type u) :=
+(sizeof : α → nat)
+
+variables {α : Type u} {β : Type v}
+
+def sizeof [has_sizeof α] : α → nat
+
+instance : has_sizeof nat := ⟨λ a : nat, a⟩
+-- ⟨...⟩ is the anonymous constructor
+
+instance [has_sizeof α] [has_sizeof β] : has_sizeof (prod α β) :=
+⟨λ p, match p with
+      | (a, b) := sizeof a + sizeof b + 1
+      end⟩
+
+instance [has_sizeof α] [has_sizeof β] : has_sizeof (sum α β) :=
+⟨λ s, match s with
+      | inl a := sizeof a + 1
+      | inr b := sizeof b + 1
+      end⟩
+
+vm_eval sizeof (10, 20)
+-- 31
+#+END_SRC
+
+* Type classes
+
+  #+BEGIN_SRC lean
+  class inhabited (α : Type u) := (default : α)
+
+  class inductive decidable (p : Prop)
+  | is_false : ¬p → decidable
+  | is_true :  p → decidable
+
+  class has_one (α : Type u) := (one : α)
+  class has_add (α : Type u) := (add : α → α → α)
+  class has_mul (α : Type u) := (mul : α → α → α)
+
+  class semigroup (α : Type) extends has_mul α :=
+  (mul_assoc : ∀ a b c : α, a * b * c = a * (b * c))
+
+  class monoid (α : Type) extends semigroup α, has_one α :=
+  (one_mul : ∀ a : α, 1 * a = a) (mul_one : ∀ a : α, a * 1 = a)
+
+  class functor (f : Type u → Type v) :=
+  (map : Π {α β : Type u}, (α → β) → f α → f β)
+
+  class monad (m : Type u → Type v) extends functor m :=
+  (ret  : Π {α : Type u}, α → M α)
+  (bind : Π {α β : Type u}, M α → (α → m β) → m β)
+  #+END_SRC
+
+* Coercions as type classes
+
+- Chapter 11, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+
+#+BEGIN_SRC lean
+class has_coe (α : Type u) (β : Type v) :=
+(coe : α → β)
+
+instance coe_bool_to_Prop : has_coe bool Prop :=
+⟨λ b, b = tt⟩
+
+structure subtype {α : Type u} (p : α → Prop) :=
+(elt_of : α) (has_property : p elt_of)
+
+instance coe_sub {α : Type u} {p : α → Prop} : has_coe (subtype p) α :=
+⟨λ s : subtype, elt_of s⟩
+
+def below (n : nat) : nat → Prop :=
+λ i, i < n
+
+def f {n : nat} (v : subtype (below n)) : nat :=
+   v + 1
+--^ Coercion used here
+#+END_SRC
+
+* Meta-programming
+
+- *Extending Lean in Lean*
+
+- Lean has an efficient bytecode interpreter
+
+  #+BEGIN_SRC lean
+  inductive expr
+  | var         : unsigned → expr
+  | sort        : level → expr
+  | const       : name → list level → expr
+  | app         : expr → expr → expr
+  ...
+
+  meta constant tactic_state : Type
+
+  inductive tactic_result (α : Type)
+  | success   : α → tactic_state → tactic_result
+  | exception : (unit → format) → tactic_state → tactic_result
+
+  meta def tactic (α : Type) :=
+  tactic_state → tactic_result α
+
+  meta instance : monad tactic := ...
+
+  meta constant infer_type : expr → tactic expr
+  meta constant subst      : expr → tactic unit
+  meta constant exact      : expr → tactic unit
+
+  meta def apply : expr → tactic unit := ...
+  #+END_SRC
+
+* Meta-programming
+
+  #+BEGIN_SRC lean
+  meta definition expr_of_nat : nat → tactic expr
+  | 0 := to_expr `(0)
+  | 1 := to_expr `(1)
+  | n :=
+    do r ← expr_of_nat (n / 2),
+    if n % 2 = 0
+    then to_expr `(bit0 %%r)
+    else to_expr `(bit1 %%r)
+
+  run_command
+    do r ← expr_of_nat 10,
+       trace r
+    -- bit0 (bit1 (bit0 one))
+  #+END_SRC
+
+* Meta-programming (decidable equality)
+
+- Building an equality predicate for each new type is very tedious.
+
+  #+BEGIN_SRC lean
+  def decidable_eq (α : Type u) :=
+  ∀ (a b : α), decidable (a = b)
+
+  instance nat_dec_eq : decidable_eq ℕ
+  | zero     zero     := is_true rfl
+  | (succ x) zero     := is_false (λ h, nat.no_confusion h)
+  | zero     (succ y) := is_false (λ h, nat.no_confusion h)
+  | (succ x) (succ y) :=
+      match nat_dec_eq x y with
+      | is_true xeqy  := is_true (xeqy ▸ eq.refl (succ x))
+      | is_false xney := is_false (λ h, nat.no_confusion h (λ xeqy, absurd xeqy xney))
+      end
+  #+END_SRC
+
+* Meta-programming (decidable equality)
+
+- We implemented a [[https://github.com/leanprover/lean/blob/lean3/library/init/meta/mk_dec_eq_instance.lean][tactic]] in Lean (< 100 lines) that creates these instances automatically.
+
+  #+BEGIN_SRC lean
+  variables {α : Type u} {β : Type v}
+
+  instance {p : α → Prop} [decidable_eq α] : decidable_eq (subtype p) :=
+  by mk_dec_eq_instance
+
+  instance [decidable_eq α] : decidable_eq (list α) :=
+  by mk_dec_eq_instance
+
+  instance [decidable_eq α] [decidable_eq β] : decidable_eq (sum α β) :=
+  by mk_dec_eq_instance
+  #+END_SRC
+
+- Same idea can be used to generate: pretty printers, serializers, etc.
+
+* Backward Chaining
+
+- Demo
+
+* Simplifier
+
+- Demo
+
+* SMT tactics
+
+- Demo
+
+* IMP language
+
+- Demo
+
+* Separation Logic
+
+- Demo
+
+* Superposition prover
+
+- Implemented in Lean
+
+#+BEGIN_SRC lean
+structure resolution_prover_state :=
+(active : rb_map name active_cls)
+(passive : rb_map name cls)
+(newly_derived : list cls)
+(prec : list expr)
+(age : nat)
+
+meta def resolution_prover :=
+stateT resolution_prover_state tactic
+#+END_SRC
+
+- Demo
+
+* Profiler
+
+- Based on sampling
+
+- It takes snapshots of the VM stack every x ms (default: 10 ms)
+
+- Useful for finding performance bottlenecks in tactics
+
+- Demo
+
+* Debugger
+
+- We can monitor the VM execution.
+
+#+BEGIN_SRC lean
+meta constant get_env              : vm environment
+meta constant stack_size           : vm nat
+meta constant stack_obj            : nat → vm vm_obj
+...
+
+meta structure vm_monitor (s : Type) :=
+(init : s) (step : s → vm s)
+
+meta constant vm_monitor.register : name → command
+#+END_SRC
+
+* Debugger
+
+- Lean comes with a simple CLI debugger implemented in Lean
+  on top of the VM monitor API.
+
+#+BEGIN_SRC lean
+namespace debugger
+
+meta def step_fn (s : state) : vm state :=
+do s ← prune_active_bps s,
+   ...
+   else return s
+
+meta def monitor : vm_monitor state :=
+{ init := init_state, step := step_fn }
+end debugger
+
+run_command vm_monitor.register `debugger.monitor
+#+END_SRC
+
+* Native compiler
+
+- The C++ code generator is implemented in Lean.
+
+- Efficient tactics
+  - Write tactic/automation in Lean
+  - Generate C++ code
+  - Build shared library and dynamically link with Lean executable
+
+- Demo
+
+* Thank you
+
+- Website: http://leanprover.github.io/
+
+- Source code: https://github.com/leanprover/lean
