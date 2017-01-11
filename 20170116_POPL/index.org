@@ -371,7 +371,7 @@ vm_eval sizeof (10, 20)
 
 * Coercions as type classes
 
-- Chapter 11, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
 
 #+BEGIN_SRC lean
 class has_coe (α : Type u) (β : Type v) :=
