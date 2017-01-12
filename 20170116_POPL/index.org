@@ -495,21 +495,71 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 
 * Superposition prover
 
-- Implemented in Lean
+- Implemented 100% in Lean
+- 2200 lines of code
+ - including toy SAT solver
+- Complete for first-order logic with equality
+- Uses Lean expressions, unification, proofs
+
+* Superposition prover
+
+- Based on refutation of formulas in clause normal form (CNF)
 
 #+BEGIN_SRC lean
-structure resolution_prover_state :=
-(active : rb_map name active_cls)
-(passive : rb_map name cls)
-(newly_derived : list cls)
-(prec : list expr)
-(age : nat)
+p 3 → (∀x, p x → q (x+1)) → q 4
 
-meta def resolution_prover :=
-stateT resolution_prover_state tactic
+-- negated for refutation:
+¬(p 3 → (∀x, p x → q (x+1)) → q 4)
+
+-- in CNF:
+p 3 ∧ (∀x, ¬p x ∨ q (x+1)) ∧ ¬q 4
+
+-- super's trace output:
+[[p 3], [¬p ?m_1, q (?m_1 + 1)], [¬q 4]]
+#+END_SRC
+
+- Applies inferences until contradiction (empty clause)
+
+* Superposition prover 
+
+- Inferences (modulo unification)
+
+#+BEGIN_SRC lean
+-- resolution
+  [a, b] & [¬b, c]  ==>   [a, c]
+
+-- superposition ("rewriting with conditions")
+[a, t=s] & [b t, c] ==> [a, b s, c]
+#+END_SRC
+
+- and others
+
+* Superposition prover
+
+- State transformer of tactic monad
+
+#+BEGIN_SRC lean
+meta structure prover_state :=
+(active  : rb_map clause_id derived_clause)
+(passive : rb_map clause_id derived_clause)
+(prec : list expr)
+(sat_solver : cdcl.state)
+-- ...
+
+meta def prover := state_t prover_state tactic
 #+END_SRC
 
 - Demo
+
+* Superposition prover
+
+- Future work
+  - Performance
+  - Integration with simplification rules
+  - Integration with standard library
+  - Better clause representation
+  - Configurability
+  - "Leanhammer"
 
 * Profiler
 
