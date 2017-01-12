@@ -6,8 +6,7 @@ WATCHMAN_BIN ?= $(CWD)/watchman/bin/watchman
 TMPDIR := $(shell mktemp -d /tmp/lean-tutorial.XXXX)
 
 %.html: %.org .cask ../elisp/org-reveal-export.el
-	@if [ ! -f ~/.cask/bin/cask ]; then echo "Cask Not Found. Please do 'make install-cask' first"; exit 1; fi
-	$(EMACS_BIN) --no-site-file --no-site-lisp -q --batch -l ../elisp/org-reveal-export.el --visit $< -f org-reveal-export-to-html
+	$(CASK_BIN) emacs --no-site-file --no-site-lisp -q --batch -l ../elisp/org-reveal-export.el --visit $< -f org-reveal-export-to-html
 
 .cask: Cask
 	@EMACS=$(EMACS_BIN) $(CASK_BIN)
