@@ -383,9 +383,9 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 --^ Coercion used here
 #+END_SRC
 
-* Demo
+* Lean in Action
 
-- [[./intro/ex1.lean][Example]]
+- [[./intro/ex1.lean][Demo]]
 
 * Meta-programming
 
@@ -435,53 +435,51 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - The =by tac= instructs Lean to use =tac : tactic unit= to synthesize
   the missing term.
 
-- [[./meta/ex1.lean][Example]]
+- [[./meta/ex1.lean][Demo]]
 
-* Meta-programming (decidable equality)
+* Meta-programming
 
-- Building an equality predicate for each new type is very tedious.
+- [[./meta/has_to_string.lean][Generating a has_to_string instance for enumeration types]]
 
-  #+BEGIN_SRC lean
-  def decidable_eq (α : Type u) :=
-  ∀ (a b : α), decidable (a = b)
+* Interactive mode
 
-  instance nat_dec_eq : decidable_eq ℕ
-  | zero     zero     := is_true rfl
-  | (succ x) zero     := is_false (λ h, nat.no_confusion h)
-  | zero     (succ y) := is_false (λ h, nat.no_confusion h)
-  | (succ x) (succ y) :=
-      match nat_dec_eq x y with
-      | is_true xeqy  := is_true (xeqy ▸ eq.refl (succ x))
-      | is_false xney := is_false (λ h, nat.no_confusion h (λ xeqy, absurd xeqy xney))
-      end
-  #+END_SRC
+- Many users want to apply tactics interactively.
 
-* Meta-programming (decidable equality)
+- They want to observe intermediate =tactic_state='s.
 
-- We implemented a [[https://github.com/leanprover/lean/blob/lean3/library/init/meta/mk_dec_eq_instance.lean][tactic]] in Lean (< 100 lines) that creates these instances automatically.
+- They want to avoid quotations, and gloss over the distinction between object and meta expressions.
 
   #+BEGIN_SRC lean
-  variables {α : Type u} {β : Type v}
-
-  instance {p : α → Prop} [decidable_eq α] : decidable_eq (subtype p) :=
-  by mk_dec_eq_instance
-
-  instance [decidable_eq α] : decidable_eq (list α) :=
-  by mk_dec_eq_instance
-
-  instance [decidable_eq α] [decidable_eq β] : decidable_eq (sum α β) :=
-  by mk_dec_eq_instance
+  -- They want to write
+  exact eq.trans h₁ (eq.symm h₂)
+  -- instead of
+  to_expr `(eq.trans h₁ (eq.symm h₂)) >>= exact
+  -- or the following, assuming (exact : pexpr -> tactic unit)
+  exact `(eq.trans h₁ (eq.symm h₂))
   #+END_SRC
 
-- Same idea can be used to generate: pretty printers, serializers, etc.
+- Lean provides an "interactive mode" for applying tactics.
+
+- [[./meta/ex2.lean][Demo]]
 
 * Backward Chaining
 
-- Demo
+- [[./backchain/back.lean][back.lean]]: A simple Lean tactic for list membership goals
+  using backward chaining.
 
-* Simplifier
+- [[./backchain/back_trace.lean][back\_trace.lean]]: Add tracing to the previous tactic.
 
-- Demo
+- [[./backchain/back_inplace.lean][back\_inplace.lean]]: The same example implemeted
+  on top of the =apply= tactic.
+
+- [[./backchain/builtin.lean][builtin.lean]]: Same example using the builtin backward
+  chaining tactic.
+
+- [[./backchain/ematch.lean][ematch.lean]]: Same example using heuristic instantiation.
+  This is not backward chaining, but it is quite effective.
+
+- Later, we return to this example using the Lean superposition
+  theorem prover.
 
 * SMT tactics
 
