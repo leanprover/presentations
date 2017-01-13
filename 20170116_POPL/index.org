@@ -268,7 +268,6 @@ check g 0 1
 
 * Recursive equations
 
-
 #+attr_html: :height 600px
 [[./img/compilation.png]]
 
@@ -394,6 +393,10 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 --^ Coercion used here
 #+END_SRC
 
+* Demo
+
+- [[./intro/ex1.lean][Example]]
+
 * Meta-programming
 
 - *Extending Lean in Lean*
@@ -409,7 +412,16 @@ def f {n : nat} (v : subtype (below n)) : nat :=
   ...
 
   meta constant tactic_state : Type
+  #+END_SRC
 
+* Meta-programming
+
+#+attr_html: :height 600px
+[[./img/tactic_state.png]]
+
+* Meta-programming
+
+  #+BEGIN_SRC lean
   inductive tactic_result (α : Type)
   | success   : α → tactic_state → tactic_result
   | exception : (unit → format) → tactic_state → tactic_result
@@ -419,12 +431,26 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 
   meta instance : monad tactic := ...
 
-  meta constant infer_type : expr → tactic expr
-  meta constant subst      : expr → tactic unit
-  meta constant exact      : expr → tactic unit
+  meta constant infer_type    : expr  → tactic expr
+  meta constant subst         : expr  → tactic unit
+  meta constant exact         : expr  → tactic unit
+  meta constant local_context : expr  → tactic (list expr)
+  meta constant to_expr       : pexpr → tactic expr
 
   meta def apply : expr → tactic unit := ...
   #+END_SRC
+
+* Meta-programming
+
+- The =by tac= instructs Lean to use =tac : tactic unit= to synthesize
+  the term
+
+  #+BEGIN_SRC lean
+  example (a b c : nat) : a = c → a = b → a = c :=
+  by tac
+  #+END_SRC
+
+# - [[meta/ex1.lean][Example]]
 
 * Meta-programming
 
