@@ -656,8 +656,9 @@ run_command vm_monitor.register `debugger.monitor
 
 - Use C++ as high level assembler, makes code
   generation & linking with runtime easy
-- Initial prototype implemented in C++.
-- How to increase confidence & make easier to program?
+- Initial prototype was implemented in C++
+- How to increase confidence, make contributing
+  easy
 
 * Self Hosting
 
@@ -665,21 +666,26 @@ run_command vm_monitor.register `debugger.monitor
 - Share preprocess phases with the VM compiler
 - Transform from higher order dependently typed lambda
   calculus to C-like imperative language in A Normal Form.
-
 - Transform that language into C++, easily call runtime
   primitives.
 
-- Efficient tactics
-  - Write tactics & script low level automation in Lean
-  - Compile to native code, via C++
-  - Build shared library and dynamically link with Lean executable
+* Compiler Design
 
-- Run programs
+#+attr_html: :height 600px
+[[./img/backend_diagram.png]]
+
+* Efficient tactics
+  - Write tactics to script low level automation in Lean
+  - Accelerate tactics via compilation
+  - Build shared library per package dynamically load
+    at runtime
+
+* Execute programs
   - Write programs, verify properties & execute
   - No need to configure extraction
   - Future plans for user level extension
 
-- Future work
+* Future work
   - Allow users to implement refinements (like extraction, but safer)
   - Reason about refinment semantics
   - Formally verify compiler
