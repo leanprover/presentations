@@ -729,7 +729,7 @@ lean --compile hello.lean
 "Hello Lean!"
 #+END_SRC
 
-- Goal is to produce efficient native code give a Lean term
+- Goal is to produce efficient native code given a Lean term
 - Assign computational intepretations to programs outside the logic (i.e =io=)
 - Verify and execute programs with *no* friction
 
