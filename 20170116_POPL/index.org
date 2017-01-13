@@ -616,14 +616,44 @@ end debugger
 run_command vm_monitor.register `debugger.monitor
 #+END_SRC
 
-* Native compiler
+* Native Compiler
 
-- The C++ code generator is implemented in Lean.
+- Make Lean more useful for programming & proving
+- Produce effcient native code given a Lean term
+- Verify & execute programs out of the box
+
+* Native Compiler Design
+
+- Use C++ as high level assembler, makes code
+  generation & linking with runtime easy
+- Initial prototype implemented in C++.
+- How to increase confidence & make easier to program?
+
+* Self Hosting
+
+- Apply same idea, script Lean in Lean.
+- Share preprocess phases with the VM compiler
+- Transform from higher order dependently typed lambda
+  calculus to C-like imperative language in A Normal Form.
+
+- Transform that language into C++, easily call runtime
+  primitives.
 
 - Efficient tactics
-  - Write tactic/automation in Lean
-  - Generate C++ code
+  - Write tactics & script low level automation in Lean
+  - Compile to native code, via C++
   - Build shared library and dynamically link with Lean executable
+
+- Run programs
+  - Write programs, verify properties & execute
+  - No need to configure extraction
+  - Future plans for user level extension
+
+- Future work
+  - Allow users to implement refinements (like extraction, but safer)
+  - Reason about refinment semantics
+  - Formally verify compiler
+  - Given IR semantics, type checker & more
 
 - Demo
 
