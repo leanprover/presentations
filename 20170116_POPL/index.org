@@ -55,27 +55,29 @@
 - [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
 - [[https://leanprover.github.io/programming_in_lean][Programming in Lean]]
 - [[https://leanprover.github.io/logic_and_proof/][Introduction to Logic course]] at CMU
-- It is an ongoing and *long long term* effort
 
 * Main Goal
 
 *Lean aims to bring two worlds together*
 
 - An interactive theorem prover with powerful automation
+
 - An automated reasoning tool that
   - produces (detailed) proofs,
   - has a rich language,
   - can be used interactively, and
   - is built on a verified mathematical library
 
+- It is an ongoing and *long long term* effort
+
 * What is new?
 
 - *Meta-programming*
   - Extend Lean using Lean
-  - Access Lean internal using Lean
-  - Proof/Program synthesizes
+  - Access Lean internals using Lean
+  - Proof/Program synthesis
 
-- Poweful *elaboration engine* that can handle
+- Powerful *elaboration engine* that can handle
   - Higher-order unification
   - Type classes
   - Coercions
@@ -110,7 +112,7 @@
   - Auto completion
   - Type information
   - Goal visualization
-  - We already support: *Emacs* and *VS Code*.
+  - We already support: *Emacs*, *VS Code* and *ACE editor*
 
 - *Profiler* and *Debugger* for Lean code
   - We can use them to profile/debug tactics since tactics
@@ -490,6 +492,18 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - Later, we return to this example using the Lean superposition
   theorem prover.
 
+* Associative Commutative operators
+
+- [[./assoc/builtin_ac.lean][=builtin_ac.lean=]]: Lean has builtin support for associative commutative operators,
+  but this is not the point of this exercise.
+
+- [[./assoc/flat_assoc.lean][=flat_assoc.lean=]]: a tactic to "flat" nested applications of associative operators. This tactic
+  uses only basic primitives.
+
+- [[./assoc/flat_assoc_trace.lean][=flat_assoc_trace.lean=]]: tracing tactic execution.
+
+- [[./assoc/ac_by_simp.lean][=ac_by_simp.lean=]]: simplifier demo.
+
 * SMT tactic framework
 
 - It implements gadgets found in state-of-the-art *SMT solvers*
@@ -499,7 +513,7 @@ def f {n : nat} (v : subtype (below n)) : nat :=
   - AC
   - Arithmetic (coming soon)
 
-- =smt_goal= contains the state of the SMT solver for a particular goal.
+- =smt_goal= contains the state of the SMT "gadgets" for a particular goal.
 
 - "Attaching more state to =tactic_state=".
 
@@ -530,7 +544,18 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 
 * SMT interactive mode
 
-TODO
+  #+BEGIN_SRC lean
+  lemma app_assoc (l₁ l₂ l₃ : list α) : app (app l₁ l₂) l₃ = app l₁ (app l₂ l₃) :=
+  begin [smt]
+    induction l₁,
+    all_goals {eblast}
+  end
+  #+END_SRC
+
+
+* SMT tactic framework
+
+
 
 * Superposition prover
 
