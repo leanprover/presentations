@@ -1,6 +1,6 @@
 #+Title: The Lean Theorem Prover
-#+Author: [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ [[https://gebner.org/][Gabriel Ebner (Vienna University of Technology)]], @@html:<br>@@ [[http://jroesch.github.io/][Jared Roesch (University of Washington)]], @@html:<br>@@ [[https://kha.github.io/][Sebastian Ullrich (Karlsruhe Institute of Technology)]]
-#+Date:  [[http://popl17.sigplan.org/event/popl-2017-tutorials-lean][POPL]] Paris, 2017/01/16 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20170116_POPL
+#+Author: @@html:<small>@@ [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ [[https://gebner.org/][Gabriel Ebner (Vienna University of Technology)]], @@html:<br>@@ [[http://jroesch.github.io/][Jared Roesch (University of Washington)]], @@html:<br>@@ [[https://kha.github.io/][Sebastian Ullrich (Karlsruhe Institute of Technology)]] @@html:</small>@@
+#+Date:  @@html:<small>@@ [[http://popl17.sigplan.org/event/popl-2017-tutorials-lean][POPL]], Paris, 2017/01/16 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20170116_POPL @@html:</small>@@
 #+REVEAL_HLEVEL: 3
 #+REVEAL_TRANS: none
 #+REVEAL_THEME: soonho
@@ -235,16 +235,6 @@ check g 0 1
 #+attr_html: :height 600px
 [[./img/inductive.png]]
 
-* Inductive families
-
-  #+BEGIN_SRC lean
-  def pred (a : nat) : nat :=
-  nat.rec nat.zero (λ (a₁ : nat) (r : nat), a₁) a
-
-  eval pred (nat.succ (nat.succ nat.zero))
-  -- => nat.succ nat.zero
-  #+END_SRC
-
 * Recursive equations
 
   - Chapter 8, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
@@ -443,32 +433,9 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 * Meta-programming
 
 - The =by tac= instructs Lean to use =tac : tactic unit= to synthesize
-  the term
+  the missing term.
 
-  #+BEGIN_SRC lean
-  example (a b c : nat) : a = c → a = b → a = c :=
-  by tac
-  #+END_SRC
-
-# - [[meta/ex1.lean][Example]]
-
-* Meta-programming
-
-  #+BEGIN_SRC lean
-  meta definition expr_of_nat : nat → tactic expr
-  | 0 := to_expr `(0)
-  | 1 := to_expr `(1)
-  | n :=
-    do r ← expr_of_nat (n / 2),
-    if n % 2 = 0
-    then to_expr `(bit0 %%r)
-    else to_expr `(bit1 %%r)
-
-  run_command
-    do r ← expr_of_nat 10,
-       trace r
-    -- bit0 (bit1 (bit0 one))
-  #+END_SRC
+- [[./meta/ex1.lean][Example]]
 
 * Meta-programming (decidable equality)
 
@@ -603,8 +570,28 @@ run_command vm_monitor.register `debugger.monitor
 
 - Demo
 
+* Project suggestions
+
+- Write tactics for automating your favorite project.
+
+- [[https://www.haskell.org/hoogle/][Hoogle]] for Lean
+  - The Lean API provides functions/tactics for traversing the environment (=environment.fold=),
+    type inference (=tactic.infer_type=), unification (=tactic.unify=), etc.
+
+- Documentation generator. The tactic =tactic.doc_string= retrieves the doc string for a given
+  declaration.
+
+- *Goal visualizer*. VS Code can render complex graphics and elaborated formatting, it is built on top of Chromium.
+  The Lean goal pretty printer can be customized, we just need to define our instance for =has_to_format tactic_state=.
+
+- *Type based auto completion*. The idea is to filter the list of candidates using the expected type.
+
+- Debugger interface based on the VM monitoring API. Consider using the [[https://code.visualstudio.com/Docs/extensions/example-debuggers][VS Code generic debug UI]].
+
 * Thank you
 
 - Website: http://leanprover.github.io/
 
 - Source code: https://github.com/leanprover/lean
+
+- Lean discussion group: https://groups.google.com/forum/#!forum/lean-user
