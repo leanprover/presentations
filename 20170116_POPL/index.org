@@ -448,7 +448,7 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 
 * Meta-programming
 
-- [[./meta/has_to_string.lean][Generating a has_to_string instance for enumeration types]]
+- [[./meta/has_to_string.lean][Generating a =has_to_string= instance for enumeration types]]
 
 * Interactive mode
 
@@ -476,9 +476,9 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - [[./backchain/back.lean][back.lean]]: A simple Lean tactic for list membership goals
   using backward chaining.
 
-- [[./backchain/back_trace.lean][back\_trace.lean]]: Add tracing to the previous tactic.
+- [[./backchain/back_trace.lean][=back_trace.lean=]]: Add tracing to the previous tactic.
 
-- [[./backchain/back_inplace.lean][back\_inplace.lean]]: The same example implemeted
+- [[./backchain/back_inplace.lean][=back_inplace.lean=]]: The same example implemeted
   on top of the =apply= tactic.
 
 - [[./backchain/builtin.lean][builtin.lean]]: Same example using the builtin backward
@@ -499,7 +499,7 @@ def f {n : nat} (v : subtype (below n)) : nat :=
   - AC
   - Arithmetic (coming soon)
 
-- =smt\_goal= contains the state of the SMT solver for a particular goal.
+- =smt_goal= contains the state of the SMT solver for a particular goal.
 
 - "Attaching more state to =tactic_state=".
 
@@ -516,17 +516,17 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - We provide Lean APIs for traversing equivalence classes, inspecting instances and
   lemmas used for E-matching, etc.
 
-* Lifting =tactic ==> smt\_tactic=
+* Lifting =tactic ==> smt_tactic=
 
 - Any =tactic= that does not change the set of hypotheses can be easily lifted
-  because they do not invalidate the =smt\_state=.
+  because they do not invalidate the =smt_state=.
 
-- Introduction tactic =smt\_tactic.intros=.
+- Tactic =smt_tactic.intros=
   - Add new hypothesis, and update =smt_state=.
   - It will update equivalence classes, propagate equalities, etc.
 
 - Tactics that modify the set of hypotheses (e.g., =revert=, =induction=) can be lifted, but
-  affected =smt\_goal='s are reconstructed from scratch.
+  the affected =smt_goal='s are reconstructed from scratch.
 
 * SMT interactive mode
 
