@@ -647,27 +647,68 @@ run_command vm_monitor.register `debugger.monitor
 #+END_SRC
 
 * Native Compiler
+- Lean is able to compile your programs, no configuration needed
 
-- Make Lean more useful for programming & proving
-- Produce effcient native code given a Lean term
-- Verify & execute programs out of the box
+#+BEGIN_SRC lean
+import system.io
+
+def main : io unit :=
+  put_str_ln "Hello Lean!"
+#+END_SRC
+
+#+BEGIN_SRC bash
+lean --compile hello.lean
+./hello
+"Hello Lean!"
+#+END_SRC
+
+- Goal is to produce efficient native code give a Lean term
+- Assign computational intepretations to programs outside the logic (i.e =io=)
+- Verify and execute programs with *no* friction
 
 * Native Compiler Design
 
 - Use C++ as high level assembler, makes code
-  generation & linking with runtime easy
-- Initial prototype was implemented in C++
-- How to increase confidence, make contributing
-  easy
+  generation and linking with runtime easy
+- Current compiler is the third generation
+  - Initial prototype was implemented in C++
+- How to increase:
+  - confidence in correctness
+  - ease of implementation
 
 * Self Hosting
 
-- Apply same idea, script Lean in Lean.
-- Share preprocess phases with the VM compiler
-- Transform from higher order dependently typed lambda
-  calculus to C-like imperative language in A Normal Form.
-- Transform that language into C++, easily call runtime
-  primitives.
+- Application of a repeated theme: script Lean in Lean
+    - shares phases with VM compiler
+- Transform higher order dependently typed lambda
+  calculus to an IR:
+    - a C-like imperative language in A Normal Form.
+- Denote IR into C++
+    - easier to prototype and configure then LLVM
+    - easily call runtime primitives
+    - rely on standard C++ optimizations
+- Enables verification of the compiler from =expr= to =ir=
+
+* Self Hosting
+- A fragment of the IR compiler written in Lean
+#+BEGIN_SRC bash
+meta def compile_defn_to_ir
+(decl_name : name)
+(params : list name)
+(body : expr) : ir_compiler ir.defn := do
+  body' ← compile_expr_to_ir_stmt body,
+  let no_params := list.length params,
+      const_obj_ref := ir.ty.ref (ir.ty.object none),
+      param_tys := list.repeat const_obj_ref no_params,
+      params := (list.zip params param_tys)
+  in pure (ir.defn.mk bool.tt decl_name params (ir.ty.object none) body')
+#+END_SRC
+- Able to use:
+  - Monad transformers (i.e =ir_compiler=)
+  - Higher level operations, reduces boilerplate
+    present in C++ prototype
+  - Reason and verify properties about
+    the compiler
 
 * Compiler Design
 
@@ -676,22 +717,38 @@ run_command vm_monitor.register `debugger.monitor
 
 * Efficient tactics
   - Write tactics to script low level automation in Lean
-  - Accelerate tactics via compilation
+  - Accelerate tactics via compilation, the compiler should
+   mitigate the cost of using Lean instead of C++
   - Build shared library per package dynamically load
     at runtime
 
 * Execute programs
   - Write programs, verify properties & execute
-  - No need to configure extraction
-  - Future plans for user level extension
+  - No need to configure extraction, convention over configuration
+  - Future plans for user level extension, philoshophy is well-designed libraries should package:
+    - Inductive types, and their operations
+    - Lemmas about the types, and definitions exposed by the library
+    - Tactics for reasoning about the library
+    - Refinements for executing the library efficiently
 
-* Future work
-  - Allow users to implement refinements (like extraction, but safer)
-  - Reason about refinment semantics
-  - Formally verify compiler
-  - Given IR semantics, type checker & more
+* In Progress
+  - Allow user provided IR refinements, with refinement proofs
+    - Basic support for replacing types + operations with
+      implementations in IR
+  - Package level compilation
+    - Compile entire package into native code, which can be loaded
+      by the VM
+    - Implemented but needs multi-platform support and polish
 
-- Demo
+* Future Work
+  - Framework for rewriting based on equality (in the theory)
+    - We can use exisiting simplifier to do optimizations
+  - Formally verifiy compiler
+    - Finish IR typechecker, and type system
+    - Give formal semantics to all IRs
+    - Apply traditional compiler verification techniques (CompCert, ...)
+
+* Native Compiler Demo
 
 * Project suggestions
 
@@ -708,6 +765,9 @@ run_command vm_monitor.register `debugger.monitor
   The Lean goal pretty printer can be customized, we just need to define our instance for =has_to_format tactic_state=.
 
 - *Type based auto completion*. The idea is to filter the list of candidates using the expected type.
+
+- Formatting tool. Build a tool to automatically format Lean code using a consistent rule set.
+  Consider similar [[https://github.com/rust-lang-nursery/rustfmt][tools]].
 
 - Debugger interface based on the VM monitoring API. Consider using the [[https://code.visualstudio.com/Docs/extensions/example-debuggers][VS Code generic debug UI]].
 
