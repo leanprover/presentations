@@ -490,17 +490,47 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - Later, we return to this example using the Lean superposition
   theorem prover.
 
-* SMT tactics
+* SMT tactic framework
 
-- Demo
+- It implements gadgets found in state-of-the-art *SMT solvers*
+  - Congruence closure
+  - E-matching
+  - Unit propagation
+  - AC
+  - Arithmetic (coming soon)
 
-* IMP language
+- =smt\_goal= contains the state of the SMT solver for a particular goal.
 
-- Demo
+- "Attaching more state to =tactic_state=".
 
-* Separation Logic
+  #+BEGIN_SRC lean
+  meta constant smt_goal : Type
+  meta def smt_state := list smt_goal
 
-- Demo
+  meta def smt_tactic :=
+  state_t smt_state tactic
+  #+END_SRC
+
+- Users can solve problems interactively, and/or write their own "end game" tactics.
+
+- We provide Lean APIs for traversing equivalence classes, inspecting instances and
+  lemmas used for E-matching, etc.
+
+* Lifting =tactic ==> smt\_tactic=
+
+- Any =tactic= that does not change the set of hypotheses can be easily lifted
+  because they do not invalidate the =smt\_state=.
+
+- Introduction tactic =smt\_tactic.intros=.
+  - Add new hypothesis, and update =smt_state=.
+  - It will update equivalence classes, propagate equalities, etc.
+
+- Tactics that modify the set of hypotheses (e.g., =revert=, =induction=) can be lifted, but
+  affected =smt\_goal='s are reconstructed from scratch.
+
+* SMT interactive mode
+
+TODO
 
 * Superposition prover
 
