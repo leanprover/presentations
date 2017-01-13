@@ -2,8 +2,6 @@ open tactic
 
 namespace fmt
 
-check expr.local_const
-
 meta def exp : expr → format
 | (expr.elet n ty val body) := "let"
 | (expr.app f args) := "app"
@@ -26,9 +24,9 @@ meta def decl : declaration → format
 
 end fmt
 
-meta def format_concat : list format → format
-| [] := format.nil
-| (f :: fs) := f ++ format_concat fs
+-- meta def format_concat : list format → format
+-- | [] := format.nil
+-- | (f :: fs) := f ++ format_concat fs
 
 set_option profiler true
 
@@ -36,6 +34,6 @@ meta def main : tactic unit := do
     env ← get_env,
     opts ← get_options,
     let fs := environment.fold env [] (fun decl decls, fmt.decl decl :: decls) in
-    tactic.trace $ format.to_string (format_concat $ list.intersperse "\n" fs) opts
+    tactic.trace $ format.to_string (format_concat $ fs) opts
 
 run_command main
