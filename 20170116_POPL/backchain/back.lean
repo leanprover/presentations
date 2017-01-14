@@ -31,7 +31,7 @@ meta def match_cons (e : expr) : tactic (expr × expr) :=
 /- The tactic (match_app_of e `list.cons) succeeds if e is a list-cons application,
    and returns a list of arguments.
 
-   The notationm `list.cons is a "name quotation".
+   The notation `list.cons is a "name quotation".
    It is a shorthand for
       (name.mk_string "cons" (name.mk_string "list" name.anonymous))
 

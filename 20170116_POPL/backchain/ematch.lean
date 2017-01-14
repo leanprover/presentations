@@ -1,5 +1,5 @@
 /- Lean also support E-matching: a heuristic lemma instantiation procedure
-   that is available in many SMT solver.
+   that is available in many SMT solvers.
 
    Goals such as mk_mem_list can also be discharged using heuristic instantiation. -/
 open list tactic
