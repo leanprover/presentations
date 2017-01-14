@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>The Lean Theorem Prover</title>
+<meta name="author" content="((link (:type http :path //leodemoura.github.io :format bracket :raw-link http://leodemoura.github.io :application nil :search-option nil :begin 1 :end 72 :contents-begin 32 :contents-end 70 :post-blank 0 :parent #0) Leonardo de Moura (Microsoft Research)) ,  (export-snippet (:back-end html :value <br> :begin 74 :end 88 :post-blank 1 :parent #0)) (link (:type https :path //gebner.org/ :format bracket :raw-link https://gebner.org/ :application nil :search-option nil :begin 88 :end 160 :contents-begin 111 :contents-end 158 :post-blank 0 :parent #0) Gabriel Ebner (Vienna University of Technology)) ,  (export-snippet (:back-end html :value <br> :begin 162 :end 176 :post-blank 1 :parent #0)) (link (:type http :path //jroesch.github.io/ :format bracket :raw-link http://jroesch.github.io/ :application nil :search-option nil :begin 176 :end 246 :contents-begin 205 :contents-end 244 :post-blank 0 :parent #0) Jared Roesch (University of Washington)) ,  (export-snippet (:back-end html :value <br> :begin 248 :end 262 :post-blank 1 :parent #0)) (link (:type https :path //kha.github.io/ :format bracket :raw-link https://kha.github.io/ :application nil :search-option nil :begin 262 :end 343 :contents-begin 288 :contents-end 341 :post-blank 0 :parent #0) Sebastian Ullrich (Karlsruhe Institute of Technology)))"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="//leanprover.github.io/presentations/reveal.js-3.0.0/css/theme/soonho.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '//leanprover.github.io/presentations/reveal.js-3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/snap.svg/0.3.0/snap.svg-min.js"></script>
+<script type="text/javascript">MathJax.Hub.Config({"HTML-CSS": {scale: 80 }})</script>
+<script src="//cdn.jsdelivr.net/webcomponentsjs/0.7.20/webcomponents.min.js"></script>
+<link rel="import" href="./juicy-ace-editor.html">
+<link rel="stylesheet" href="../css/code.css">
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1 id='title-name'>The Lean Theorem Prover</h1>
+<h2 id='author-list'><a href="http://leodemoura.github.io/">Leonardo de Moura (Microsoft Research)</a>, <br> <a href="https://gebner.org/">Gabriel Ebner (Vienna University of Technology)</a>, <br> <a href="http://jroesch.github.io/">Jared Roesch (University of Washington)</a>, <br> <a href="https://kha.github.io/">Sebastian Ullrich (Karlsruhe Institute of Technology)</a></h2>
+<h2 id='date'><a href="http://popl17.sigplan.org/event/popl-2017-tutorials-lean">POPL</a>, Paris, 2017/01/16 <br> <a href="http://leanprover.github.io/">http://leanprover.github.io/</a> <br><br> <a href="http://leanprover.github.io/presentations/20170116_POPL">http://leanprover.github.io/presentations/20170116_POPL</a></h2>
+</section>
+
+<section>
+<section id="slide-orgf7ff9a9">
+<h2 id="orgf7ff9a9">The Lean Theorem Prover Team</h2>
+<ul>
+<li>The presenters, and</li>
+<li>Jeremy Avigad (CMU),</li>
+<li>Floris van Doorn (CMU),</li>
+<li>Rob Lewis (CMU),</li>
+<li>Daniel Selsam (Stanford)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org2abb8c2">
+<h2 id="org2abb8c2">Many thanks to</h2>
+<ul>
+<li>Soonho Kong (former member)</li>
+<li>Jakob von Raumer (former member)</li>
+<li>Cody Roux</li>
+<li>Georges Gonthier</li>
+<li>Grant Passmore</li>
+<li>Nikhil Swamy</li>
+<li>Assia Mahboubi</li>
+<li>Bas Spitters</li>
+<li>Steve Awodey</li>
+<li>Ulrik Buchholtz</li>
+<li>Tom Ball</li>
+<li>Parikshit Khanna</li>
+<li>Haitao Zhang</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org6023d08">
+<h2 id="org6023d08">Introduction: <b>Lean</b></h2>
+<ul>
+<li>New <b>open source</b> theorem prover</li>
+<li>Platform for
+<ul>
+<li><b>Software</b> verification &amp; development</li>
+<li>Formalized <b>mathematics</b></li>
+<li><b>Education</b> (mathematics, logic, computer science)</li>
+<li><b>Synthesis</b> (proofs &amp; programs)</li>
+
+</ul></li>
+<li>de Bruijn's Principle: <b>small trusted kernel</b></li>
+<li>Expressive logic</li>
+<li>Partial constructions: automation fills the "holes"</li>
+<li><b>Meta-programming</b></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org7659efd">
+<h2 id="org7659efd">Introduction: <b>Lean</b></h2>
+<ul>
+<li><a href="https://leanprover.github.io/introduction_to_lean">Introduction to Lean</a></li>
+<li><a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li><a href="https://leanprover.github.io/programming_in_lean">Programming in Lean</a></li>
+<li><a href="https://leanprover.github.io/logic_and_proof/">Introduction to Logic course</a> at CMU</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orge5916e0">
+<h2 id="orge5916e0">Main Goal</h2>
+<p>
+<b>Lean aims to bring two worlds together</b>
+</p>
+
+<ul>
+<li>An interactive theorem prover with powerful automation</li>
+
+<li>An automated reasoning tool that
+<ul>
+<li>produces (detailed) proofs,</li>
+<li>has a rich language,</li>
+<li>can be used interactively, and</li>
+<li>is built on a verified mathematical library</li>
+
+</ul></li>
+
+<li>It is an ongoing and <b>long long term</b> effort</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgdb2f53b">
+<h2 id="orgdb2f53b">What is new?</h2>
+<ul>
+<li><b>Meta-programming</b>
+<ul>
+<li>Extend Lean using Lean</li>
+<li>Access Lean internals using Lean</li>
+<li>Proof/Program synthesis</li>
+
+</ul></li>
+
+<li>Powerful <b>elaboration engine</b> that can handle
+<ul>
+<li>Higher-order unification</li>
+<li>Type classes</li>
+<li>Coercions</li>
+<li>Ad-hoc polymorphism (aka overloading)</li>
+
+</ul></li>
+
+</ul>
+
+<blockquote nil>
+<p>
+"By relieving the brain of all unnecessary work, a good notation sets it free to
+ concentrate on more advanced problems, and in effect increases the mental power of the
+ race."
+     &#x2013; A. N. Whitehead
+</p>
+</blockquote>
+
+</section>
+</section>
+<section>
+<section id="slide-orgd0a9d5f">
+<h2 id="orgd0a9d5f">What is new?</h2>
+<ul>
+<li>Small <b>trusted</b> kernel
+<ul>
+<li>It does <b>not</b> contain
+<ul>
+<li>Termination checker</li>
+<li>Fixpoint operators</li>
+<li>Pattern matching</li>
+<li>Module management</li>
+
+</ul></li>
+
+</ul></li>
+
+<li><a href="https://github.com/leanprover/tc">Reference type checker</a> in Haskell</li>
+
+<li><b>Multi-core support</b>
+<ul>
+<li>Compile files in parallel</li>
+<li>Compile theorems in parallel</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org6f1e7a0">
+<h2 id="org6f1e7a0">What is new?</h2>
+<ul>
+<li>Simple json-based protocol for communicating with editors
+<ul>
+<li>Fast <b>incremental compilation</b></li>
+<li>Auto completion</li>
+<li>Type information</li>
+<li>Goal visualization</li>
+<li>We already support: <b>Emacs</b>, <b>VS Code</b> and <b>ACE editor</b></li>
+
+</ul></li>
+
+<li><b>Profiler</b> and <b>Debugger</b> for Lean code
+<ul>
+<li>We can use them to profile/debug tactics since tactics
+are written in Lean.</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgecf49cd">
+<h2 id="orgecf49cd">What is new?</h2>
+<ul>
+<li><b>Bytecode</b> and <b>C++</b> generator</li>
+
+<li>Many efficient native tactics implemented in C++
+<ul>
+<li>Simplifier</li>
+<li>Congruence closure</li>
+<li>E-matching</li>
+<li>Ground AC completion</li>
+<li>(more coming soon)</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org4500166">
+<h2 id="org4500166">Agenda</h2>
+<ul>
+<li>Lean language</li>
+
+<li>Tactics and Meta-programming</li>
+
+<li>SMT-based tactics</li>
+
+<li>Superposition prover</li>
+
+<li>Profiler and Debugger</li>
+
+<li>Native code generator</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orga09c392">
+<h2 id="orga09c392">The Logical Framework</h2>
+<ul>
+<li>Dependent lambda calculus</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">Type                      -- Sort
+nat                       -- Constant
+λ x : nat, x              -- Lambda abstraction
+vector bool 3             -- Application
+Π (n : nat), vector nat n -- Function Space
+nat → bool                -- Function Space (no dependency)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org8cc5116">
+<h2 id="org8cc5116">The Logical Framework</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def f (α β : Type) : α → β → α :=
+λ (a : α) (b : β), a
+
+def f (α β : Type) (a : α) (b : β) : α :=
+a
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgf031eea">
+<h2 id="orgf031eea">The Logical Framework</h2>
+<ul>
+<li>Hierarchy of universes</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">check Prop      -- Prop   : Type 1
+check Type 0    -- Prop   : Type 1
+check Type      -- Type 1 : Type 2
+check Type 1    -- Type 1 : Type 2
+check Type 2    -- Type 2 : Type 3
+</juicy-ace-editor>
+</div>
+
+<ul>
+<li>Universe polymorphic definitions</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def {u} f (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+universe variable u
+
+def g (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+def h (α β : Type _) : α → β → α :=
+λ (a : α) (b : β), a
+
+def r (α β : Type*) : α → β → α :=
+λ (a : α) (b : β), a
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org2a59be1">
+<h2 id="org2a59be1">Implicit arguments</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def f (α β : Type u) : α → β → α :=
+λ (a : α) (b : β), a
+
+check f nat nat 0 1
+check f _ _ 0 1
+
+def g {α β : Type u} : α → β → α :=
+λ (a : α) (b : β), a
+
+check g 0 1
+set_option pp.implicit true
+check g 0 1
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgd00e1b8">
+<h2 id="orgd00e1b8">The Logical Framework</h2>
+<ul>
+<li>Chapter 7, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+
+<li><p>
+Inductive families
+</p>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive nat
+| zero : nat
+| succ : nat → nat
+
+inductive tree (α : Type u)
+| leaf : α → tree
+| node : tree → tree → tree
+
+inductive vector (α : Type) : nat → Type
+| nil  : vector zero
+| cons : Π {n : nat}, α → vector n → vector (succ n)
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc22b93a">
+<h2 id="orgc22b93a">Inductive families</h2>
+
+<div class="figure">
+<p><img src="./img/inductive.png" alt="inductive.png" height="600px" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgee7eb7a">
+<h2 id="orgee7eb7a">Recursive equations</h2>
+<ul>
+<li>Chapter 8, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+
+<li><b>Recursors</b> are <b>inconvenient</b> to use.</li>
+<li>Compiler from <b>recursive equations</b> to <b>recursors</b>.</li>
+<li>Two compilation strategies: <b>structural</b> and <b>well-founded</b> recursion</li>
+<li><b>Well-founded</b> recursion is coming soon.</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def fib : nat → nat
+| 0     := 1
+| 1     := 1
+| (a+2) := fib (a+1) + fib a
+
+example (a : nat) : fib (a+2) = fib (a+1) + fib a :=
+rfl
+</juicy-ace-editor>
+</div>
+
+<ul>
+<li>Proofs by induction</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org9046ee7">
+<h2 id="org9046ee7">Recursive equations</h2>
+
+<div class="figure">
+<p><img src="./img/compilation.png" alt="compilation.png" height="600px" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org9ffa8ab">
+<h2 id="org9ffa8ab">Recursive equations</h2>
+<ul>
+<li>Dependent pattern matching</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">open nat
+
+inductive vector (α : Type) : nat → Type
+| nil {} : vector 0
+| cons   : Π {n}, α → vector n → vector (succ n)
+
+open vector
+
+def map {α β δ : Type} (f : α → β → δ)
+	: Π {n : nat}, vector α n → vector β n → vector δ n
+| 0        nil         nil         := nil
+| (succ n) (cons a va) (cons b vb) := cons (f a b) (map va vb)
+
+def zip {α β : Type}
+	: Π {n}, vector α n → vector β n → vector (α × β) n
+| 0        nil         nil         := nil
+| (succ n) (cons a va) (cons b vb) := cons (a, b) (zip va vb)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org74a82aa">
+<h2 id="org74a82aa">Structures</h2>
+<ul>
+<li>Chapter 9, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">structure point (α : Type) :=
+mk :: (x : α) (y : α)
+
+eval point.x (point.mk 10 20)
+eval point.y (point.mk 10 20)
+
+eval {point . x := 10, y := 20}
+
+def p : point nat :=
+{x := 10, y := 20}
+
+eval p^.x
+eval p^.y
+eval {p with x := 0}
+
+structure point3d (α : Type) extends point α :=
+(z : α)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgd8f8ccf">
+<h2 id="orgd8f8ccf">Type classes</h2>
+<ul>
+<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class has_sizeof (α : Type u) :=
+(sizeof : α → nat)
+
+variables {α : Type u} {β : Type v}
+
+def sizeof [has_sizeof α] : α → nat
+
+instance : has_sizeof nat := ⟨λ a : nat, a⟩
+-- ⟨...⟩ is the anonymous constructor
+
+instance [has_sizeof α] [has_sizeof β] : has_sizeof (prod α β) :=
+⟨λ p, match p with
+      | (a, b) := sizeof a + sizeof b + 1
+      end⟩
+
+instance [has_sizeof α] [has_sizeof β] : has_sizeof (sum α β) :=
+⟨λ s, match s with
+      | inl a := sizeof a + 1
+      | inr b := sizeof b + 1
+      end⟩
+
+vm_eval sizeof (10, 20)
+-- 31
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org04842b2">
+<h2 id="org04842b2">Type classes</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class inhabited (α : Type u) := (default : α)
+
+class inductive decidable (p : Prop)
+| is_false : ¬p → decidable
+| is_true :  p → decidable
+
+class has_one (α : Type u) := (one : α)
+class has_add (α : Type u) := (add : α → α → α)
+class has_mul (α : Type u) := (mul : α → α → α)
+
+class semigroup (α : Type) extends has_mul α :=
+(mul_assoc : ∀ a b c : α, a * b * c = a * (b * c))
+
+class monoid (α : Type) extends semigroup α, has_one α :=
+(one_mul : ∀ a : α, 1 * a = a) (mul_one : ∀ a : α, a * 1 = a)
+
+class functor (f : Type u → Type v) :=
+(map : Π {α β : Type u}, (α → β) → f α → f β)
+
+class monad (m : Type u → Type v) extends functor m :=
+(ret  : Π {α : Type u}, α → M α)
+(bind : Π {α β : Type u}, M α → (α → m β) → m β)
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org0169db3">
+<h2 id="org0169db3">Coercions as type classes</h2>
+<ul>
+<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class has_coe (α : Type u) (β : Type v) :=
+(coe : α → β)
+
+instance coe_bool_to_Prop : has_coe bool Prop :=
+⟨λ b, b = tt⟩
+
+structure subtype {α : Type u} (p : α → Prop) :=
+(elt_of : α) (has_property : p elt_of)
+
+instance coe_sub {α : Type u} {p : α → Prop} : has_coe (subtype p) α :=
+⟨λ s : subtype, elt_of s⟩
+
+def below (n : nat) : nat → Prop :=
+λ i, i &lt; n
+
+def f {n : nat} (v : subtype (below n)) : nat :=
+   v + 1
+--^ Coercion used here
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org708524d">
+<h2 id="org708524d">Lean in Action</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/intro/ex1.lean&live">Demo</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org34ce718">
+<h2 id="org34ce718">Meta-programming</h2>
+<ul>
+<li><b>Extending Lean in Lean</b></li>
+
+<li><p>
+Lean has an efficient bytecode interpreter
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive expr
+| var         : unsigned → expr
+| sort        : level → expr
+| const       : name → list level → expr
+| app         : expr → expr → expr
+...
+
+meta constant tactic_state : Type
+</juicy-ace-editor>
+</div></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org249d474">
+<h2 id="org249d474">Meta-programming</h2>
+
+<div class="figure">
+<p><img src="./img/tactic_state.png" alt="tactic_state.png" height="600px" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb0930f1">
+<h2 id="orgb0930f1">Meta-programming</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive tactic_result (α : Type)
+| success   : α → tactic_state → tactic_result
+| exception : (unit → format) → tactic_state → tactic_result
+
+meta def tactic (α : Type) :=
+tactic_state → tactic_result α
+
+meta instance : monad tactic := ...
+
+meta constant infer_type    : expr  → tactic expr
+meta constant subst         : expr  → tactic unit
+meta constant exact         : expr  → tactic unit
+meta constant local_context : expr  → tactic (list expr)
+meta constant to_expr       : pexpr → tactic expr
+
+meta def apply : expr → tactic unit := ...
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orge67ac38">
+<h2 id="orge67ac38">Meta-programming</h2>
+<ul>
+<li>The <code>by tac</code> instructs Lean to use <code>tac : tactic unit</code> to synthesize
+the missing term.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/meta/ex1.lean&live">Demo</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org5ed0080">
+<h2 id="org5ed0080">Meta-programming</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/meta/has_to_string.lean&live">Generating a <code>has_to_string</code> instance for enumeration types</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgb7bb4bb">
+<h2 id="orgb7bb4bb">Interactive mode</h2>
+<ul>
+<li>Many users want to apply tactics interactively.</li>
+
+<li>They want to observe intermediate <code>tactic_state</code>'s.</li>
+
+<li><p>
+They want to avoid quotations, and gloss over the distinction between object and meta expressions.
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">-- They want to write
+exact eq.trans h₁ (eq.symm h₂)
+-- instead of
+to_expr `(eq.trans h₁ (eq.symm h₂)) &gt;&gt;= exact
+-- or the following, assuming (exact : pexpr -&gt; tactic unit)
+exact `(eq.trans h₁ (eq.symm h₂))
+</juicy-ace-editor>
+</div></li>
+
+<li>Lean provides an "interactive mode" for applying tactics.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/meta/ex2.lean&live">Demo</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org7e71556">
+<h2 id="org7e71556">Backward Chaining</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/back.lean&live"><code>back.lean</code></a>: simple Lean tactic for list membership goals
+using backward chaining.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/back_trace.lean&live"><code>back_trace.lean</code></a>: adds tracing to the previous tactic.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/back_inplace.lean&live"><code>back_inplace.lean</code></a>: same example implemeted
+on top of the <code>apply</code> tactic.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/builtin.lean&live"><code>builtin.lean</code></a>: same example using the builtin backward
+chaining tactic.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/ematch.lean&live"><code>ematch.lean</code></a>: same example using heuristic instantiation.
+Actually, this one is not a form of backward chaining.</li>
+
+<li>Later, we return to this example using the Lean superposition
+theorem prover.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc6f0937">
+<h2 id="orgc6f0937">Associative Commutative operators</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/builtin_ac.lean&live"><code>builtin_ac.lean</code></a>: Lean has builtin support for associative commutative operators,
+but this is not the point of this exercise.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/flat_assoc.lean&live"><code>flat_assoc.lean</code></a>: a tactic to "flat" nested applications of associative operators. This tactic
+uses only basic primitives.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/flat_assoc_trace.lean&live"><code>flat_assoc_trace.lean</code></a>: tracing tactic execution.</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/ac_by_simp.lean&live"><code>ac_by_simp.lean</code></a>: simplifier demo.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org3e2fe0d">
+<h2 id="org3e2fe0d">SMT tactic framework</h2>
+<ul>
+<li>It implements gadgets found in state-of-the-art <b>SMT solvers</b>
+<ul>
+<li>Congruence closure</li>
+<li>E-matching</li>
+<li>Unit propagation</li>
+<li>AC</li>
+<li>Arithmetic (coming soon)</li>
+
+</ul></li>
+
+<li><code>smt_goal</code> contains the state of the SMT "gadgets" for a particular goal.</li>
+
+<li><p>
+"Attaching more state to <code>tactic_state</code>".
+</p>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta constant smt_goal : Type
+meta def smt_state := list smt_goal
+
+meta def smt_tactic :=
+state_t smt_state tactic
+</juicy-ace-editor>
+</div></li>
+
+<li>Users can solve problems interactively, and/or write their own "end game" tactics.</li>
+
+<li>We provide Lean APIs for traversing equivalence classes, inspecting instances and
+lemmas used for E-matching, etc.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgef52c03">
+<h2 id="orgef52c03">Lifting <code>tactic ==&gt; smt_tactic</code></h2>
+<ul>
+<li>Any <code>tactic</code> that does not change the set of hypotheses can be easily lifted
+because they do not invalidate the <code>smt_state</code>.</li>
+
+<li>Tactic <code>smt_tactic.intros</code>
+<ul>
+<li>Add new hypothesis, and update <code>smt_state</code>.</li>
+<li>It will update equivalence classes, propagate equalities, etc.</li>
+
+</ul></li>
+
+<li>Tactics that modify the set of hypotheses (e.g., <code>revert</code>, <code>induction</code>) can be lifted, but
+the affected <code>smt_goal</code>'s are reconstructed from scratch.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org73fe975">
+<h2 id="org73fe975">SMT interactive mode</h2>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">lemma app_assoc (l₁ l₂ l₃ : list α) : app (app l₁ l₂) l₃ = app l₁ (app l₂ l₃) :=
+begin [smt]
+  induction l₁,
+  all_goals {eblast}
+end
+</juicy-ace-editor>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgfb639ae">
+<h2 id="orgfb639ae">SMT tactic framework demo</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/smt/ex1.lean&live">ex1.lean</a>: basic examples</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/smt/ex2.lean&live">ex2.lean</a>: list properties</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/smt/ex3.lean&live">ex3.lean</a>: constant folding for a simple expression language</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/smt/ex4.lean&live">ex4.lean</a>: separation logic example</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgdacd6a5">
+<h2 id="orgdacd6a5">Superposition prover</h2>
+<ul>
+<li>Implemented 100% in Lean</li>
+<li>2200 lines of code
+<ul>
+<li>including toy SAT solver</li>
+
+</ul></li>
+<li>Complete for first-order logic with equality</li>
+<li>Uses Lean expressions, unification, proofs</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org11495e7">
+<h2 id="org11495e7">Superposition prover</h2>
+<ul>
+<li>Based on refutation of formulas in clause normal form (CNF)</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">p 3 → (∀x, p x → q (x+1)) → q 4
+
+-- negated for refutation:
+¬(p 3 → (∀x, p x → q (x+1)) → q 4)
+
+-- in CNF:
+p 3 ∧ (∀x, ¬p x ∨ q (x+1)) ∧ ¬q 4
+
+-- super's trace output:
+[[p 3], [¬p ?m_1, q (?m_1 + 1)], [¬q 4]]
+</juicy-ace-editor>
+</div>
+
+<ul>
+<li>Applies inferences until contradiction (empty clause)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org8525d22">
+<h2 id="org8525d22">Superposition prover</h2>
+<ul>
+<li>Inferences (modulo unification)</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">-- resolution
+  [a, b] &amp; [¬b, c]  ==&gt;   [a, c]
+
+-- superposition ("rewriting with conditions")
+[a, t=s] &amp; [b t, c] ==&gt; [a, b s, c]
+</juicy-ace-editor>
+</div>
+
+<ul>
+<li>and others</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org9aaf7da">
+<h2 id="org9aaf7da">Superposition prover</h2>
+<ul>
+<li>State transformer of tactic monad</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta structure prover_state :=
+(active  : rb_map clause_id derived_clause)
+(passive : rb_map clause_id derived_clause)
+(prec : list expr)
+(sat_solver : cdcl.state)
+-- ...
+
+meta def prover := state_t prover_state tactic
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org154531a">
+<h2 id="org154531a">Superposition prover demos</h2>
+<ul>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/usage.lean&live">usage.lean</a>: shows the basic usage of the super tactic</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/clauses.lean&live">clauses.lean</a>: shows the data structure used for clauses</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/assoc.lean&live">assoc.lean</a>: support for associative-commutative function symbols, as an example we show how to obtain the right inverse from the left inverse in monoids</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/listex.lean&live">listex.lean</a>: reasoning about membership in lists</li>
+
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/heapex.lean&live">heapex.lean</a>: proving a lemma about the disjoint union of heaps in separation logic, [that we proved before using E-matching](TODO)</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org79fea8e">
+<h2 id="org79fea8e">Superposition prover</h2>
+<ul>
+<li>Future work
+<ul>
+<li>Performance</li>
+<li>Integration with simplification rules</li>
+<li>Integration with standard library</li>
+<li>Better clause representation</li>
+<li>Configurability</li>
+<li>"Leanhammer"</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org5aeee30">
+<h2 id="org5aeee30">Profiler</h2>
+<ul>
+<li>Based on sampling</li>
+
+<li>It takes snapshots of the VM stack every x ms (default: 10 ms)</li>
+
+<li>Useful for finding performance bottlenecks in tactics</li>
+
+<li>Demo</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org8e55641">
+<h2 id="org8e55641">Debugger</h2>
+<ul>
+<li>We can monitor the VM execution.</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta constant get_env              : vm environment
+meta constant stack_size           : vm nat
+meta constant stack_obj            : nat → vm vm_obj
+...
+
+meta structure vm_monitor (s : Type) :=
+(init : s) (step : s → vm s)
+
+meta constant vm_monitor.register : name → command
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orga168dd2">
+<h2 id="orga168dd2">Debugger</h2>
+<ul>
+<li>Lean comes with a simple CLI debugger implemented in Lean
+on top of the VM monitor API.</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">namespace debugger
+
+meta def step_fn (s : state) : vm state :=
+do s ← prune_active_bps s,
+   ...
+   else return s
+
+meta def monitor : vm_monitor state :=
+{ init := init_state, step := step_fn }
+end debugger
+
+run_command vm_monitor.register `debugger.monitor
+</juicy-ace-editor>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orga7402df">
+<h2 id="orga7402df">Native Compiler</h2>
+<ul>
+<li>Lean is able to compile your programs, no configuration needed</li>
+
+</ul>
+
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">import system.io
+
+def main : io unit :=
+  put_str_ln "Hello Lean!"
+</juicy-ace-editor>
+</div>
+
+<pre  class="example">
+lean --compile hello.lean
+./hello
+"Hello Lean!"
+</pre>
+
+<ul>
+<li>Goal is to produce efficient native code give a Lean term</li>
+<li>Assign computational intepretations to programs outside the logic (i.e <code>io</code>)</li>
+<li>Verify and execute programs with <b>no</b> friction</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org73aceb4">
+<h2 id="org73aceb4">Native Compiler Design</h2>
+<ul>
+<li>Use C++ as high level assembler, makes code
+generation and linking with runtime easy</li>
+<li>Current compiler is the third generation
+<ul>
+<li>Initial prototype was implemented in C++</li>
+
+</ul></li>
+<li>How to increase:
+<ul>
+<li>confidence in correctness</li>
+<li>ease of implementation</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orga8c8363">
+<h2 id="orga8c8363">Self Hosting</h2>
+<ul>
+<li>Application of a repeated theme: script Lean in Lean
+<ul>
+<li>shares phases with VM compiler</li>
+
+</ul></li>
+<li>Transform higher order dependently typed lambda
+calculus to an IR:
+<ul>
+<li>a C-like imperative language in A Normal Form.</li>
+
+</ul></li>
+<li>Denote IR into C++
+<ul>
+<li>easier to prototype and configure then LLVM</li>
+<li>easily call runtime primitives</li>
+<li>rely on standard C++ optimizations</li>
+
+</ul></li>
+<li>Enables verification of the compiler from <code>expr</code> to <code>ir</code></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org7ba4a77">
+<h2 id="org7ba4a77">Self Hosting</h2>
+<ul>
+<li>A fragment of the IR compiler written in Lean</li>
+
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">meta def compile_defn_to_ir
+(decl_name : name)
+(params : list name)
+(body : expr) : ir_compiler ir.defn := do
+  body' ← compile_expr_to_ir_stmt body,
+  let no_params := list.length params,
+      const_obj_ref := ir.ty.ref (ir.ty.object none),
+      param_tys := list.repeat const_obj_ref no_params,
+      params := (list.zip params param_tys)
+  in pure (ir.defn.mk bool.tt decl_name params (ir.ty.object none) body')
+</juicy-ace-editor>
+</div>
+<ul>
+<li>Able to use:
+<ul>
+<li>Monad transformers (i.e <code>ir_compiler</code>)</li>
+<li>Higher level operations, reduces boilerplate
+present in C++ prototype</li>
+<li>Reason and verify properties about
+the compiler</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org47f1a0c">
+<h2 id="org47f1a0c">Compiler Design</h2>
+
+<div class="figure">
+<p><img src="./img/backend_diagram.png" alt="backend_diagram.png" height="600px" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org3a54446">
+<h2 id="org3a54446">Efficient tactics</h2>
+<ul>
+<li>Write tactics to script low level automation in Lean</li>
+<li>Accelerate tactics via compilation, the compiler should
+mitigate the cost of using Lean instead of C++</li>
+<li>Build shared library per package dynamically load
+at runtime</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org04a1c85">
+<h2 id="org04a1c85">Execute programs</h2>
+<ul>
+<li>Write programs, verify properties &amp; execute</li>
+<li>No need to configure extraction, convention over configuration</li>
+<li>Future plans for user level extension, philoshophy is well-designed libraries should package:
+<ul>
+<li>Inductive types, and their operations</li>
+<li>Lemmas about the types, and definitions exposed by the library</li>
+<li>Tactics for reasoning about the library</li>
+<li>Refinements for executing the library efficiently</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org14542d0">
+<h2 id="org14542d0">In Progress</h2>
+<ul>
+<li>Allow user provided IR refinements, with refinement proofs
+<ul>
+<li>Basic support for replacing types + operations with
+implementations in IR</li>
+
+</ul></li>
+<li>Package level compilation
+<ul>
+<li>Compile entire package into native code, which can be loaded
+by the VM</li>
+<li>Implemented but needs multi-platform support and polish</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgfa65689">
+<h2 id="orgfa65689">Future Work</h2>
+<ul>
+<li>Framework for rewriting based on equality (in the theory)
+<ul>
+<li>We can use exisiting simplifier to do optimizations</li>
+
+</ul></li>
+<li>Formally verifiy compiler
+<ul>
+<li>Finish IR typechecker, and type system</li>
+<li>Give formal semantics to all IRs</li>
+<li>Apply traditional compiler verification techniques (CompCert, &#x2026;)</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org5590201">
+<h2 id="org5590201">Native Compiler Demo</h2>
+
+</section>
+</section>
+<section>
+<section id="slide-org3ecff8c">
+<h2 id="org3ecff8c">Project suggestions</h2>
+<ul>
+<li>Write tactics for automating your favorite project.</li>
+
+<li><a href="https://www.haskell.org/hoogle/">Hoogle</a> for Lean
+<ul>
+<li>The Lean API provides functions/tactics for traversing the environment (<code>environment.fold</code>),
+type inference (<code>tactic.infer_type</code>), unification (<code>tactic.unify</code>), etc.</li>
+
+</ul></li>
+
+<li>Documentation generator. The tactic <code>tactic.doc_string</code> retrieves the doc string for a given
+declaration.</li>
+
+<li><b>Goal visualizer</b>. VS Code can render complex graphics and elaborated formatting, it is built on top of Chromium.
+The Lean goal pretty printer can be customized, we just need to define our instance for <code>has_to_format tactic_state</code>.</li>
+
+<li><b>Type based auto completion</b>. The idea is to filter the list of candidates using the expected type.</li>
+
+<li>Formatting tool. Build a tool to automatically format Lean code using a consistent rule set.
+Consider similar <a href="https://github.com/rust-lang-nursery/rustfmt">tools</a>.</li>
+
+<li>Debugger interface based on the VM monitoring API. Consider using the <a href="https://code.visualstudio.com/Docs/extensions/example-debuggers">VS Code generic debug UI</a>.</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org9216d19">
+<h2 id="org9216d19">Thank you</h2>
+<ul>
+<li>Website: <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></li>
+
+<li>Source code: <a href="https://github.com/leanprover/lean">https://github.com/leanprover/lean</a></li>
+
+<li>Lean discussion group: <a href="https://groups.google.com/forum/#!forum/lean-user">https://groups.google.com/forum/#!forum/lean-user</a></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-59814431-1', 'auto');ga('send', 'pageview');</script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/head.min.js"></script>
+<script src="//leanprover.github.io/presentations/reveal.js-3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: false,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+width: 1000,
+height: 800,
+minScale: 1.00,
+maxScale: 1.00,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'none', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: '//leanprover.github.io/presentations/reveal.js-3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
