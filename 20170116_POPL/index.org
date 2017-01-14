@@ -688,7 +688,7 @@ def main : io unit :=
   put_str_ln "Hello Lean!"
 #+END_SRC
 
-#+BEGIN_SRC bash
+#+BEGIN_SRC
 lean --compile hello.lean
 ./hello
 "Hello Lean!"
@@ -723,7 +723,7 @@ lean --compile hello.lean
 
 * Self Hosting
 - A fragment of the IR compiler written in Lean
-#+BEGIN_SRC bash
+#+BEGIN_SRC lean
 meta def compile_defn_to_ir
 (decl_name : name)
 (params : list name)
