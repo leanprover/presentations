@@ -475,19 +475,19 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 
 * Backward Chaining
 
-- [[./backchain/back.lean][back.lean]]: A simple Lean tactic for list membership goals
+- [[./backchain/back.lean][=back.lean=]]: simple Lean tactic for list membership goals
   using backward chaining.
 
-- [[./backchain/back_trace.lean][=back_trace.lean=]]: Add tracing to the previous tactic.
+- [[./backchain/back_trace.lean][=back_trace.lean=]]: adds tracing to the previous tactic.
 
-- [[./backchain/back_inplace.lean][=back_inplace.lean=]]: The same example implemeted
+- [[./backchain/back_inplace.lean][=back_inplace.lean=]]: same example implemeted
   on top of the =apply= tactic.
 
-- [[./backchain/builtin.lean][builtin.lean]]: Same example using the builtin backward
+- [[./backchain/builtin.lean][=builtin.lean=]]: same example using the builtin backward
   chaining tactic.
 
-- [[./backchain/ematch.lean][ematch.lean]]: Same example using heuristic instantiation.
-  This is not backward chaining, but it is quite effective.
+- [[./backchain/ematch.lean][=ematch.lean=]]: same example using heuristic instantiation.
+  Actually, this one is not a form of backward chaining.
 
 - Later, we return to this example using the Lean superposition
   theorem prover.
@@ -620,7 +620,18 @@ meta structure prover_state :=
 meta def prover := state_t prover_state tactic
 #+END_SRC
 
-- Demo
+* Superposition prover demos
+
+- [[./super/usage.lean][usage.lean]]: shows the basic usage of the super tactic
+
+- [[./super/clauses.lean][clauses.lean]]: shows the data structure used for clauses
+
+- [[./super/assoc.lean][assoc.lean]]: support for associative-commutative function symbols, as an example we show how to obtain the right inverse from the left inverse in monoids
+
+- [[./super/listex.lean][listex.lean]]: reasoning about membership in lists
+
+- [[./super/heapex.lean][heapex.lean]]: proving a lemma about the disjoint union of heaps in separation logic, [that we proved before using E-matching](TODO)
+
 
 * Superposition prover
 
