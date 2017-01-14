@@ -44,4 +44,5 @@ trace c5,
 
 -- We now have a proof of false (the type of the empty clause) and are done.
 trace c5^.proof,
+trace c5^.type,
 exact c5^.proof
