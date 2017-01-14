@@ -1,6 +1,6 @@
 #+Title: The Lean Theorem Prover
-#+Author: @@html:<small>@@ [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ [[https://gebner.org/][Gabriel Ebner (Vienna University of Technology)]], @@html:<br>@@ [[http://jroesch.github.io/][Jared Roesch (University of Washington)]], @@html:<br>@@ [[https://kha.github.io/][Sebastian Ullrich (Karlsruhe Institute of Technology)]] @@html:</small>@@
-#+Date:  @@html:<small>@@ [[http://popl17.sigplan.org/event/popl-2017-tutorials-lean][POPL]], Paris, 2017/01/16 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20170116_POPL @@html:</small>@@
+#+Author:  [[http://leodemoura.github.io][Leonardo de Moura (Microsoft Research)]], @@html:<br>@@ [[https://gebner.org/][Gabriel Ebner (Vienna University of Technology)]], @@html:<br>@@ [[http://jroesch.github.io/][Jared Roesch (University of Washington)]], @@html:<br>@@ [[https://kha.github.io/][Sebastian Ullrich (Karlsruhe Institute of Technology)]]
+#+Date:   [[http://popl17.sigplan.org/event/popl-2017-tutorials-lean][POPL]], Paris, 2017/01/16 @@html:<br>@@ http://leanprover.github.io @@html:<br><br>@@ http://leanprover.github.io/presentations/20170116_POPL
 #+REVEAL_HLEVEL: 3
 #+REVEAL_TRANS: none
 #+REVEAL_THEME: soonho
