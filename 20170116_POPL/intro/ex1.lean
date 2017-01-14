@@ -23,7 +23,7 @@ and.left (h y)
 
 In general, t^.id works in the following way.
 - Infer type of `t`
-- If it is of ther form (C ...) where C is a constant,
+- If it is of the form (C ...) where C is a constant,
 search for declaration C.id.
 -/
 example : (∀ x : α, p x ∧ q x) → ∀ y : α, p y  :=

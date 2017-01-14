@@ -1,7 +1,7 @@
 import data.set
 
 /-
-The Lean simplifer can be also use to "flat" nested application of associatiave operators,
+The Lean simplifer can be also use to "flat" nested application of associative operators,
 and "sort" associative/commutative ones.
 
 The Lean simplifier can be viewed as a ordered rewriting system.

@@ -10,7 +10,7 @@ it returns a new term
 
   (op a (op b (op c d)))
 
-and a proof that it is equalt to the given one.
+and a proof that it is equal to the given one.
 -/
 import data.set
 open tactic expr
@@ -60,7 +60,7 @@ meta def flat_with (op : expr) (assoc : expr) : expr → expr → tactic (expr �
 
          congr_arg : ∀ {α : Type u₁} {β : Type u₂} {a₁ a₂ : α} (f : α → β), a₁ = a₂ → f a₁ = f a₂
 
-      It is quite inconvenie to use directly since it has 2 universe metavariables and 4 implicit arguments.
+      It is quite inconvenient to use directly since it has 2 universe metavariables and 4 implicit arguments.
       Thus we use the helper tactic mk_app. It infers implicit arguments using type inference and
       type class resolution.
     -/
@@ -124,7 +124,7 @@ do
   /- The following tactic will fail if the flattening of lhs and rhs are not identical. -/
   guard (flat_lhs = flat_rhs),
   /- If flat_lhs and flat_rhs are the same term, then we build a proof that
-     lhs and rhs are equal using trasitivity and symmetry, and close the main
+     lhs and rhs are equal using transitivity and symmetry, and close the main
      goal using the `exact` tactic.
 
      The notation t₁ >>= t₂ is syntax sugar for (do a ← t₁, t₂ a)

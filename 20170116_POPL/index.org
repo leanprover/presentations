@@ -553,8 +553,15 @@ def f {n : nat} (v : subtype (below n)) : nat :=
   #+END_SRC
 
 
-* SMT tactic framework
+* SMT tactic framework demo
 
+- [[./smt/ex1.lean][ex1.lean]]: basic examples
+
+- [[./smt/ex2.lean][ex2.lean]]: list properties
+
+- [[./smt/ex3.lean][ex3.lean]]: constant folding for a simple expression language
+
+- [[./smt/ex4.lean][ex4.lean]]: separation logic example
 
 
 * Superposition prover
