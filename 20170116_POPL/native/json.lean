@@ -24,4 +24,3 @@ def tokenize : tokenizer_state → option tokenizer_state
 | (some #"\"", remaining, ts, none) :=  some (list.head_option remaining, list.tail remaining, ts, some "")
 | _ := none
 
-
