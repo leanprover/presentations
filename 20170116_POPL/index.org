@@ -798,7 +798,7 @@ meta def compile_defn_to_ir
 * Programming
   - Write a program, verify a property, compile and run
   - No need to configure; convention over configuration
-      #+BEGIN_SRC bash
+      #+BEGIN_SRC
       lean --compile my_source_code.lean
       #+END_SRC
       * Configuration still exists.
