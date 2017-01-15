@@ -52,7 +52,7 @@
 * Introduction: *Lean*
 
 - [[https://leanprover.github.io/introduction_to_lean][Introduction to Lean]]
-- [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 - [[https://leanprover.github.io/programming_in_lean][Programming in Lean]]
 - [[https://leanprover.github.io/logic_and_proof/][Introduction to Logic course]] at CMU
 
@@ -62,11 +62,16 @@
 
 - An interactive theorem prover with powerful automation
 
-- An automated reasoning tool that
+- An *automated reasoning tool* that
   - produces (detailed) proofs,
   - has a rich language,
   - can be used interactively, and
   - is built on a verified mathematical library
+
+- A *programming environment* in which one can
+  - compute with objects with a precise formal semantics,
+  - reason about the results of computation, and
+  - write proof-producing automation
 
 - It is an ongoing and *long long term* effort
 
@@ -215,7 +220,7 @@ check g 0 1
 
 * The Logical Framework
 
-- Chapter 7, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- Chapter 7, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 
 - Inductive families
   #+BEGIN_SRC lean
@@ -239,7 +244,7 @@ check g 0 1
 
 * Recursive equations
 
-  - Chapter 8, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+  - Chapter 8, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 
   - *Recursors* are *inconvenient* to use.
   - Compiler from *recursive equations* to *recursors*.
@@ -290,7 +295,7 @@ def zip {α β : Type}
 
 * Structures
 
-- Chapter 9, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- Chapter 9, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 
 #+BEGIN_SRC lean
 structure point (α : Type) :=
@@ -314,7 +319,7 @@ structure point3d (α : Type) extends point α :=
 
 * Type classes
 
-- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 
 #+BEGIN_SRC lean
 class has_sizeof (α : Type u) :=
@@ -371,7 +376,7 @@ vm_eval sizeof (10, 20)
 
 * Coercions as type classes
 
-- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem proving in Lean]]
+- Chapter 10, [[http://leanprover.github.io/theorem_proving_in_lean][Theorem Proving in Lean]]
 
 #+BEGIN_SRC lean
 class has_coe (α : Type u) (β : Type v) :=
@@ -497,7 +502,7 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - [[./assoc/builtin_ac.lean][=builtin_ac.lean=]]: Lean has builtin support for associative commutative operators,
   but this is not the point of this exercise.
 
-- [[./assoc/flat_assoc.lean][=flat_assoc.lean=]]: a tactic to "flat" nested applications of associative operators. This tactic
+- [[./assoc/flat_assoc.lean][=flat_assoc.lean=]]: a tactic to "flatten" nested applications of associative operators. This tactic
   uses only basic primitives.
 
 - [[./assoc/flat_assoc_trace.lean][=flat_assoc_trace.lean=]]: tracing tactic execution.
@@ -643,7 +648,7 @@ meta def prover := state_t prover_state tactic
 
 - [[./super/clauses.lean][clauses.lean]]: shows the data structure used for clauses
 
-- [[./super/assoc.lean][assoc.lean]]: support for associative-commutative function symbols, as an example we show how to obtain the right inverse from the left inverse in monoids
+- [[./super/assoc.lean][assoc.lean]]: support for associative-commutative function symbols; as an example we show how to obtain the right inverse from the left inverse in monoids
 
 - [[./super/listex.lean][listex.lean]]: reasoning about membership in lists
 

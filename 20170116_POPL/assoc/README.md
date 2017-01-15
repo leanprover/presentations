@@ -5,7 +5,7 @@ Flattening nested applications of associative operators
   but this is not the point of this mini tutorial.
 
 - [flat_assoc.lean](flat_assoc.lean): In this example, we demonstrate how to write
-  a tactic to "flat" nested applications of associative operators. This tactic
+  a tactic to "flatten" nested applications of associative operators. This tactic
   uses only the basic primitives, and does not rely on the Lean simplifier.
 
 - [flat_assoc_trace.lean](flat_assoc_trace.lean): In this example, we show
