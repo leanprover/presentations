@@ -37,8 +37,8 @@
 </section>
 
 <section>
-<section id="slide-orgf7ff9a9">
-<h2 id="orgf7ff9a9">The Lean Theorem Prover Team</h2>
+<section id="slide-orge4bf1d3">
+<h2 id="orge4bf1d3">The Lean Theorem Prover Team</h2>
 <ul>
 <li>The presenters, and</li>
 <li>Jeremy Avigad (CMU),</li>
@@ -51,8 +51,8 @@
 </section>
 </section>
 <section>
-<section id="slide-org2abb8c2">
-<h2 id="org2abb8c2">Many thanks to</h2>
+<section id="slide-orgd56a5e9">
+<h2 id="orgd56a5e9">Many thanks to</h2>
 <ul>
 <li>Soonho Kong (former member)</li>
 <li>Jakob von Raumer (former member)</li>
@@ -73,8 +73,8 @@
 </section>
 </section>
 <section>
-<section id="slide-org6023d08">
-<h2 id="org6023d08">Introduction: <b>Lean</b></h2>
+<section id="slide-orga11455b">
+<h2 id="orga11455b">Introduction: <b>Lean</b></h2>
 <ul>
 <li>New <b>open source</b> theorem prover</li>
 <li>Platform for
@@ -95,11 +95,11 @@
 </section>
 </section>
 <section>
-<section id="slide-org7659efd">
-<h2 id="org7659efd">Introduction: <b>Lean</b></h2>
+<section id="slide-org8c19507">
+<h2 id="org8c19507">Introduction: <b>Lean</b></h2>
 <ul>
 <li><a href="https://leanprover.github.io/introduction_to_lean">Introduction to Lean</a></li>
-<li><a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li><a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 <li><a href="https://leanprover.github.io/programming_in_lean">Programming in Lean</a></li>
 <li><a href="https://leanprover.github.io/logic_and_proof/">Introduction to Logic course</a> at CMU</li>
 
@@ -108,8 +108,8 @@
 </section>
 </section>
 <section>
-<section id="slide-orge5916e0">
-<h2 id="orge5916e0">Main Goal</h2>
+<section id="slide-orgdc39564">
+<h2 id="orgdc39564">Main Goal</h2>
 <p>
 <b>Lean aims to bring two worlds together</b>
 </p>
@@ -117,12 +117,20 @@
 <ul>
 <li>An interactive theorem prover with powerful automation</li>
 
-<li>An automated reasoning tool that
+<li>An <b>automated reasoning tool</b> that
 <ul>
 <li>produces (detailed) proofs,</li>
 <li>has a rich language,</li>
 <li>can be used interactively, and</li>
 <li>is built on a verified mathematical library</li>
+
+</ul></li>
+
+<li>A <b>programming environment</b> in which one can
+<ul>
+<li>compute with objects with a precise formal semantics,</li>
+<li>reason about the results of computation, and</li>
+<li>write proof-producing automation</li>
 
 </ul></li>
 
@@ -133,8 +141,8 @@
 </section>
 </section>
 <section>
-<section id="slide-orgdb2f53b">
-<h2 id="orgdb2f53b">What is new?</h2>
+<section id="slide-orgbc8504e">
+<h2 id="orgbc8504e">What is new?</h2>
 <ul>
 <li><b>Meta-programming</b>
 <ul>
@@ -167,8 +175,8 @@
 </section>
 </section>
 <section>
-<section id="slide-orgd0a9d5f">
-<h2 id="orgd0a9d5f">What is new?</h2>
+<section id="slide-orgcfafb84">
+<h2 id="orgcfafb84">What is new?</h2>
 <ul>
 <li>Small <b>trusted</b> kernel
 <ul>
@@ -197,8 +205,8 @@
 </section>
 </section>
 <section>
-<section id="slide-org6f1e7a0">
-<h2 id="org6f1e7a0">What is new?</h2>
+<section id="slide-orgad701a6">
+<h2 id="orgad701a6">What is new?</h2>
 <ul>
 <li>Simple json-based protocol for communicating with editors
 <ul>
@@ -222,8 +230,8 @@ are written in Lean.</li>
 </section>
 </section>
 <section>
-<section id="slide-orgecf49cd">
-<h2 id="orgecf49cd">What is new?</h2>
+<section id="slide-org064a561">
+<h2 id="org064a561">What is new?</h2>
 <ul>
 <li><b>Bytecode</b> and <b>C++</b> generator</li>
 
@@ -242,8 +250,8 @@ are written in Lean.</li>
 </section>
 </section>
 <section>
-<section id="slide-org4500166">
-<h2 id="org4500166">Agenda</h2>
+<section id="slide-org4368552">
+<h2 id="org4368552">Agenda</h2>
 <ul>
 <li>Lean language</li>
 
@@ -262,8 +270,8 @@ are written in Lean.</li>
 </section>
 </section>
 <section>
-<section id="slide-orga09c392">
-<h2 id="orga09c392">The Logical Framework</h2>
+<section id="slide-org1720dd0">
+<h2 id="org1720dd0">The Logical Framework</h2>
 <ul>
 <li>Dependent lambda calculus</li>
 
@@ -283,8 +291,8 @@ nat → bool                -- Function Space (no dependency)
 </section>
 </section>
 <section>
-<section id="slide-org8cc5116">
-<h2 id="org8cc5116">The Logical Framework</h2>
+<section id="slide-org0147879">
+<h2 id="org0147879">The Logical Framework</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def f (α β : Type) : α → β → α :=
@@ -298,8 +306,8 @@ a
 </section>
 </section>
 <section>
-<section id="slide-orgf031eea">
-<h2 id="orgf031eea">The Logical Framework</h2>
+<section id="slide-org4cc4cfc">
+<h2 id="org4cc4cfc">The Logical Framework</h2>
 <ul>
 <li>Hierarchy of universes</li>
 
@@ -341,8 +349,8 @@ def r (α β : Type*) : α → β → α :=
 </section>
 </section>
 <section>
-<section id="slide-org2a59be1">
-<h2 id="org2a59be1">Implicit arguments</h2>
+<section id="slide-orgf1b31e3">
+<h2 id="orgf1b31e3">Implicit arguments</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">def f (α β : Type u) : α → β → α :=
@@ -363,10 +371,10 @@ check g 0 1
 </section>
 </section>
 <section>
-<section id="slide-orgd00e1b8">
-<h2 id="orgd00e1b8">The Logical Framework</h2>
+<section id="slide-orgadadd3d">
+<h2 id="orgadadd3d">The Logical Framework</h2>
 <ul>
-<li>Chapter 7, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li>Chapter 7, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 
 <li><p>
 Inductive families
@@ -392,8 +400,8 @@ inductive vector (α : Type) : nat → Type
 </section>
 </section>
 <section>
-<section id="slide-orgc22b93a">
-<h2 id="orgc22b93a">Inductive families</h2>
+<section id="slide-org3fc51d6">
+<h2 id="org3fc51d6">Inductive families</h2>
 
 <div class="figure">
 <p><img src="./img/inductive.png" alt="inductive.png" height="600px" />
@@ -403,10 +411,10 @@ inductive vector (α : Type) : nat → Type
 </section>
 </section>
 <section>
-<section id="slide-orgee7eb7a">
-<h2 id="orgee7eb7a">Recursive equations</h2>
+<section id="slide-org49d1b75">
+<h2 id="org49d1b75">Recursive equations</h2>
 <ul>
-<li>Chapter 8, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li>Chapter 8, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 
 <li><b>Recursors</b> are <b>inconvenient</b> to use.</li>
 <li>Compiler from <b>recursive equations</b> to <b>recursors</b>.</li>
@@ -435,8 +443,8 @@ rfl
 </section>
 </section>
 <section>
-<section id="slide-org9046ee7">
-<h2 id="org9046ee7">Recursive equations</h2>
+<section id="slide-org03f86ec">
+<h2 id="org03f86ec">Recursive equations</h2>
 
 <div class="figure">
 <p><img src="./img/compilation.png" alt="compilation.png" height="600px" />
@@ -446,8 +454,8 @@ rfl
 </section>
 </section>
 <section>
-<section id="slide-org9ffa8ab">
-<h2 id="org9ffa8ab">Recursive equations</h2>
+<section id="slide-orgcc296a7">
+<h2 id="orgcc296a7">Recursive equations</h2>
 <ul>
 <li>Dependent pattern matching</li>
 
@@ -478,10 +486,10 @@ def zip {α β : Type}
 </section>
 </section>
 <section>
-<section id="slide-org74a82aa">
-<h2 id="org74a82aa">Structures</h2>
+<section id="slide-orgb95040e">
+<h2 id="orgb95040e">Structures</h2>
 <ul>
-<li>Chapter 9, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li>Chapter 9, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 
 </ul>
 
@@ -510,10 +518,10 @@ structure point3d (α : Type) extends point α :=
 </section>
 </section>
 <section>
-<section id="slide-orgd8f8ccf">
-<h2 id="orgd8f8ccf">Type classes</h2>
+<section id="slide-org091118d">
+<h2 id="org091118d">Type classes</h2>
 <ul>
-<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 
 </ul>
 
@@ -548,8 +556,8 @@ vm_eval sizeof (10, 20)
 </section>
 </section>
 <section>
-<section id="slide-org04842b2">
-<h2 id="org04842b2">Type classes</h2>
+<section id="slide-org16c9b24">
+<h2 id="org16c9b24">Type classes</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">class inhabited (α : Type u) := (default : α)
@@ -580,10 +588,10 @@ class monad (m : Type u → Type v) extends functor m :=
 </section>
 </section>
 <section>
-<section id="slide-org0169db3">
-<h2 id="org0169db3">Coercions as type classes</h2>
+<section id="slide-org71cd1ec">
+<h2 id="org71cd1ec">Coercions as type classes</h2>
 <ul>
-<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem proving in Lean</a></li>
+<li>Chapter 10, <a href="http://leanprover.github.io/theorem_proving_in_lean">Theorem Proving in Lean</a></li>
 
 </ul>
 
@@ -613,8 +621,8 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 </section>
 </section>
 <section>
-<section id="slide-org708524d">
-<h2 id="org708524d">Lean in Action</h2>
+<section id="slide-org3c2c263">
+<h2 id="org3c2c263">Lean in Action</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/intro/ex1.lean&live">Demo</a></li>
 
@@ -623,8 +631,8 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 </section>
 </section>
 <section>
-<section id="slide-org34ce718">
-<h2 id="org34ce718">Meta-programming</h2>
+<section id="slide-orgbb9320c">
+<h2 id="orgbb9320c">Meta-programming</h2>
 <ul>
 <li><b>Extending Lean in Lean</b></li>
 
@@ -650,8 +658,8 @@ meta constant tactic_state : Type
 </section>
 </section>
 <section>
-<section id="slide-org249d474">
-<h2 id="org249d474">Meta-programming</h2>
+<section id="slide-orge3cfd7c">
+<h2 id="orge3cfd7c">Meta-programming</h2>
 
 <div class="figure">
 <p><img src="./img/tactic_state.png" alt="tactic_state.png" height="600px" />
@@ -661,8 +669,8 @@ meta constant tactic_state : Type
 </section>
 </section>
 <section>
-<section id="slide-orgb0930f1">
-<h2 id="orgb0930f1">Meta-programming</h2>
+<section id="slide-orgc9c0c1a">
+<h2 id="orgc9c0c1a">Meta-programming</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">inductive tactic_result (α : Type)
@@ -687,8 +695,8 @@ meta def apply : expr → tactic unit := ...
 </section>
 </section>
 <section>
-<section id="slide-orge67ac38">
-<h2 id="orge67ac38">Meta-programming</h2>
+<section id="slide-orgcaedbd3">
+<h2 id="orgcaedbd3">Meta-programming</h2>
 <ul>
 <li>The <code>by tac</code> instructs Lean to use <code>tac : tactic unit</code> to synthesize
 the missing term.</li>
@@ -700,8 +708,8 @@ the missing term.</li>
 </section>
 </section>
 <section>
-<section id="slide-org5ed0080">
-<h2 id="org5ed0080">Meta-programming</h2>
+<section id="slide-orge53c0d2">
+<h2 id="orge53c0d2">Meta-programming</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/meta/has_to_string.lean&live">Generating a <code>has_to_string</code> instance for enumeration types</a></li>
 
@@ -710,8 +718,8 @@ the missing term.</li>
 </section>
 </section>
 <section>
-<section id="slide-orgb7bb4bb">
-<h2 id="orgb7bb4bb">Interactive mode</h2>
+<section id="slide-org473a863">
+<h2 id="org473a863">Interactive mode</h2>
 <ul>
 <li>Many users want to apply tactics interactively.</li>
 
@@ -741,8 +749,8 @@ exact `(eq.trans h₁ (eq.symm h₂))
 </section>
 </section>
 <section>
-<section id="slide-org7e71556">
-<h2 id="org7e71556">Backward Chaining</h2>
+<section id="slide-org4d73324">
+<h2 id="org4d73324">Backward Chaining</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/backchain/back.lean&live"><code>back.lean</code></a>: simple Lean tactic for list membership goals
 using backward chaining.</li>
@@ -766,13 +774,13 @@ theorem prover.</li>
 </section>
 </section>
 <section>
-<section id="slide-orgc6f0937">
-<h2 id="orgc6f0937">Associative Commutative operators</h2>
+<section id="slide-org085e829">
+<h2 id="org085e829">Associative Commutative operators</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/builtin_ac.lean&live"><code>builtin_ac.lean</code></a>: Lean has builtin support for associative commutative operators,
 but this is not the point of this exercise.</li>
 
-<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/flat_assoc.lean&live"><code>flat_assoc.lean</code></a>: a tactic to "flat" nested applications of associative operators. This tactic
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/flat_assoc.lean&live"><code>flat_assoc.lean</code></a>: a tactic to "flatten" nested applications of associative operators. This tactic
 uses only basic primitives.</li>
 
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/assoc/flat_assoc_trace.lean&live"><code>flat_assoc_trace.lean</code></a>: tracing tactic execution.</li>
@@ -784,8 +792,8 @@ uses only basic primitives.</li>
 </section>
 </section>
 <section>
-<section id="slide-org3e2fe0d">
-<h2 id="org3e2fe0d">SMT tactic framework</h2>
+<section id="slide-org9256560">
+<h2 id="org9256560">SMT tactic framework</h2>
 <ul>
 <li>It implements gadgets found in state-of-the-art <b>SMT solvers</b>
 <ul>
@@ -823,8 +831,8 @@ lemmas used for E-matching, etc.</li>
 </section>
 </section>
 <section>
-<section id="slide-orgef52c03">
-<h2 id="orgef52c03">Lifting <code>tactic ==&gt; smt_tactic</code></h2>
+<section id="slide-org771e229">
+<h2 id="org771e229">Lifting <code>tactic ==&gt; smt_tactic</code></h2>
 <ul>
 <li>Any <code>tactic</code> that does not change the set of hypotheses can be easily lifted
 because they do not invalidate the <code>smt_state</code>.</li>
@@ -844,8 +852,8 @@ the affected <code>smt_goal</code>'s are reconstructed from scratch.</li>
 </section>
 </section>
 <section>
-<section id="slide-org73fe975">
-<h2 id="org73fe975">SMT interactive mode</h2>
+<section id="slide-orgf266be0">
+<h2 id="orgf266be0">SMT interactive mode</h2>
 <div class="org-src-container">
 
 <juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">lemma app_assoc (l₁ l₂ l₃ : list α) : app (app l₁ l₂) l₃ = app l₁ (app l₂ l₃) :=
@@ -860,8 +868,8 @@ end
 </section>
 </section>
 <section>
-<section id="slide-orgfb639ae">
-<h2 id="orgfb639ae">SMT tactic framework demo</h2>
+<section id="slide-org5ebc715">
+<h2 id="org5ebc715">SMT tactic framework demo</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/smt/ex1.lean&live">ex1.lean</a>: basic examples</li>
 
@@ -877,8 +885,8 @@ end
 </section>
 </section>
 <section>
-<section id="slide-orgdacd6a5">
-<h2 id="orgdacd6a5">Superposition prover</h2>
+<section id="slide-orgd56e61d">
+<h2 id="orgd56e61d">Superposition prover</h2>
 <ul>
 <li>Implemented 100% in Lean</li>
 <li>2200 lines of code
@@ -886,16 +894,18 @@ end
 <li>including toy SAT solver</li>
 
 </ul></li>
-<li>Complete for first-order logic with equality</li>
 <li>Uses Lean expressions, unification, proofs</li>
+<li>Complete for first-order logic with equality</li>
+
+<li>Similar to metis in Isabelle</li>
 
 </ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org11495e7">
-<h2 id="org11495e7">Superposition prover</h2>
+<section id="slide-orgf9f6a55">
+<h2 id="orgf9f6a55">Superposition prover</h2>
 <ul>
 <li>Based on refutation of formulas in clause normal form (CNF)</li>
 
@@ -924,8 +934,8 @@ p 3 ∧ (∀x, ¬p x ∨ q (x+1)) ∧ ¬q 4
 </section>
 </section>
 <section>
-<section id="slide-org8525d22">
-<h2 id="org8525d22">Superposition prover</h2>
+<section id="slide-org9aa546e">
+<h2 id="org9aa546e">Superposition prover</h2>
 <ul>
 <li>Inferences (modulo unification)</li>
 
@@ -949,8 +959,35 @@ p 3 ∧ (∀x, ¬p x ∨ q (x+1)) ∧ ¬q 4
 </section>
 </section>
 <section>
-<section id="slide-org9aaf7da">
-<h2 id="org9aaf7da">Superposition prover</h2>
+<section id="slide-org6d81a05">
+<h2 id="org6d81a05">Superposition prover</h2>
+<ul>
+<li>Gadgets
+<ul>
+<li>Term ordering</li>
+<li>Selection</li>
+<li>Subsumption</li>
+<li>Demodulation</li>
+<li>Splitting</li>
+
+</ul></li>
+
+<li>"Best-effort" intuitionist proofs</li>
+
+<li>To be done:
+<ul>
+<li>Term indexing</li>
+<li>AC redundancy elimination</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-orgc0fe620">
+<h2 id="orgc0fe620">Superposition prover</h2>
 <ul>
 <li>State transformer of tactic monad</li>
 
@@ -972,14 +1009,14 @@ meta def prover := state_t prover_state tactic
 </section>
 </section>
 <section>
-<section id="slide-org154531a">
-<h2 id="org154531a">Superposition prover demos</h2>
+<section id="slide-orgc5feb67">
+<h2 id="orgc5feb67">Superposition prover demos</h2>
 <ul>
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/usage.lean&live">usage.lean</a>: shows the basic usage of the super tactic</li>
 
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/clauses.lean&live">clauses.lean</a>: shows the data structure used for clauses</li>
 
-<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/assoc.lean&live">assoc.lean</a>: support for associative-commutative function symbols, as an example we show how to obtain the right inverse from the left inverse in monoids</li>
+<li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/assoc.lean&live">assoc.lean</a>: support for associative-commutative function symbols; as an example we show how to obtain the right inverse from the left inverse in monoids</li>
 
 <li><a href="https://leanprover.github.io/programming_in_lean/?url=https://github.com/leanprover/presentations/blob/master/20170116_POPL/super/listex.lean&live">listex.lean</a>: reasoning about membership in lists</li>
 
@@ -991,15 +1028,17 @@ meta def prover := state_t prover_state tactic
 </section>
 </section>
 <section>
-<section id="slide-org79fea8e">
-<h2 id="org79fea8e">Superposition prover</h2>
+<section id="slide-orgaad5811">
+<h2 id="orgaad5811">Superposition prover</h2>
 <ul>
 <li>Future work
 <ul>
 <li>Performance</li>
-<li>Integration with simplification rules</li>
-<li>Integration with standard library</li>
+<li>Application of simplification rules</li>
+<li>Use of standard library</li>
+<li>Integration with SMT tactics</li>
 <li>Better clause representation</li>
+<li>Heterogeneous equality</li>
 <li>Configurability</li>
 <li>"Leanhammer"</li>
 
@@ -1010,8 +1049,8 @@ meta def prover := state_t prover_state tactic
 </section>
 </section>
 <section>
-<section id="slide-org5aeee30">
-<h2 id="org5aeee30">Profiler</h2>
+<section id="slide-orgb7b1f6f">
+<h2 id="orgb7b1f6f">Profiler</h2>
 <ul>
 <li>Based on sampling</li>
 
@@ -1026,8 +1065,8 @@ meta def prover := state_t prover_state tactic
 </section>
 </section>
 <section>
-<section id="slide-org8e55641">
-<h2 id="org8e55641">Debugger</h2>
+<section id="slide-orgae5a6a2">
+<h2 id="orgae5a6a2">Debugger</h2>
 <ul>
 <li>We can monitor the VM execution.</li>
 
@@ -1050,8 +1089,8 @@ meta constant vm_monitor.register : name → command
 </section>
 </section>
 <section>
-<section id="slide-orga168dd2">
-<h2 id="orga168dd2">Debugger</h2>
+<section id="slide-orgf1f047f">
+<h2 id="orgf1f047f">Debugger</h2>
 <ul>
 <li>Lean comes with a simple CLI debugger implemented in Lean
 on top of the VM monitor API.</li>
@@ -1078,10 +1117,10 @@ run_command vm_monitor.register `debugger.monitor
 </section>
 </section>
 <section>
-<section id="slide-orga7402df">
-<h2 id="orga7402df">Native Compiler</h2>
+<section id="slide-org582a87e">
+<h2 id="org582a87e">Native Compiler</h2>
 <ul>
-<li>Lean is able to compile your programs, no configuration needed</li>
+<li>Lean is able to compile your programs <b>no</b> configuration needed</li>
 
 </ul>
 
@@ -1101,20 +1140,21 @@ lean --compile hello.lean
 </pre>
 
 <ul>
-<li>Goal is to produce efficient native code give a Lean term</li>
+<li>Goal is to produce efficient native code given a Lean term</li>
 <li>Assign computational intepretations to programs outside the logic (i.e <code>io</code>)</li>
-<li>Verify and execute programs with <b>no</b> friction</li>
+<li><b>Verify</b> and <b>execute</b> programs <b>without</b> friction</li>
 
 </ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org73aceb4">
-<h2 id="org73aceb4">Native Compiler Design</h2>
+<section id="slide-orge57957a">
+<h2 id="orge57957a">Native Compiler Design</h2>
 <ul>
-<li>Use C++ as high level assembler, makes code
-generation and linking with runtime easy</li>
+<li>Use C++ as a high level assembler, makes code
+generation, linking with runtime, and calling
+into the VM easy</li>
 <li>Current compiler is the third generation
 <ul>
 <li>Initial prototype was implemented in C++</li>
@@ -1122,8 +1162,9 @@ generation and linking with runtime easy</li>
 </ul></li>
 <li>How to increase:
 <ul>
-<li>confidence in correctness</li>
-<li>ease of implementation</li>
+<li>Confidence in correctness</li>
+<li>Ease of implementation</li>
+<li>Reusability</li>
 
 </ul></li>
 
@@ -1132,25 +1173,25 @@ generation and linking with runtime easy</li>
 </section>
 </section>
 <section>
-<section id="slide-orga8c8363">
-<h2 id="orga8c8363">Self Hosting</h2>
+<section id="slide-orga03ebe3">
+<h2 id="orga03ebe3">Self Hosting</h2>
 <ul>
 <li>Application of a repeated theme: script Lean in Lean
 <ul>
 <li>shares phases with VM compiler</li>
 
 </ul></li>
-<li>Transform higher order dependently typed lambda
-calculus to an IR:
+<li>Transform higher order, dependently typed lambda
+calculus to <code>ir</code>:
 <ul>
-<li>a C-like imperative language in A Normal Form.</li>
+<li>an imperative language in A Normal Form.</li>
 
 </ul></li>
 <li>Denote IR into C++
 <ul>
-<li>easier to prototype and configure then LLVM</li>
-<li>easily call runtime primitives</li>
-<li>rely on standard C++ optimizations</li>
+<li>Easier to prototype and configure then LLVM</li>
+<li>Easily call runtime primitives</li>
+<li>Rely on standard C++ optimizations</li>
 
 </ul></li>
 <li>Enables verification of the compiler from <code>expr</code> to <code>ir</code></li>
@@ -1160,8 +1201,8 @@ calculus to an IR:
 </section>
 </section>
 <section>
-<section id="slide-org7ba4a77">
-<h2 id="org7ba4a77">Self Hosting</h2>
+<section id="slide-org3099997">
+<h2 id="org3099997">Self Hosting</h2>
 <ul>
 <li>A fragment of the IR compiler written in Lean</li>
 
@@ -1181,11 +1222,22 @@ calculus to an IR:
 </juicy-ace-editor>
 </div>
 <ul>
-<li>Able to use:
+<li><p>
+able to use:
+</p>
 <ul>
-<li>Monad transformers (i.e <code>ir_compiler</code>)</li>
+<li>Monad transformers</li>
+
+</ul>
+<div class="org-src-container">
+
+<juicy-ace-editor mode="ace/mode/lean" theme="ace/theme/chrome" fontsize="20px">@[reducible] meta def ir_compiler (A : Type) :=
+resultT (state ir_compiler_state) error A
+</juicy-ace-editor>
+</div>
+<ul>
 <li>Higher level operations, reduces boilerplate
-present in C++ prototype</li>
+present in C++ prototype (i.e <code>monad.map</code>)</li>
 <li>Reason and verify properties about
 the compiler</li>
 
@@ -1196,8 +1248,8 @@ the compiler</li>
 </section>
 </section>
 <section>
-<section id="slide-org47f1a0c">
-<h2 id="org47f1a0c">Compiler Design</h2>
+<section id="slide-orgee6dde6">
+<h2 id="orgee6dde6">Compiler Design</h2>
 
 <div class="figure">
 <p><img src="./img/backend_diagram.png" alt="backend_diagram.png" height="600px" />
@@ -1207,29 +1259,45 @@ the compiler</li>
 </section>
 </section>
 <section>
-<section id="slide-org3a54446">
-<h2 id="org3a54446">Efficient tactics</h2>
+<section id="slide-org4d455ba">
+<h2 id="org4d455ba">Efficient tactics</h2>
 <ul>
-<li>Write tactics to script low level automation in Lean</li>
-<li>Accelerate tactics via compilation, the compiler should
-mitigate the cost of using Lean instead of C++</li>
-<li>Build shared library per package dynamically load
-at runtime</li>
+<li>Tactics written in Lean are accesible to average user
+<ul>
+<li>Enables scripting low level automation</li>
+
+</ul></li>
+<li>Accelerate tactics using compilation, and optimization</li>
+<li>Build shared library per package; dynamically load at runtime</li>
 
 </ul>
+
+<div class="figure">
+<p><img src="./img/package_compile.png" alt="package_compile.png" />
+</p>
+</div>
 
 </section>
 </section>
 <section>
-<section id="slide-org04a1c85">
-<h2 id="org04a1c85">Execute programs</h2>
+<section id="slide-org66af6eb">
+<h2 id="org66af6eb">Programming</h2>
 <ul>
-<li>Write programs, verify properties &amp; execute</li>
-<li>No need to configure extraction, convention over configuration</li>
-<li>Future plans for user level extension, philoshophy is well-designed libraries should package:
+<li>Write a program, verify a property, compile and run</li>
+<li><p>
+No need to configure; convention over configuration
+</p>
+<pre  class="example">
+lean --compile my_source_code.lean
+</pre>
 <ul>
-<li>Inductive types, and their operations</li>
-<li>Lemmas about the types, and definitions exposed by the library</li>
+<li>Configuration still exists.</li>
+
+</ul></li>
+<li>Future plans for user extension, philoshophy is well-designed libraries should package:
+<ul>
+<li>Inductive types and their operations</li>
+<li>Lemmas about types and definitions in the library</li>
 <li>Tactics for reasoning about the library</li>
 <li>Refinements for executing the library efficiently</li>
 
@@ -1240,20 +1308,28 @@ at runtime</li>
 </section>
 </section>
 <section>
-<section id="slide-org14542d0">
-<h2 id="org14542d0">In Progress</h2>
+<section id="slide-org957c76b">
+<h2 id="org957c76b">Work in progress</h2>
 <ul>
+<li>Package level compilation
+<ul>
+<li>Compile entire package into native code, which can be loaded
+by the VM</li>
+<li>Implemented but needs multi-platform support and polish</li>
+
+</ul></li>
 <li>Allow user provided IR refinements, with refinement proofs
 <ul>
 <li>Basic support for replacing types + operations with
 implementations in IR</li>
 
 </ul></li>
-<li>Package level compilation
+<li>The version of the native compiler in <code>master</code> is incomplete</li>
+<li>The next iteration is nearing completion, and contains
+many of the features discussed above.
 <ul>
-<li>Compile entire package into native code, which can be loaded
-by the VM</li>
-<li>Implemented but needs multi-platform support and polish</li>
+<li>More details here:
+<a href="https://github.com/leanprover/lean/pull/1241">https://github.com/leanprover/lean/pull/1241</a></li>
 
 </ul></li>
 
@@ -1262,18 +1338,29 @@ by the VM</li>
 </section>
 </section>
 <section>
-<section id="slide-orgfa65689">
-<h2 id="orgfa65689">Future Work</h2>
+<section id="slide-orgd506bb5">
+<h2 id="orgd506bb5">Work in progress</h2>
+
+<div class="figure">
+<p><img src="./img/native_wip.png" alt="native_wip.png" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org5d361f4">
+<h2 id="org5d361f4">Future Work</h2>
 <ul>
-<li>Framework for rewriting based on equality (in the theory)
+<li>Framework for rewriting based on equality (in the theory, i.e <code>eq</code> <code>heq</code>)
 <ul>
-<li>We can use exisiting simplifier to do optimizations</li>
+<li>We can use exisiting simplifier as an optimizer</li>
 
 </ul></li>
 <li>Formally verifiy compiler
 <ul>
-<li>Finish IR typechecker, and type system</li>
 <li>Give formal semantics to all IRs</li>
+<li>Finish IR typechecker, and type system</li>
 <li>Apply traditional compiler verification techniques (CompCert, &#x2026;)</li>
 
 </ul></li>
@@ -1283,14 +1370,21 @@ by the VM</li>
 </section>
 </section>
 <section>
-<section id="slide-org5590201">
-<h2 id="org5590201">Native Compiler Demo</h2>
+<section id="slide-orgea0d08a">
+<h2 id="orgea0d08a">Native Compiler Demo</h2>
+<ul>
+<li>Configuring the native compiler</li>
+<li>Inspecting generated code</li>
+<li>Executing it in ahead of time mode</li>
+<li>More</li>
+
+</ul>
 
 </section>
 </section>
 <section>
-<section id="slide-org3ecff8c">
-<h2 id="org3ecff8c">Project suggestions</h2>
+<section id="slide-org9c6eea4">
+<h2 id="org9c6eea4">Project suggestions</h2>
 <ul>
 <li>Write tactics for automating your favorite project.</li>
 
@@ -1319,8 +1413,8 @@ Consider similar <a href="https://github.com/rust-lang-nursery/rustfmt">tools</a
 </section>
 </section>
 <section>
-<section id="slide-org9216d19">
-<h2 id="org9216d19">Thank you</h2>
+<section id="slide-orgf31d305">
+<h2 id="orgf31d305">Thank you</h2>
 <ul>
 <li>Website: <a href="http://leanprover.github.io/">http://leanprover.github.io/</a></li>
 
