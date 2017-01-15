@@ -714,7 +714,7 @@ run_command vm_monitor.register `debugger.monitor
 #+END_SRC
 
 * Native Compiler
-- Lean is able to compile your programs, no configuration needed
+- Lean is able to compile your programs *no* configuration needed
 
 #+BEGIN_SRC lean
 import system.io
@@ -729,31 +729,33 @@ lean --compile hello.lean
 "Hello Lean!"
 #+END_SRC
 
-- Goal is to produce efficient native code give a Lean term
+- Goal is to produce efficient native code given a Lean term
 - Assign computational intepretations to programs outside the logic (i.e =io=)
-- Verify and execute programs with *no* friction
+- *Verify* and *execute* programs *without* friction
 
 * Native Compiler Design
 
-- Use C++ as high level assembler, makes code
-  generation and linking with runtime easy
+- Use C++ as a high level assembler, makes code
+  generation, linking with runtime, and calling
+  into the VM easy
 - Current compiler is the third generation
   - Initial prototype was implemented in C++
 - How to increase:
-  - confidence in correctness
-  - ease of implementation
+  - Confidence in correctness
+  - Ease of implementation
+  - Reusability
 
 * Self Hosting
 
 - Application of a repeated theme: script Lean in Lean
     - shares phases with VM compiler
-- Transform higher order dependently typed lambda
-  calculus to an IR:
-    - a C-like imperative language in A Normal Form.
+- Transform higher order, dependently typed lambda
+  calculus to =ir=:
+    - an imperative language in A Normal Form.
 - Denote IR into C++
-    - easier to prototype and configure then LLVM
-    - easily call runtime primitives
-    - rely on standard C++ optimizations
+    - Easier to prototype and configure then LLVM
+    - Easily call runtime primitives
+    - Rely on standard C++ optimizations
 - Enables verification of the compiler from =expr= to =ir=
 
 * Self Hosting
@@ -770,10 +772,14 @@ meta def compile_defn_to_ir
       params := (list.zip params param_tys)
   in pure (ir.defn.mk bool.tt decl_name params (ir.ty.object none) body')
 #+END_SRC
-- Able to use:
-  - Monad transformers (i.e =ir_compiler=)
+- able to use:
+  - Monad transformers
+  #+BEGIN_SRC lean
+  @[reducible] meta def ir_compiler (A : Type) :=
+  resultT (state ir_compiler_state) error A
+  #+END_SRC
   - Higher level operations, reduces boilerplate
-    present in C++ prototype
+    present in C++ prototype (i.e =monad.map=)
   - Reason and verify properties about
     the compiler
 
@@ -783,39 +789,55 @@ meta def compile_defn_to_ir
 [[./img/backend_diagram.png]]
 
 * Efficient tactics
-  - Write tactics to script low level automation in Lean
-  - Accelerate tactics via compilation, the compiler should
-   mitigate the cost of using Lean instead of C++
-  - Build shared library per package dynamically load
-    at runtime
+  - Tactics written in Lean are accesible to average user
+    - Enables scripting low level automation
+  - Accelerate tactics using compilation, and optimization
+  - Build shared library per package; dynamically load at runtime
+[[./img/package_compile.png]]
 
-* Execute programs
-  - Write programs, verify properties & execute
-  - No need to configure extraction, convention over configuration
-  - Future plans for user level extension, philoshophy is well-designed libraries should package:
-    - Inductive types, and their operations
-    - Lemmas about the types, and definitions exposed by the library
+* Programming
+  - Write a program, verify a property, compile and run
+  - No need to configure; convention over configuration
+      #+BEGIN_SRC bash
+      lean --compile my_source_code.lean
+      #+END_SRC
+      * Configuration still exists.
+  - Future plans for user extension, philoshophy is well-designed libraries should package:
+    - Inductive types and their operations
+    - Lemmas about types and definitions in the library
     - Tactics for reasoning about the library
     - Refinements for executing the library efficiently
 
-* In Progress
-  - Allow user provided IR refinements, with refinement proofs
-    - Basic support for replacing types + operations with
-      implementations in IR
+* Work in progress
   - Package level compilation
-    - Compile entire package into native code, which can be loaded
+    * Compile entire package into native code, which can be loaded
       by the VM
-    - Implemented but needs multi-platform support and polish
+    * Implemented but needs multi-platform support and polish
+  - Allow user provided IR refinements, with refinement proofs
+    * Basic support for replacing types + operations with
+      implementations in IR
+  - The version of the native compiler in =master= is incomplete
+  - The next iteration is nearing completion, and contains
+    many of the features discussed above.
+    * More details here:
+      https://github.com/leanprover/lean/pull/1241
+
+* Work in progress
+[[./img/native_wip.png]]
 
 * Future Work
-  - Framework for rewriting based on equality (in the theory)
-    - We can use exisiting simplifier to do optimizations
+  - Framework for rewriting based on equality (in the theory, i.e =eq= =heq=)
+    - We can use exisiting simplifier as an optimizer
   - Formally verifiy compiler
-    - Finish IR typechecker, and type system
     - Give formal semantics to all IRs
+    - Finish IR typechecker, and type system
     - Apply traditional compiler verification techniques (CompCert, ...)
 
 * Native Compiler Demo
+- Configuring the native compiler
+- Inspecting generated code
+- Executing it in ahead of time mode
+- More
 
 * Project suggestions
 
