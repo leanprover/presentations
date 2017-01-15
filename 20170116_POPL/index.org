@@ -569,8 +569,10 @@ def f {n : nat} (v : subtype (below n)) : nat :=
 - Implemented 100% in Lean
 - 2200 lines of code
  - including toy SAT solver
-- Complete for first-order logic with equality
 - Uses Lean expressions, unification, proofs
+- Complete for first-order logic with equality
+
+- Similar to metis in Isabelle
 
 * Superposition prover
 
@@ -607,6 +609,21 @@ p 3 ∧ (∀x, ¬p x ∨ q (x+1)) ∧ ¬q 4
 
 * Superposition prover
 
+- Gadgets
+  - Term ordering
+  - Selection
+  - Subsumption
+  - Demodulation
+  - Splitting
+
+- "Best-effort" intuitionist proofs
+
+- To be done:
+  - Term indexing
+  - AC redundancy elimination
+
+* Superposition prover
+
 - State transformer of tactic monad
 
 #+BEGIN_SRC lean
@@ -637,9 +654,11 @@ meta def prover := state_t prover_state tactic
 
 - Future work
   - Performance
-  - Integration with simplification rules
-  - Integration with standard library
+  - Application of simplification rules
+  - Use of standard library
+  - Integration with SMT tactics
   - Better clause representation
+  - Heterogeneous equality
   - Configurability
   - "Leanhammer"
 

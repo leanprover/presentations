@@ -28,8 +28,8 @@ example {α a} {s t : list α} : a ∉ s → a ∉ t → a ∉ s ++ t := by supe
 example {α a} {s t : list α} : a ∈ s ∨ a ∈ t ∨ a ∉ t ++ s := by super list.mem_append_iff
 example {α a b} {t : list α} : a = b ∨ a ∈ t ∨ a ∉ t ++ [b] ++ t := by super list.mem_append_iff
 
--- since super tries to produce constructive proofs, it can reason in other
--- types than Prop as well:
+-- because super attempts to produce constructive proofs, it can also
+-- work in other types than Prop:
 universe variables u v
 example {α : Type u} [comm_semigroup α] {P : list α → Type.{v}}
   (h : ∀x y zs, P (x::y::zs) → P (y::x::zs)) :
