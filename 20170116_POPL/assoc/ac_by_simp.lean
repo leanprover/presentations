@@ -82,7 +82,7 @@ do
   S ← return simp_lemmas.mk,
   S ← S^.add h_comm,
   S ← S^.add h_assoc,
-  h_left_comm ← to_expr `(left_comm_rw %%op %%h_comm %%h_assoc) >>= whnf,
+  h_left_comm ← to_expr `(left_comm_rw %%op %%h_comm %%h_assoc),
   S^.add h_left_comm
 
 declare_trace sort_ac
