@@ -327,7 +327,8 @@ class has_sizeof (α : Type u) :=
 
 variables {α : Type u} {β : Type v}
 
-def sizeof [has_sizeof α] : α → nat
+def sizeof [has_sizeof α] : α → nat :=
+has_sizeof.sizeof
 
 instance : has_sizeof nat := ⟨λ a : nat, a⟩
 -- ⟨...⟩ is the anonymous constructor
