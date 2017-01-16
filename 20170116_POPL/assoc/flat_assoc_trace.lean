@@ -82,9 +82,9 @@ do
      t_fmt ← pp t,
      trace $ to_fmt ">> a_refl_core " ++ t_fmt),
   (lhs, rhs) ← match_eq t,
-  when_tracing `flat_assoc (trace ">>> formating lhs"),
+  when_tracing `flat_assoc (trace ">>> flattening lhs"),
   (flat_lhs, h₁) ← flat_core op assoc lhs,
-  when_tracing `flat_assoc (trace ">>> formating rhs"),
+  when_tracing `flat_assoc (trace ">>> flattening rhs"),
   (flat_rhs, h₂) ← flat_core op assoc rhs,
   guard (flat_lhs = flat_rhs),
   to_expr `(eq.trans %%h₁ (eq.symm %%h₂)) >>= exact
