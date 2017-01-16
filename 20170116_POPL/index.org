@@ -370,8 +370,8 @@ vm_eval sizeof (10, 20)
   (map : Π {α β : Type u}, (α → β) → f α → f β)
 
   class monad (m : Type u → Type v) extends functor m :=
-  (ret  : Π {α : Type u}, α → M α)
-  (bind : Π {α β : Type u}, M α → (α → m β) → m β)
+  (ret  : Π {α : Type u}, α → m α)
+  (bind : Π {α β : Type u}, m α → (α → m β) → m β)
   #+END_SRC
 
 * Coercions as type classes
@@ -396,7 +396,7 @@ def below (n : nat) : nat → Prop :=
 
 def f {n : nat} (v : subtype (below n)) : nat :=
    v + 1
---^ Coercion used here
+ --^ Coercion used here
 #+END_SRC
 
 * Lean in Action
