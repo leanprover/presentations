@@ -1,0 +1,214 @@
+#+Title: Lean 4: Reimplementing Lean in Lean
+#+Author:  @@html:<br>@@ [[https://pp.ipd.kit.edu/person.php?id=144][Sebastian Ullrich (Karlsruhe Institute of Technology)]]
+#+Date:   Microsoft Research, Redmond, 2018/10/12
+#+REVEAL_HLEVEL: 3
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: soonho
+#+OPTIONS: toc:nil reveal_mathjax:t num:nil reveal_center:nil reveal_control:t reveal_overview:t reveal_history:t reveal_progress:t
+#+OPTIONS: reveal_rolling_links:nil
+#+OPTIONS: reveal_width:1000 reveal_height:800
+#+REVEAL_MIN_SCALE: 1.0
+#+REVEAL_MAX_SCALE: 1.0
+#+REVEAL_ACE_THEME: ace/theme/chrome
+#+REVEAL_ACE_FONTSIZE: 20px
+#+REVEAL_EXTRA_CSS: ./local.css
+#+REVEAL_EXTRA_CSS: ./chrome.css
+
+* A brief history of Lean
+- Lean 0.1 (2014)
+- Lean 2 (2015)
+  - first official release 
+  - fixed tactic language
+- Lean 3 (2017)
+  - make Lean a *meta-programming* language: build tactics in Lean
+  - backed by a bytecode interpreter
+- Lean 4 (201X)
+  - make Lean a *general-purpose* language: native back end, FFI, ...
+  - reimplement Lean in Lean
+
+* Lean 3 frontend
+
+#+attr_html: :height 600px
+[[./img/pipeline3.svg]]
+ 
+* Lean 4 frontend
+
+#+attr_html: :height 600px
+[[./img/pipeline4.svg]]
+
+* Writing a parser in 2018
+
+Modern ASTs should be usable not just by the compiler but also external tools like
+- code editors
+- documentation generators
+- refactoring tools
+- ...
+
+For that, they should capture
+- precise source locations
+- whitespace and comments
+- erroneous input
+
+As seen in
+- Roslyn (C# compiler)
+- TypeScript
+
+* Writing a parser in 2018
+
+#+REVEAL_HTML: <div data-markdown="include/syntax.md"></div>
+
+# #+BEGIN_SRC lean
+# structure source_info :=
+# (leading  : substring)
+# (pos      : parsec.position)
+# (trailing : substring)
+# 
+# structure syntax_atom :=
+# (info : option source_info := none) (val : string)
+# 
+# structure syntax_node (syntax : Type) :=
+# (kind : option syntax_node_kind) (args : list syntax)
+# 
+# inductive syntax
+# | atom (val : syntax_atom)
+# | node (val : syntax_node syntax)
+# | missing
+# #+END_SRC
+
+* Writing an *ITP* parser in 2018
+
+*Lean 3*: basic lexer, LL(1) recursive descent parser
+
+*Isabelle*: basic lexer, Earley parser for arbitrary context-free grammars, delimited terms
+
+#+ATTR_REVEAL: :frag t :frag_idx 1
+*Lean 4*:
+#+ATTR_REVEAL: :frag t :frag_idx 1
+- *no* built-in lexer
+  - make it possible to embed arbitrary DSLs in Lean
+- arbitrary *char-based* parsers built on top of monadic parser combinators
+- local arbitrary backtracking via /longest match/ combinator
+  - possibly combine with packrat parser-like cache
+ 
+* Syntax tree-constructing parser combinators
+
+#+REVEAL_HTML: <div data-markdown="include/anon.md"></div>
+
+* Syntax tree-constructing parser combinators
+
+#+REVEAL_HTML: <div data-markdown="include/anon.md"></div>
+
+#+REVEAL_HTML: <div data-markdown="include/view.md"></div>
+
+* Lean 4 parser status
+
+- able to parse all ~2000 LoC of =core.lean=
+- produced syntax tree round-trips
+
+#+REVEAL_HTML: <div data-markdown="include/perf.md"></div>
+
+Mostly an issue with Lean 3 code generation for monadic programs:
+- interpreted
+- no specialization to avoid closures
+
+#+REVEAL_HTML: <div data-markdown="include/eta.md"></div>
+
+* Components in progress
+
+* Macro expander
+
+Steal the best ideas from Scheme/Racket:
+
+- top-down expansion, with =local-expand= override
+- ensure hygiene by marking identifiers with sets of scopes
+
+Work on *formalizing hygiene* and provide verification condition for user-created macros
+
+$\Sigma_{surf} \vdash s =_{\alpha} t \;\Rightarrow\; \Sigma_{core} \vdash f(s) =_{\alpha} f(t)$
+
+* Elaborator
+
+The Lean 3 elaborator has a strict left-to-right elaboration order:
+
+#+REVEAL_HTML: <div data-markdown="include/elab.md"></div>
+
+When we rewrite it in Lean, we want to switch to a *dependency-based* ordering
+
+- based on a *coroutine monad*
+- When some information is needed, but not yet known, *yield*
+- When a metavariable is assigned, *resume* dependent elaborators
+
+* Coroutines for interactive code processing
+
+The parser and elaborator need to be suspended when reaching the end of the screen
+
+*Lean 3*: Store/restore internal state to/from snapshot structure (fragile)
+
+*Lean 4*: Use coroutine on top level and *yield* after each command\\
+${\Rightarrow}$ State is captured implicitly
+
+Resuming a coroutine does not mutate it\\
+${\Rightarrow}$ We can store all yield points and *resume* the one just above an edit
+
+* Making it fast: code generation
+
+- support for *unboxed* primitive types
+- boxed objects *reference counted*
+  - use destructive updates on RC=1
+  - use non-atomic RC operations by default, mark object graphs as multi-threaded in threading primitives
+- functional IR for GHC-like optimizations
+  - using *verified* rewrite rules
+- imperative IR for RC optimizations
+- interpreter/JIT backend and native backend
+- foreign function interface
+ 
+* Making it fast: imports
+
+*Issue*: Deserializing imports on startup takes a long time
+
+#+ATTR_REVEAL: :frag t
+*Solution*: Don't deserialize imports
+
+#+ATTR_REVEAL: :frag t
+- directly store run-time representation using relative pointers
+- use =mmap= for on-demand reading and sharing between multiple Lean processes
+
+* Making it fast: monad transformers
+
+Standard monad transformer implementations: Allocate on basically every operation
+
+#+REVEAL_HTML: <div data-markdown="include/monad1.md"></div>
+
+Alternative implementations optimized for destructive updates
+
+#+REVEAL_HTML: <div data-markdown="include/monad2.md"></div>
+
+* Conclusion
+
+Make Lean *sufficiently fast* for real-world programs, tactics, and decision procedures
+
+Give users *full access* to internals by reimplementing them in Lean
+
+* Formal definition of hygiene
+
+#+BEGIN_CENTER
+$\Sigma_{surf} \vdash s =_{\alpha} t \;\Rightarrow\; \Sigma_{core} \vdash f(s) =_{\alpha} f(t)$
+
+$\Sigma \vdash s =_{\alpha} t \;\Leftrightarrow\; \exists \Psi. s \bowtie t = \Psi \wedge \forall x, y \in s. [\Sigma, s \vdash x \sim y \Leftrightarrow \Sigma, t \vdash \Psi(x) \sim \Psi(y) ]$
+#+END_CENTER
+
+# * Lean 4 object layout
+# 
+# Primitive types like =uint32= are *unboxed*. Other types are *boxed*, but can contain unboxed data.
+# 
+# #+BEGIN_SRC lean
+# structure point :=
+# (x y : uint32)
+# #+END_SRC
+# 
+# Objects can be stored in 4 different kinds of memory:
+# - *Multi-threaded heap*: reference-counted (atomically)
+# - *Single-threaded heap*: Non-atomic reference counts. Objects are upgraded to _multi-threaded_ status
+# when passed to a threading primitive.
+# - *Stack*: no reference count
+# - *Region*: no reference count, relative pointers

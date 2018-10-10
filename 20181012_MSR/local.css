@@ -1,0 +1,10 @@
+.reveal p {
+    text-align: left;
+}
+.ace-chrome span:hover {
+    background-color: rgba(0, 0, 255, 0.06);
+}
+pre.ace-chrome {
+    padding: 15px;
+    padding-left: 30px;
+}

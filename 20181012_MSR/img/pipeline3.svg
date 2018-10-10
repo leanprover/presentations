@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="17cm" height="25cm" viewBox="138 118 323 483" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #1e90ff" x="140" y="120" width="40" height="40" rx="6" ry="6"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #0000ff" x="140" y="120" width="40" height="40" rx="6" ry="6"/>
+  </g>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="180" y="145.628">
+    <tspan x="182" y="145.628">  C++</tspan>
+  </text>
+  <g>
+    <rect style="fill: #ffa500" x="140" y="180" width="40" height="40" rx="6" ry="6"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #d28a05" x="140" y="180" width="40" height="40" rx="6" ry="6"/>
+  </g>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="180" y="205.875">
+    <tspan x="182" y="205.875">  Lean</tspan>
+  </text>
+  <g>
+    <rect style="fill: #1e90ff" x="300" y="180" width="160" height="100" rx="6" ry="6"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #0000ff" x="300" y="180" width="160" height="100" rx="6" ry="6"/>
+  </g>
+  <text font-size="22.5778" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="380" y="237.825">
+    <tspan x="380" y="237.825">Parser</tspan>
+  </text>
+  <g>
+    <rect style="fill: #1e90ff" x="300" y="340" width="160" height="100" rx="6" ry="6"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #0000ff" x="300" y="340" width="160" height="100" rx="6" ry="6"/>
+  </g>
+  <text font-size="22.5778" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="380" y="397.825">
+    <tspan x="380" y="397.825">Elaborator</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" x1="380" y1="280" x2="380" y2="330.264"/>
+    <polygon style="fill: #000000" points="380,337.764 375,327.764 380,330.264 385,327.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="380,337.764 375,327.764 380,330.264 385,327.764 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="380" y1="130" x2="380" y2="170.264"/>
+    <polygon style="fill: #000000" points="380,177.764 375,167.764 380,170.264 385,167.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="380,177.764 375,167.764 380,170.264 385,167.764 "/>
+  </g>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="380" y="155.875">
+    <tspan x="382" y="155.875">  Input</tspan>
+  </text>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="380" y="315.875">
+    <tspan x="382" y="315.875">  Preterm</tspan>
+  </text>
+  <g>
+    <rect style="fill: #1e90ff" x="300" y="500" width="160" height="100" rx="6" ry="6"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #0000ff" x="300" y="500" width="160" height="100" rx="6" ry="6"/>
+  </g>
+  <text font-size="22.5778" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:700" x="380" y="557.825">
+    <tspan x="380" y="557.825">Kernel</tspan>
+  </text>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" x1="380" y1="440" x2="380" y2="490.264"/>
+    <polygon style="fill: #000000" points="380,497.764 375,487.764 380,490.264 385,487.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="380,497.764 375,487.764 380,490.264 385,487.764 "/>
+  </g>
+  <text font-size="16.9333" style="fill: #000000;text-anchor:start;font-family:sans-serif;font-style:normal;font-weight:normal" x="380" y="475.875">
+    <tspan x="382" y="475.875">  Term</tspan>
+  </text>
+</svg>
