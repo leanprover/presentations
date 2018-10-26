@@ -1,37 +1,4 @@
-<pre class="juicy-ace-editor-container ace-chrome"><span title="(module.header [] [])"></span><span title="(command.mixfix
- [[] (command.mixfix.kind (2 &quot;infixl&quot;))]
- (command.notation_spec.mixfix_symbol
-  (0
-   (command.notation_spec.notation_quoted_symbol
-    &quot;`&quot;
-    &quot;×&quot;
-    &quot;`&quot;
-    [(command.notation_spec.precedence
-      &quot;:&quot;
-      (command.notation_spec.precedence_term
-       (0 (command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;)))))))])))
- &quot;:=&quot;
- (ident_univs `bla []))"><span title="(command.mixfix.kind (2 &quot;infixl&quot;))"><span class='ace_comment'></span><span class='ace_keyword'>infixl</span><span class='ace_comment'> </span></span><span title="(command.notation_spec.mixfix_symbol
- (0
-  (command.notation_spec.notation_quoted_symbol
-   &quot;`&quot;
-   &quot;×&quot;
-   &quot;`&quot;
-   [(command.notation_spec.precedence
-     &quot;:&quot;
-     (command.notation_spec.precedence_term
-      (0 (command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;)))))))])))"><span title="(command.notation_spec.notation_quoted_symbol
- &quot;`&quot;
- &quot;×&quot;
- &quot;`&quot;
- [(command.notation_spec.precedence
-   &quot;:&quot;
-   (command.notation_spec.precedence_term
-    (0 (command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;)))))))])"><span class='ace_comment'></span>`<span class='ace_comment'></span><span class='ace_comment'></span>×<span class='ace_comment'></span><span class='ace_comment'></span>`<span class='ace_comment'></span><span title="(command.notation_spec.precedence
- &quot;:&quot;
- (command.notation_spec.precedence_term
-  (0 (command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;)))))))"><span class='ace_comment'></span>:<span class='ace_comment'></span><span title="(command.notation_spec.precedence_term
- (0 (command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;))))))"><span title="(command.notation_spec.precedence_lit (0 (number (0 &quot;30&quot;))))"><span title="(number (0 &quot;30&quot;))"><span class='ace_comment'></span>30<span class='ace_comment'> </span></span></span></span></span></span></span><span class='ace_comment'></span>:=<span class='ace_comment'> </span>bla</span><span title="(command.declaration
+<pre class="juicy-ace-editor-container ace-chrome"><span title="(module.header [] [])"></span><span title="(command.declaration
  (command.decl_modifiers [] [] [] [] [])
  (command.declaration.inner
   (0
@@ -202,8 +169,7 @@
        [(term.paren_content
          (notation<TODO> (ident_univs `α []) &quot;×&quot; (ident_univs `σ []))
          [])]
-       &quot;)&quot;)))))))"><span title="(command.def_like.kind (0 &quot;def&quot;))"><span class='ace_comment'>
-</span><span class='ace_keyword'>def</span><span class='ace_comment'> </span></span><span class='ace_variable'>state_t'</span><span title="(command.decl_sig
+       &quot;)&quot;)))))))"><span title="(command.def_like.kind (0 &quot;def&quot;))"><span class='ace_comment'></span><span class='ace_keyword'>def</span><span class='ace_comment'> </span></span><span class='ace_variable'>state_t'</span><span title="(command.decl_sig
  [(term.bracketed_binder
    (0
     (term.explicit_binder
