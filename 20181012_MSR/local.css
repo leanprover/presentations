@@ -1,0 +1,19 @@
+.reveal {
+    font-size: 25px !important;
+}
+.reveal p {
+    text-align: left;
+}
+.reveal .fragment {
+    text-align: left;
+}
+.reveal .slide-number {
+    background-color: unset;
+}
+.ace-chrome span:hover {
+    background-color: rgba(0, 0, 255, 0.06);
+}
+pre.ace-chrome {
+    padding: 15px;
+    padding-left: 30px;
+}
