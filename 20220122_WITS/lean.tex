@@ -68,6 +68,9 @@
 %}
 %\makeatother
 
+\setbeamertemplate{footline}{}
+\renewcommand{\kitseparationline}{}
+
 \titleimage{logo}
 \grouplogo{}
 \groupname{IPD Snelting}
@@ -76,7 +79,7 @@
 \subtitle{Building an Ecosystem for Effortless Native Compilation of Tactics}
 
 \author{Sebastian Ullrich}
-\date{2022/01/06}
+\date{2022/01/22}
 
 \begin{document}
 
@@ -92,7 +95,7 @@
   % ... by way of an expressive, hygienic macro system
   \vfill
 
-  Erase the boundary between built-in and custom macros/tactics/...
+  Erase the boundary between built-in and custom syntax/tactics/...
   \\
   by reimplementing >75\% of Lean in Lean itself
 
@@ -122,6 +125,7 @@
             \item[--] would first need a true LLVM backend
           \end{description}
           \pause
+          \vfill
     \item reuse Ahead-Of-Time toolchain for stand-alone Lean programs
           \begin{description}
             \item[+] much simpler... hopefully!
@@ -182,10 +186,15 @@
 
   \includegraphics[width=0.8\textwidth]{rust2.png}
   \pause
-  %\only<2-3>{
-  %\includegraphics[width=0.8\textwidth]{haskell2.png}
 
-  \only<2>{We need effortless setup \emph{not requiring root}!}
+  \begin{onlyenv}<2-4>
+    \begin{itemize}
+      \item Windows 10 SDK: 1.69 GB download \pause
+      \item Xcode Command Line Tools: \textasciitilde 580 MB download \pause
+    \end{itemize}
+
+    We need effortless setup \emph{not requiring root}!
+  \end{onlyenv}
   %}
   \pause
   %\includegraphics[width=0.6\textwidth]{zig2.png}
@@ -213,6 +222,7 @@
   It does not help at all with assembling
   \begin{itemize}
     \item the above with \emph{reasonable} runtime dependencies
+          \pause
     \item a libc
           \begin{itemize}
             \item Linux: bundle older glibc for compatibility
@@ -375,7 +385,7 @@ theorem ...
   \begin{itemize}
     \item Scalability questions such as to number and size of shared libraries remain to be seen
     %\item Please help me design an appropriate module system?
-    \item We want a better module/compilation unit system
+    \item We want a better module/compilation unit system\footnote{\url{https://github.com/leanprover/lean4/issues/416}}
   \end{itemize}
   \vfill
 
@@ -383,6 +393,37 @@ theorem ...
   \renewcommand*{\bibfont}{\scriptsize}
   \printbibliography[heading=none]
   \vspace{-1cm}
+\end{frame}
+
+\begin{frame}{Relevant Pull Requests}
+  \begin{itemize}
+    \item \emph{Build \& distribute release builds with Zig as stand-alone C compiler} (abandoned) \url{https://github.com/leanprover/lean4/pull/659}
+    \item \emph{Bundle LLVM on all platforms} (merged)\\ \url{https://github.com/leanprover/lean4/pull/795}
+    \item \emph{Simple, opt-in precompilation scheme}\\ \url{https://github.com/leanprover/lean4/pull/949}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Early mathlib4 Benchmarks (Warm ccache)}
+  \small
+\begin{verbatim}
+  diff [s]           drv
+----------  -------  ----------------------------------------
+  -0.0976    -12.4%  Mathlib.Tactic.Lint.Simp
+  -0.0882     -3.6%  Mathlib.Data.List.Basic
+  -0.0812     -6.6%  Mathlib.Init.Data.Int.Order
+  +0.0745   +100.0%  Mathlib.Mathport.Syntax-dynlib
+  +0.0697   +100.0%  Mathlib.Data.Prod-dynlib
+  +0.069    +100.0%  Mathlib.Init.Data.List.Lemmas-dynlib
+  +0.069    +100.0%  Mathlib.Data.UInt-dynlib
+  +0.0687   +100.0%  Mathlib.Data.ByteArray-dynlib
+  +0.0686   +100.0%  Mathlib.Data.Fin.Basic-dynlib
+  +0.0684   +100.0%  Mathlib.Tactic.NormNum-dynlib
+  +0.0682   +100.0%  Mathlib.Tactic.Ring-dynlib
+  +0.0681   +100.0%  Mathlib.Data.Subtype-dynlib
+  +0.068    +100.0%  Mathlib.Data.Option.Basic-dynlib
+...
+  +7.84      +16.5%  total
+\end{verbatim}
 \end{frame}
 
 \end{document}
