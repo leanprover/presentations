@@ -1,0 +1,34 @@
+@inproceedings{pratt1973top,
+  title={Top down operator precedence},
+  author={Pratt, Vaughan R},
+  booktitle={Proceedings of the 1st annual ACM SIGACT-SIGPLAN symposium on Principles of programming languages},
+  pages={41--51},
+  year={1973}
+}
+@inproceedings{swierstra1996deterministic,
+  title={Deterministic, error-correcting combinator parsers},
+  author={Swierstra, S Doaitse and Duponcheel, Luc},
+  booktitle={International School on Advanced Functional Programming},
+  pages={184--207},
+  year={1996},
+  organization={Springer}
+}
+@article{ford2002packrat,
+author = {Ford, Bryan},
+title = {Packrat Parsing: Simple, Powerful, Lazy, Linear Time ({Functional Pearl})},
+year = {2002},
+issue_date = {September 2002},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {37},
+number = {9},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/583852.581483},
+doi = {10.1145/583852.581483},
+abstract = {Packrat parsing is a novel technique for implementing parsers in a lazy functional programming language. A packrat parser provides the power and flexibility of top-down parsing with backtracking and unlimited lookahead, but nevertheless guarantees linear parse time. Any language defined by an LL(k) or LR(k) grammar can be recognized by a packrat parser, in addition to many languages that conventional linear-time algorithms do not support. This additional power simplifies the handling of common syntactic idioms such as the widespread but troublesome longest-match rule, enables the use of sophisticated disambiguation strategies such as syntactic and semantic predicates, provides better grammar composition properties, and allows lexical analysis to be integrated seamlessly into parsing. Yet despite its power, packrat parsing shares the same simplicity and elegance as recursive descent parsing; in fact converting a backtracking recursive descent parser into a linear-time packrat parser often involves only a fairly straightforward structural change. This paper describes packrat parsing informally with emphasis on its use in practical applications, and explores its advantages and disadvantages with respect to the more conventional alternatives.},
+journal = {SIGPLAN Not.},
+month = {sep},
+pages = {36–47},
+numpages = {12},
+keywords = {top-down parsing, parser combinators, lexical analysis, scannerless parsing, Haskell, memoization, backtracking}
+}
