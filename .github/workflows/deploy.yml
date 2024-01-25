@@ -1,0 +1,48 @@
+name: Deploy to Netlify
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events for the main branch or for release branches
+  push:
+    branches:
+      - 'master'
+      - 'release/*'
+    tags:
+      - '*'
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - id: deploy-info
+      name: Compute Deployment Metadata
+      run: |
+        set -e
+        python3 -c 'import base64; print("alias="+base64.urlsafe_b64encode(bytes.fromhex("${{github.sha}}")).decode("utf-8").rstrip("="))' >> "$GITHUB_OUTPUT"
+        echo "message=`git log -1 --pretty=format:"%s"`" >> "$GITHUB_OUTPUT"
+
+    - name: Deploy to Netlify hosting
+      uses: nwtgck/actions-netlify@v2.0
+      with:
+        publish-dir: .
+        production-branch: master
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        deploy-message: |
+          ${{ github.event_name == 'pull_request' && format('pr#{0}: {1}', github.event.number, github.event.pull_request.title) || format('ref/{0}: {1}', github.ref_name, steps.deploy-info.outputs.message) }}
+        alias: ${{ steps.deploy-info.outputs.alias }}
+        enable-commit-comment: false
+        enable-pull-request-comment: false
+        github-deployment-environment: "lean-lang.org/presentations"
+        fails-without-credentials: true
+      env:
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        NETLIFY_SITE_ID: "2b7dc1d6-7b7b-461e-bd19-cc18149aaba9"
