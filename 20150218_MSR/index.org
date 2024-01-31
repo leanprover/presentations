@@ -568,7 +568,7 @@ dvd.intro aux
   - A placeholder/hole can be viewed as a *goal*
   - A *proof state* is a sequence of goals, substitution (already solved holes), and postponed constraints.
   - A *tactic* is a function from proof state to a *lazy stream of proof states*.
-  - *Tacticals* are tactic combinadors: *andthen*, *orelse*, *par*, ...
+  - *Tacticals* are tactic combinators: *andthen*, *orelse*, *par*, ...
 
 * Tactics
 
