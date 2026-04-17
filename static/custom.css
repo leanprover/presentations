@@ -1,0 +1,380 @@
+/* ── ETAPS Tutorial slides — Stanford look and feel ── */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --lean-teal: #0891b2;
+  --lean-blue: #0073A3;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --bg-code: #f8fafc;
+  --border-code: #e2e8f0;
+}
+
+/* ── Base typography ── */
+.reveal {
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  font-size: 3.4vh;
+  color: var(--text-dark);
+}
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+  text-transform: none;
+  font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.reveal .slides section {
+  text-align: left;
+  padding: 2vh 3vw;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ── Slide header (logo + teal line) ── */
+.slide-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 0.5em;
+}
+.slide-header img {
+  height: 6vh;
+  flex-shrink: 0;
+}
+.slide-header::after {
+  content: '';
+  flex: 1;
+  height: 1.5px;
+  background: var(--lean-teal);
+}
+
+/* ── Title slide (Stanford two-part layout) ── */
+.title-slide {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  text-align: left;
+  padding: 0 !important;
+}
+.title-slide .top-area {
+  padding: 1.2em 1.5em 0.8em;
+}
+.title-slide .logo {
+  height: 140px;
+}
+.title-slide .blue-band {
+  background: #0073A3;
+  flex: 1;
+  padding: 1em 1.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.title-slide h1 {
+  font-size: 2em;
+  font-weight: 300;
+  margin: 0 0 0.6em 0;
+  color: #ffffff;
+}
+.title-slide .meta {
+  font-size: 0.85em;
+  font-weight: 300;
+  color: #ffffff;
+  line-height: 1.6;
+}
+.title-slide .meta strong {
+  font-weight: 500;
+  color: #ffffff;
+}
+.title-slide .date {
+  font-size: 0.85em;
+  font-weight: 300;
+  color: rgba(255,255,255,0.8);
+  margin-top: auto;
+  padding-bottom: 0.5em;
+}
+
+/* ── Content slides ── */
+.reveal h2 {
+  font-size: 1.3em;
+  font-weight: 600;
+  margin: 0 0 0.5em 0;
+  color: var(--text-dark);
+}
+
+.reveal ul {
+  font-size: 0.9em;
+  font-weight: 300;
+  line-height: 1.7;
+  margin: 0;
+  padding-left: 1.2em;
+}
+.reveal ul ul {
+  font-size: 1em;
+}
+.reveal ul li {
+  margin-bottom: 0.25em;
+}
+
+.reveal p {
+  font-size: 0.9em;
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0.4em 0;
+}
+
+.reveal strong {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.reveal a {
+  color: #0e7490;
+  font-weight: 600;
+}
+
+/* ── Code blocks (non-Lean) ── */
+.reveal pre {
+  font-size: 0.68em;
+  width: 100%;
+  margin: 0.4em 0;
+  box-shadow: none;
+  border: 1px solid var(--border-code);
+  border-radius: 6px;
+  background: var(--bg-code);
+}
+.reveal pre code {
+  padding: 0.8em 1em;
+  max-height: 70vh;
+  background: var(--bg-code);
+}
+
+/* ── Inline code ── */
+.reveal code {
+  font-size: 0.9em;
+  background: #f1f5f9;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+.reveal pre code {
+  background: var(--bg-code);
+  padding: 0.8em 1em;
+}
+
+/* ── Accent ── */
+.accent {
+  color: var(--lean-teal);
+  font-weight: 600;
+}
+
+/* ── Key-value highlight boxes ── */
+.key-box {
+  background: #ecfeff;
+  border: 1px solid #a5f3fc;
+  border-left: 4px solid var(--lean-teal);
+  border-radius: 0 8px 8px 0;
+  padding: 0.6em 1em;
+  margin: 0.4em 0;
+  font-size: 0.85em;
+}
+.key-box strong {
+  color: var(--text-dark);
+}
+
+/* ── Dark background slides (title, section breaks) ── */
+.reveal section[data-background-color="#0073A3"] {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+}
+.reveal section[data-background-color="#0073A3"] h1,
+.reveal section[data-background-color="#0073A3"] h2 {
+  color: #ffffff !important;
+  font-size: 2em;
+  font-weight: 300;
+}
+.reveal section[data-background-color="#0073A3"] p,
+.reveal section[data-background-color="#0073A3"] li {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1em;
+}
+.reveal section[data-background-color="#0073A3"] em {
+  color: #a5f3fc;
+}
+.reveal section[data-background-color="#0073A3"] strong {
+  color: #ffffff;
+}
+.reveal section[data-background-color="#0073A3"] code {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+/* ── Two-column layout ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  align-items: start;
+}
+
+/* ── Blockquotes ── */
+.reveal blockquote {
+  font-size: 0.85em;
+  border-left: 4px solid var(--lean-teal);
+  padding: 0.3em 0.8em;
+  margin: 0.5em 0;
+  background: #ecfeff;
+  border-radius: 0 6px 6px 0;
+}
+
+/* ═══════════════════════════════════════════════
+   Lean code: Stanford-style syntax colors
+   ═══════════════════════════════════════════════ */
+
+.reveal,
+.reveal section {
+  --verso-code-keyword-color: #cf222e;
+  --verso-code-const-color: #0550ae;
+  --verso-code-var-color: #1e293b;
+  --verso-code-color: #1e293b;
+  --verso-code-font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+  --verso-info-indicator-color: var(--lean-teal);
+  --verso-code-keyword-weight: 700;
+}
+
+/* ── Lean code block appearance ── */
+.reveal code.hl.lean.block {
+  background: var(--bg-code);
+  border: 1px solid var(--border-code);
+  border-radius: 6px;
+  box-shadow: none;
+  padding: 0.8em 1em;
+  font-size: 0.5em;
+  line-height: 1.55;
+  width: 95%;
+  max-width: 95%;
+  text-align: left;
+}
+
+/* ── Code panel: Verso info panel alongside code ── */
+.code-with-panel {
+  border: 1px solid var(--border-code);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: none;
+}
+.code-with-panel > code.hl.lean.block {
+  border: none;
+  border-radius: 6px 0 0 6px;
+  background: var(--bg-code);
+}
+.code-with-panel > .panel-cell {
+  background: #f8fafc;
+  border-left: 1px solid var(--border-code);
+}
+.code-with-panel > .info-panel,
+.code-with-panel .info-panel {
+  font-size: 0.45em;
+  color: var(--text-dark);
+}
+
+/* ── Inline Lean code ── */
+.reveal code.hl.lean.inline {
+  background: #f1f5f9;
+  border-radius: 3px;
+  padding: 0.1em 0.3em;
+  font-size: 0.85em;
+}
+
+/* ── #eval output ── */
+.command-output.information {
+  background: #ecfeff;
+  border-color: var(--lean-teal);
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* ── Soften wavy underlines on info diagnostics ── */
+.reveal .hl.lean .has-info.information .token:not(.tactic-state):not(.tactic-state *),
+.reveal .hl.lean .has-info.information .inter-text:not(.tactic-state):not(.tactic-state *) {
+  text-decoration-color: rgba(8, 145, 178, 0.35);
+}
+
+/* ── Keyword: bold and colored ── */
+.hl.lean .keyword {
+  font-weight: 700 !important;
+}
+
+/* ── Variable: no italic ── */
+.hl.lean .var {
+  font-style: normal !important;
+}
+
+/* ── Re-enable Verso hover popups ── */
+.hl.lean .hover-container {
+  display: block;
+}
+
+/* ── Images: scale to fit slide ── */
+.reveal section img {
+  max-width: 70%;
+  max-height: 45vh;
+  object-fit: contain;
+}
+.reveal section img.img-tall {
+  max-height: 70vh;
+  max-width: 95%;
+}
+.reveal section img.img-small {
+  max-height: 25vh;
+  max-width: 40%;
+}
+.reveal section img.img-wide {
+  max-width: 90%;
+  max-height: 40vh;
+}
+
+/* ── hstack layout ── */
+.reveal .r-hstack {
+  display: flex !important;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1.5em;
+}
+.reveal .r-hstack > ul {
+  flex: 1;
+}
+.reveal .r-hstack > p {
+  flex: 1;
+}
+.reveal .r-hstack > hr,
+.reveal .r-hstack > p:empty {
+  display: none;
+}
+
+/* ── Table styling ── */
+.reveal table {
+  font-size: 0.75em;
+  border-collapse: collapse;
+  margin: 0.5em 0;
+  width: 100%;
+}
+.reveal table th {
+  background: var(--lean-teal);
+  color: white;
+  font-weight: 600;
+  padding: 0.4em 0.8em;
+  text-align: left;
+}
+.reveal table td {
+  padding: 0.3em 0.8em;
+  border-bottom: 1px solid var(--border-code);
+}
+.reveal table tr:nth-child(even) td {
+  background: #f8fafc;
+}
