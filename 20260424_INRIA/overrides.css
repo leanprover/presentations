@@ -1,0 +1,50 @@
+/* Presentation-specific overrides on top of ../static/custom.css */
+
+/* Boost base font size 30% for this talk (3.4vh → 4.42vh) */
+.reveal { font-size: 4.42vh; }
+
+/* Match Illuminate's 1.5s easeInOut fade so .ir boxes and the paired
+   fragment line appear in sync. Default reveal.js is `all .2s ease`. */
+.reveal .fragment.ir-fade { transition: opacity 1.5s ease-in-out; }
+
+/* Center tall images horizontally. */
+.reveal section img.img-tall { display: block; margin: 0 auto; }
+
+/* Two-column hstack: grid gives reliable 50/50. Only `display` needs
+   `!important` since the shared stylesheet forces `display: flex !important`. */
+.reveal .r-hstack {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5em;
+  align-items: start;
+}
+.reveal .r-hstack > .r-vstack {
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.reveal .r-hstack > p {
+  margin: 0;
+  max-width: 100%;
+}
+.reveal .r-hstack img {
+  display: block;
+  max-width: 100%;
+  max-height: 60vh;
+  margin: 0 auto;
+}
+
+/* Title slide: split top (logo) and blue band 50/50 regardless of logo
+   intrinsic size. Default rule makes top-area hug the logo. */
+.reveal .title-slide .top-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 1.5em;
+}
+.reveal .title-slide .logo {
+  height: auto;
+  width: auto;
+  max-height: 100%;
+  max-width: 60%;
+}
