@@ -1,0 +1,52 @@
+{"9":
+ "<code>Demo.Environment.base (self : Environment) : VisibilityMap Kernel.Environment</code>",
+ "8":
+ "<code>Bool : Type</code><span class=\"sep\"></span><code class=\"docstring\">The Boolean values, `true` and `false`.\n\nLogically speaking, this is equivalent to `Prop` (the type of propositions). The distinction is\npublic important for programming: both propositions and their proofs are erased in the code generator,\nwhile `Bool` corresponds to the Boolean type in most programming languages and carries precisely one\nbit of run-time information.\n</code>",
+ "7": "<code>Demo.Environment.isExporting (self : Environment) : Bool</code>",
+ "6": "<code>Demo.Environment : Type</code>",
+ "5":
+ "<code>Demo.VisibilityMap.public {α : Type} (self : VisibilityMap α) : α</code>",
+ "4":
+ "<code>Demo.VisibilityMap.private {α : Type} (self : VisibilityMap α) : α</code>",
+ "30":
+ "<code>Demo.Environment.findConstVal? (env : Environment) (n : Name) : Option ConstantVal</code>",
+ "3":
+ "<code class=\"docstring\">A type universe. `Type ≡ Type 0`, `Type u ≡ Sort (u + 1)`. </code>",
+ "29":
+ "<code>Demo.Environment.findTask (env : Environment) (n : Name) : Task (Option AsyncConstantInfo)</code>",
+ "28": "<code>Lean.NameMap (α : Type) : Type</code>",
+ "27":
+ "<code>Lean.VisibilityMap (α : Type) : Type</code><span class=\"sep\"></span><code class=\"docstring\">Maps `Visibility` to `α`. </code>",
+ "26":
+ "<code>Lean.Kernel.Environment : Type</code><span class=\"sep\"></span><code class=\"docstring\">An environment stores declarations provided by the user. The kernel\ncurrently supports different kinds of declarations such as definitions, theorems,\nand inductive families. Each has a unique identifier (i.e., `Name`), and can be\nparameterized by a sequence of universe parameters.\nA constant in Lean is just a reference to a `ConstantInfo` object. The main task of\nthe kernel is to type check these declarations and refuse type incorrect ones. The\nkernel does not allow declarations containing metavariables and/or free variables\nto be added to an environment. Environments are never destructively updated.\n\nThe environment also contains a collection of extensions. For example, the `simp` theorems\ndeclared by users are stored in an environment extension. Users can declare new extensions\nusing meta-programming.\n</code>",
+ "25":
+ "<code>Demo.Environment.checked (self : Environment) : Task Kernel.Environment</code>",
+ "24":
+ "<code>Demo.AsyncConstantInfo.constInfo (self : AsyncConstantInfo) : Task ConstantInfo</code>",
+ "23":
+ "<code>Lean.ConstantVal : Type</code><span class=\"sep\"></span><code class=\"docstring\">Base structure for `AxiomVal`, `DefinitionVal`, `TheoremVal`, `InductiveVal`, `ConstructorVal`, `RecursorVal` and `QuotVal`. </code>",
+ "22":
+ "<code>Task.{u} (α : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">`Task α` is a primitive for asynchronous computation.\nIt represents a computation that will resolve to a value of type `α`,\npossibly being computed on another thread. This is similar to `Future` in Scala,\n`Promise` in Javascript, and `JoinHandle` in Rust.\n\nThe tasks have an overridden representation in the runtime.\n</code>",
+ "21":
+ "<code>Demo.AsyncConstantInfo.sig (self : AsyncConstantInfo) : Task ConstantVal</code>",
+ "20": "<code>Lean.ConstantKind : Type</code>",
+ "2": "<code>Type</code>",
+ "19":
+ "<code>Demo.AsyncConstantInfo.kind (self : AsyncConstantInfo) : ConstantKind</code>",
+ "18":
+ "<code>Demo.AsyncConstantInfo.name (self : AsyncConstantInfo) : Name</code>",
+ "17": "<code>Demo.AsyncConstantInfo : Type</code>",
+ "16":
+ "<code class=\"docstring\">`if c then t else e` is notation for `ite c t e`, \"if-then-else\", which decides to\nreturn `t` or `e` depending on whether `c` is true or false. The explicit argument\n`c : Prop` does not have any actual computational content, but there is an additional\n`[Decidable c]` argument synthesized by typeclass inference which actually\ndetermines how to evaluate `c` to true or false. Write `if h : c then t else e`\ninstead for a \"dependent if-then-else\" `dite`, which allows `t`/`e` to use the fact\nthat `c` is true/false.\n</code>",
+ "15":
+ "<code>Lean.ConstantInfo : Type</code><span class=\"sep\"></span><code class=\"docstring\">Information associated with constant declarations. </code>",
+ "14":
+ "<code>Option.{u} (α : Type u) : Type u</code><span class=\"sep\"></span><code class=\"docstring\">Optional values, which are either `some` around a value from the underlying type or `none`.\n\n`Option` can represent nullable types or computations that might fail. In the codomain of a function\ntype, it can also represent partiality.\n</code>",
+ "13":
+ "<code>Lean.Name : Type</code><span class=\"sep\"></span><code class=\"docstring\">Hierarchical names consist of a sequence of components, each of\nwhich is either a string or numeric, that are written separated by dots (`.`).\n\nHierarchical names are used to name declarations and for creating\nunique identifiers for free variables and metavariables.\n\nYou can create hierarchical names using a backtick:\n```\n`Lean.Meta.whnf\n```\nIt is short for `.str (.str (.str .anonymous \"Lean\") \"Meta\") \"whnf\"`.\n\nYou can use double backticks to request Lean to statically check whether the name\ncorresponds to a Lean declaration in scope.\n```\n``Lean.Meta.whnf\n```\nIf the name is not in scope, Lean will report an error.\n\nThere are two ways to convert a `String` to a `Name`:\n\n 1. `Name.mkSimple` creates a name with a single string component.\n\n 2. `String.toName` first splits the string into its dot-separated\n    components, and then creates a hierarchical name.\n</code>",
+ "12": "<code>Name</code>",
+ "11": "<code>Environment</code>",
+ "10":
+ "<code>Demo.Environment.find? (env : Environment) (n : Name) : Option ConstantInfo</code>",
+ "1": "<code>Demo.VisibilityMap (α : Type) : Type</code>",
+ "0": "<code>Demo.Kernel.Environment : Type</code>"}
