@@ -1,0 +1,45 @@
+/* Presentation-specific overrides on top of ../static/custom.css */
+
+/* Boost base font size 30% for this talk (3.4vh → 4.42vh) */
+.reveal { font-size: 4vh; }
+
+/* Center all images horizontally (for now). Previous: tall images only —
+   .reveal section img.img-tall { display: block; margin: 0 auto; } */
+.reveal section img { display: block; margin: 0 auto; }
+/* Keep the header-strip logo left-aligned (it lives in a flex row, where the
+   blanket `margin: 0 auto` above would otherwise center it). */
+.reveal section .slide-header img { margin: 0; }
+
+/* Title slide: split top (logo) and blue band 50/50 regardless of logo
+   intrinsic size. Default rule makes top-area hug the logo. */
+.reveal .title-slide .top-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1em 1.5em;
+}
+.reveal .title-slide .logo {
+  height: auto;
+  width: auto;
+  max-height: 100%;
+  max-width: 60%;
+}
+
+/* Hide the interactive code block's right info panel until it's used. The
+   panel starts empty and only gets content when a token is clicked (or a
+   fragment reveals one); while empty, collapse to just the code (full width)
+   and hide the divider entirely. Relies on :has(), so it needs a modern
+   browser (the reveal.js runtime qualifies). */
+.code-with-panel:not(:has(.info-panel:not(:empty))) {
+  grid-template-columns: 1fr auto 0fr;
+}
+.code-with-panel:not(:has(.info-panel:not(:empty))) > .panel-cell {
+  display: none;
+}
+.code-with-panel:not(:has(.info-panel:not(:empty))) > .panel-divider {
+  display: none;
+}
+.code-with-panel:not(:has(.info-panel:not(:empty))) > code.hl.lean.block {
+  border-radius: 6px;
+}

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" font-family="'Source Sans 3', -apple-system, sans-serif">
+  <style>
+    .grid { stroke: #e2e8f0; stroke-width: 1; }
+    .axis { stroke: #1e293b; stroke-width: 1.5; }
+    .tick-label { fill: #64748b; font-size: 24px; }
+    .axis-title { fill: #1e293b; font-size: 28px; font-weight: 500; }
+    .series-total { stroke: #B05F00; stroke-width: 4; fill: none; }
+    .pt-total { fill: #B05F00; }
+  </style>
+
+  <!-- Grid -->
+  <line class="grid" x1="90" y1="420" x2="670" y2="420"/>
+  <line class="grid" x1="90" y1="344" x2="670" y2="344"/>
+  <line class="grid" x1="90" y1="268" x2="670" y2="268"/>
+  <line class="grid" x1="90" y1="192" x2="670" y2="192"/>
+  <line class="grid" x1="90" y1="116" x2="670" y2="116"/>
+  <line class="grid" x1="90" y1="40"  x2="670" y2="40"/>
+
+  <!-- Axes -->
+  <line class="axis" x1="90" y1="40" x2="90" y2="420"/>
+  <line class="axis" x1="90" y1="420" x2="670" y2="420"/>
+
+  <!-- Y tick labels -->
+  <text class="tick-label" x="82" y="428" text-anchor="end">0</text>
+  <text class="tick-label" x="82" y="352" text-anchor="end">100</text>
+  <text class="tick-label" x="82" y="276" text-anchor="end">200</text>
+  <text class="tick-label" x="82" y="200" text-anchor="end">300</text>
+  <text class="tick-label" x="82" y="124" text-anchor="end">400</text>
+  <text class="tick-label" x="82" y="48"  text-anchor="end">500</text>
+
+  <!-- X tick labels -->
+  <text class="tick-label" x="90" y="450" text-anchor="middle">100</text>
+  <text class="tick-label" x="154.44" y="450" text-anchor="middle">200</text>
+  <text class="tick-label" x="218.89" y="450" text-anchor="middle">300</text>
+  <text class="tick-label" x="283.33" y="450" text-anchor="middle">400</text>
+  <text class="tick-label" x="347.78" y="450" text-anchor="middle">500</text>
+  <text class="tick-label" x="412.22" y="450" text-anchor="middle">600</text>
+  <text class="tick-label" x="476.67" y="450" text-anchor="middle">700</text>
+  <text class="tick-label" x="541.11" y="450" text-anchor="middle">800</text>
+  <text class="tick-label" x="605.56" y="450" text-anchor="middle">900</text>
+  <text class="tick-label" x="670" y="450" text-anchor="middle">1000</text>
+
+  <!-- Axis titles -->
+  <text class="axis-title" x="380" y="478" text-anchor="middle">Goal size</text>
+  <text class="axis-title" x="22" y="230" text-anchor="middle" transform="rotate(-90 22 230)">Kernel time (ms)</text>
+
+  <!-- Kernel line -->
+  <polyline class="series-total" points="90,393.64 154.44,365.29 218.89,334.73 283.33,306.78 347.78,274.95 412.22,239.61 476.67,216.83 541.11,184.23 605.56,146.58 670,114.65"/>
+
+  <!-- Kernel points -->
+  <circle class="pt-total" cx="90" cy="393.64" r="5"/>
+  <circle class="pt-total" cx="154.44" cy="365.29" r="5"/>
+  <circle class="pt-total" cx="218.89" cy="334.73" r="5"/>
+  <circle class="pt-total" cx="283.33" cy="306.78" r="5"/>
+  <circle class="pt-total" cx="347.78" cy="274.95" r="5"/>
+  <circle class="pt-total" cx="412.22" cy="239.61" r="5"/>
+  <circle class="pt-total" cx="476.67" cy="216.83" r="5"/>
+  <circle class="pt-total" cx="541.11" cy="184.23" r="5"/>
+  <circle class="pt-total" cx="605.56" cy="146.58" r="5"/>
+  <circle class="pt-total" cx="670" cy="114.65" r="5"/>
+</svg>

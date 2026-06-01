@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="260" viewBox="0 0 360 260" role="img" aria-labelledby="title desc">
+  <title id="title">Proof size by example size</title>
+  <desc id="desc">Line chart of proof size in nodes for transitivity-chain examples of size n from 10 to 5000.</desc>
+  <rect width="360" height="260" fill="#ffffff"/>
+  <rect x="48" y="22" width="294" height="204" fill="#eff6ff" stroke="#bfdbfe"/>
+  <g stroke="#dbeafe" stroke-width="1">
+    <line x1="48" y1="226" x2="342" y2="226"/>
+    <line x1="48" y1="124" x2="342" y2="124"/>
+    <line x1="48" y1="22" x2="342" y2="22"/>
+  </g>
+  <g stroke="#94a3b8" stroke-width="1.2">
+    <line x1="48" y1="22" x2="48" y2="226"/>
+    <line x1="48" y1="226" x2="342" y2="226"/>
+  </g>
+  <polyline fill="none" stroke="#2563eb" stroke-width="3" points="48.0,225.6 48.6,225.2 50.4,223.9 53.3,221.9 59.2,217.8 65.1,213.7 71.0,209.7 76.9,205.6 82.8,201.5 88.7,197.4 94.5,193.3 100.4,189.3 106.3,185.2 165.2,144.4 224.2,103.6 283.1,62.8 342.0,22.0"/>
+  <g fill="#2563eb">
+    <circle cx="48.0" cy="225.6" r="2.8"/>
+    <circle cx="48.6" cy="225.2" r="2.8"/>
+    <circle cx="50.4" cy="223.9" r="2.8"/>
+    <circle cx="53.3" cy="221.9" r="2.8"/>
+    <circle cx="59.2" cy="217.8" r="2.8"/>
+    <circle cx="65.1" cy="213.7" r="2.8"/>
+    <circle cx="71.0" cy="209.7" r="2.8"/>
+    <circle cx="76.9" cy="205.6" r="2.8"/>
+    <circle cx="82.8" cy="201.5" r="2.8"/>
+    <circle cx="88.7" cy="197.4" r="2.8"/>
+    <circle cx="94.5" cy="193.3" r="2.8"/>
+    <circle cx="100.4" cy="189.3" r="2.8"/>
+    <circle cx="106.3" cy="185.2" r="2.8"/>
+    <circle cx="165.2" cy="144.4" r="2.8"/>
+    <circle cx="224.2" cy="103.6" r="2.8"/>
+    <circle cx="283.1" cy="62.8" r="2.8"/>
+    <circle cx="342.0" cy="22.0" r="2.8"/>
+  </g>
+  <g fill="#334155" font-family="system-ui, sans-serif" font-size="13">
+    <text x="18" y="230">0</text>
+    <text x="8" y="128">45k</text>
+    <text x="1" y="26">90k</text>
+    <text x="44" y="246">10</text>
+    <text x="92" y="246">1000</text>
+    <text x="325" y="246">5000</text>
+  </g>
+  <text x="180" y="14" text-anchor="middle" fill="#0f172a" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Proof Size (nodes)</text>
+  <text x="180" y="258" text-anchor="middle" fill="#475569" font-family="system-ui, sans-serif" font-size="12">example size n</text>
+</svg>

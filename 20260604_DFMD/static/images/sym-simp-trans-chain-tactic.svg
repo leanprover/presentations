@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="260" viewBox="0 0 360 260" role="img" aria-labelledby="title desc">
+  <title id="title">Sym.simp tactic time by example size</title>
+  <desc id="desc">Line chart of tactic time in milliseconds for transitivity-chain examples of size n from 10 to 5000.</desc>
+  <rect width="360" height="260" fill="#ffffff"/>
+  <rect x="48" y="22" width="294" height="204" fill="#f8fafc" stroke="#cbd5e1"/>
+  <g stroke="#e2e8f0" stroke-width="1">
+    <line x1="48" y1="226" x2="342" y2="226"/>
+    <line x1="48" y1="124" x2="342" y2="124"/>
+    <line x1="48" y1="22" x2="342" y2="22"/>
+  </g>
+  <g stroke="#94a3b8" stroke-width="1.2">
+    <line x1="48" y1="22" x2="48" y2="226"/>
+    <line x1="48" y1="226" x2="342" y2="226"/>
+  </g>
+  <polyline fill="none" stroke="#0f766e" stroke-width="3" points="48.0,225.2 48.6,224.8 50.4,223.4 53.3,220.9 59.2,216.3 65.1,207.0 71.0,207.6 76.9,204.3 82.8,200.6 88.7,196.2 94.5,194.2 100.4,189.8 106.3,185.2 165.2,146.8 224.2,107.1 283.1,61.1 342.0,22.0"/>
+  <g fill="#0f766e">
+    <circle cx="48.0" cy="225.2" r="2.8"/>
+    <circle cx="48.6" cy="224.8" r="2.8"/>
+    <circle cx="50.4" cy="223.4" r="2.8"/>
+    <circle cx="53.3" cy="220.9" r="2.8"/>
+    <circle cx="59.2" cy="216.3" r="2.8"/>
+    <circle cx="65.1" cy="207.0" r="2.8"/>
+    <circle cx="71.0" cy="207.6" r="2.8"/>
+    <circle cx="76.9" cy="204.3" r="2.8"/>
+    <circle cx="82.8" cy="200.6" r="2.8"/>
+    <circle cx="88.7" cy="196.2" r="2.8"/>
+    <circle cx="94.5" cy="194.2" r="2.8"/>
+    <circle cx="100.4" cy="189.8" r="2.8"/>
+    <circle cx="106.3" cy="185.2" r="2.8"/>
+    <circle cx="165.2" cy="146.8" r="2.8"/>
+    <circle cx="224.2" cy="107.1" r="2.8"/>
+    <circle cx="283.1" cy="61.1" r="2.8"/>
+    <circle cx="342.0" cy="22.0" r="2.8"/>
+  </g>
+  <g fill="#334155" font-family="system-ui, sans-serif" font-size="13">
+    <text x="18" y="230">0</text>
+    <text x="8" y="128">11.3</text>
+    <text x="8" y="26">22.7</text>
+    <text x="44" y="246">10</text>
+    <text x="92" y="246">1000</text>
+    <text x="325" y="246">5000</text>
+  </g>
+  <text x="180" y="14" text-anchor="middle" fill="#0f172a" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Tactic Time (ms)</text>
+  <text x="180" y="258" text-anchor="middle" fill="#475569" font-family="system-ui, sans-serif" font-size="12">example size n</text>
+</svg>

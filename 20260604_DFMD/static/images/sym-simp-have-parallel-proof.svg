@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="260" viewBox="0 0 360 260" role="img" aria-labelledby="title desc">
+  <title id="title">Have telescope proof size by example size</title>
+  <desc id="desc">Line chart of proof size in nodes for have-parallel-unsimplified-value examples of size n from 10 to 500.</desc>
+  <rect width="360" height="260" fill="#ffffff"/>
+  <rect x="48" y="22" width="294" height="204" fill="#eff6ff" stroke="#bfdbfe"/>
+  <g stroke="#dbeafe" stroke-width="1">
+    <line x1="48" y1="226" x2="342" y2="226"/>
+    <line x1="48" y1="124" x2="342" y2="124"/>
+    <line x1="48" y1="22" x2="342" y2="22"/>
+  </g>
+  <g stroke="#94a3b8" stroke-width="1.2">
+    <line x1="48" y1="22" x2="48" y2="226"/>
+    <line x1="48" y1="226" x2="342" y2="226"/>
+  </g>
+  <polyline fill="none" stroke="#2563eb" stroke-width="3" points="48.0,220.8 54.0,216.8 60.0,212.7 66.0,208.7 72.0,204.6 78.0,200.5 84.0,196.5 90.0,192.4 96.0,188.4 102.0,184.3 108.0,180.2 114.0,176.2 120.0,172.1 126.0,168.1 132.0,164.0 162.0,143.7 222.0,103.2 282.0,62.6 342.0,22.0"/>
+  <g fill="#2563eb">
+    <circle cx="48.0" cy="220.8" r="2.8"/>
+    <circle cx="54.0" cy="216.8" r="2.8"/>
+    <circle cx="60.0" cy="212.7" r="2.8"/>
+    <circle cx="66.0" cy="208.7" r="2.8"/>
+    <circle cx="72.0" cy="204.6" r="2.8"/>
+    <circle cx="78.0" cy="200.5" r="2.8"/>
+    <circle cx="84.0" cy="196.5" r="2.8"/>
+    <circle cx="90.0" cy="192.4" r="2.8"/>
+    <circle cx="96.0" cy="188.4" r="2.8"/>
+    <circle cx="102.0" cy="184.3" r="2.8"/>
+    <circle cx="108.0" cy="180.2" r="2.8"/>
+    <circle cx="114.0" cy="176.2" r="2.8"/>
+    <circle cx="120.0" cy="172.1" r="2.8"/>
+    <circle cx="126.0" cy="168.1" r="2.8"/>
+    <circle cx="132.0" cy="164.0" r="2.8"/>
+    <circle cx="162.0" cy="143.7" r="2.8"/>
+    <circle cx="222.0" cy="103.2" r="2.8"/>
+    <circle cx="282.0" cy="62.6" r="2.8"/>
+    <circle cx="342.0" cy="22.0" r="2.8"/>
+  </g>
+  <g fill="#334155" font-family="system-ui, sans-serif" font-size="13">
+    <text x="18" y="230">0</text>
+    <text x="8" y="128">9.3k</text>
+    <text x="8" y="26">18.6k</text>
+    <text x="44" y="246">10</text>
+    <text x="155" y="246">200</text>
+    <text x="325" y="246">500</text>
+  </g>
+  <text x="180" y="14" text-anchor="middle" fill="#0f172a" font-family="system-ui, sans-serif" font-size="15" font-weight="700">Proof Size (nodes)</text>
+  <text x="180" y="258" text-anchor="middle" fill="#475569" font-family="system-ui, sans-serif" font-size="12">example size n</text>
+</svg>
