@@ -1,0 +1,678 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizing the World with Lean</title><link rel="stylesheet" href="lib/reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="lib/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="lib/reveal.js/dist/theme/white.css">
+    <link rel="stylesheet" href="lib/github.css">
+    <link rel="stylesheet" href="lib/highlighting.css">
+    <link rel="stylesheet" href="lib/tippy-border.css">
+    <link rel="stylesheet" href="lib/slides-highlight.css">
+    <link rel="stylesheet" href="lib/panel.css">
+    <link rel="stylesheet" href="lib/lightbox.css">
+    <link rel="stylesheet" href="lib/diagram.css">
+    <link rel="stylesheet" href="lib/illuminate-anim.css">
+    <link rel="stylesheet" href="lib/table.css">
+    <link rel="stylesheet" href="lib/katex/dist/katex.min.css">
+    <link rel="stylesheet" href="custom.css">
+    </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section class="title-slide">
+          <div class="top-area"><img class="logo" src="lean-logo-large.png" alt="Lean Logo"></div>
+          <div class="blue-band"><h1>Customizing the World with Lean</h1>
+          <div class="meta"><strong>Sebastian Ullrich</strong><br>Head of Engineering, Lean FRO<br>Chief Lean Officer, &Truth</div>
+          <div class="date">Lambda World · October 30, 2026</div>
+          </div></section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Lean</h2>
+          <p>
+            ... is an interactive theorem prover for verification of mathematics and code</p>
+          <div class="r-hstack news">
+            <p>
+              <img src="images/flt-anthropic.jpg" alt="Formalizing Fermat's Last Theorem (Anthropic)"></p>
+            <p>
+              <img src="images/navier-stokes-openai.jpg" alt="On the Navier-Stokes Millennium Prize Problem (OpenAI)"></p>
+            </div>
+          <p class="fragment" data-fragment-index="1">
+            It is also a general-purpose programming language <span class="fragment" data-fragment-index="2">and its own <strong>metaprogramming language</strong></span></p>
+          <p class="fragment" data-fragment-index="2">
+            This talk is about the latter</p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            A Story from PLDI 2025</h2>
+          <div class="r-hstack story">
+            <div class="r-vstack">
+              <p class="bubble tail-right fragment fade-in" data-fragment-index="2">
+                Could I show you some code?</p>
+              <p class="person fragment fade-in" data-fragment-index="1">
+                <img src="images/ilya.jpg" alt="Ilya Sergey"> Ilya Sergey (NUS)</p>
+              <p class="bubble below fragment fade-in" data-fragment-index="5">
+                It's Lean!</p>
+              </div>
+            <pre class="fragment fade-in" data-fragment-index="3">method Predicate.toArray (mut s: α → Bool)
+  return (res: Array α)
+  ensures ∀ x, sOld x ↔ x ∈ res do
+  let mut res := #[]
+  while ∃ x, s x
+    invariant ∀ x, sOld x ↔ x ∈ res ∨ s x do
+    let x :| s x
+    res := res.push x
+    s := fun y =&gt; if y = x then false else s y
+  return res
+</pre><div class="r-vstack">
+              <p class="bubble thought tail-left fragment fade-in" data-fragment-index="4">
+                Why is he showing us Dafny code?</p>
+              <div class="r-hstack">
+                <p class="person">
+                  <img src="images/leo.jpg" alt="Leo"> Leo</p>
+                <p class="person">
+                  <img src="images/sebastian.jpg" alt="Sebastian"> Sebastian</p>
+                </div>
+              <p class="bubble below tail-both fragment fade-in" data-fragment-index="6">
+                Whaaat?!</p>
+              </div>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Lean Is Implemented in Lean</h2>
+          <p>
+            Parser, elaborator, tactics, language server: <strong>all written in Lean</strong></p>
+          <p>
+            The built-in features use the <strong>same extension mechanisms</strong> that are available to users</p>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro_rules-5627">macro_rules</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="keyword token" data-binding="kw-occ-termIfLet-5645" data-verso-hover="0">if</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfLet-5645" data-verso-hover="0">let</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.125" data-verso-hover="1">pat</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.118" data-verso-hover="1">d</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfLet-5645" data-verso-hover="0">then</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.111" data-verso-hover="1">t</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfLet-5645" data-verso-hover="0">else</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.104" data-verso-hover="1">e</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+    </span><span class="unknown token" data-binding="">`(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.match-5689" data-verso-hover="2">match</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.118" data-verso-hover="1">d</span><span class="unknown token" data-binding="">:</span><span class="keyword token" data-binding="kw-occ-antiquotName-5697">term</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.match-5689" data-verso-hover="2">with</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.125" data-verso-hover="1">pat</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.111" data-verso-hover="1">t</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">_</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.104" data-verso-hover="1">e</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p>
+            <strong>If we can build it, so can you</strong>, without forking the compiler</p>
+          <p class="space-above">
+            <em>Focus of my PhD thesis: "An Extensible Theorem Proving Frontend"</em></p>
+          </section>
+        <section data-background-color="#0073A3">
+          <h2>
+            Extending Lean</h2>
+          <p>
+            <em>How Lean processes a file and where you can change that</em></p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            The Frontend Pipeline</h2>
+          <div class="r-hstack pipeline">
+            <p class="step highlight">
+              Parser</p>
+            <p class="arrow">
+              →</p>
+            <p class="step highlight">
+              Macros</p>
+            <p class="arrow">
+              →</p>
+            <p class="step highlight">
+              Elaborator</p>
+            <p class="arrow">
+              →</p>
+            <p class="step">
+              Kernel</p>
+            </div>
+          <ul>
+            <li>
+              <p>
+                <strong>Parser</strong>: extensible grammar; new syntax can be declared anywhere</p>
+              </li>
+            <li>
+              <p>
+                <strong>Macros</strong>: syntax-to-syntax rewriting, hygienic by default</p>
+              </li>
+            <li>
+              <p>
+                <strong>Elaborator</strong>: syntax to typed core terms, with full access to type inference and unification</p>
+              </li>
+            <li>
+              <p>
+                <strong>Kernel</strong>: small, fixed, and <strong>not</strong> extensible; the safety net for everything above</p>
+              </li>
+            </ul>
+          <p>
+            Plus: the <strong>language server</strong> and the <strong>infoview</strong> UI</p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Notation</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.infixl-6721" data-verso-hover="3">infixl</span><span class="unknown token" data-binding="">:</span><span class="unknown token" data-binding="">65</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="4">" +++ "</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="const token" data-binding="const-List.append" data-verso-hover="5">List.append</span><span class="inter-text">
+
+</span><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-6755" data-verso-hover="6">#eval</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">[</span><span class="inter-text"></span><span class="unknown token" data-binding="">1</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">2</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">3</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">]</span></span></code></span></span><span class="inter-text"> </span><span class="unknown token" data-binding="">[</span><span class="typed token" data-binding="" data-verso-hover="8">1</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">2</span><span class="unknown token" data-binding="">]</span><span class="inter-text"> </span><span class="unknown token" data-binding="">+++</span><span class="inter-text"> </span><span class="unknown token" data-binding="">[</span><span class="typed token" data-binding="" data-verso-hover="8">3</span><span class="unknown token" data-binding="">]</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">[</span><span class="inter-text"></span><span class="unknown token" data-binding="">1</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">2</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">3</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">]</span></span></code></div><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.notation-6776">notation</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="9">"‖"</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.9745" data-verso-hover="1">x</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="9">"‖"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="const token" data-binding="const-Int.natAbs" data-verso-hover="10">Int.natAbs</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.9745" data-verso-hover="1">x</span><span class="inter-text">
+
+</span><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-6816" data-verso-hover="6">#eval</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="unknown token" data-binding="">42</span><span class="inter-text"></span></span></code></span></span><span class="inter-text"> </span><span class="unknown token" data-binding="">‖</span><span class="unknown token" data-binding="">-</span><span class="typed token" data-binding="" data-verso-hover="11">42</span><span class="unknown token" data-binding="">‖</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="unknown token" data-binding="">42</span><span class="inter-text"></span></span></code></div><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Syntax and Macros</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.syntax-6898">syntax</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="12">"["</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="14">" | "</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.ident" data-verso-hover="15">ident</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="16">" ← "</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="17">"]"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.syntax-6950">syntax</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="12">"["</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="14">" | "</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.ident" data-verso-hover="15">ident</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="16">" ← "</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="18">", "</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="17">"]"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text">
+
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro_rules-7013">macro_rules</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">[</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.472" data-verso-hover="1">f</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.465" data-verso-hover="19">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.458" data-verso-hover="1">xs</span><span class="unknown token" data-binding="">]</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+    </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">List.map</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-7069">fun</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.465" data-verso-hover="19">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.472" data-verso-hover="1">f</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.458" data-verso-hover="1">xs</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">[</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4229" data-verso-hover="1">f</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4222" data-verso-hover="19">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4215" data-verso-hover="1">xs</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4208" data-verso-hover="1">p</span><span class="unknown token" data-binding="">]</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+    </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">List.map</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-7136">fun</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4222" data-verso-hover="19">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4229" data-verso-hover="1">f</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">List.filter</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-7164">fun</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4222" data-verso-hover="19">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4208" data-verso-hover="1">p</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.4215" data-verso-hover="1">xs</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+
+</span><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-7185" data-verso-hover="6">#eval</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">[</span><span class="inter-text"></span><span class="unknown token" data-binding="">4</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">16</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">36</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">]</span></span></code></span></span><span class="inter-text"> </span><span class="unknown token" data-binding="">[</span><span class="var token" data-binding="var-_uniq.8329" data-verso-hover="20">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">*</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.8329" data-verso-hover="20">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.8329" data-verso-hover="20">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">[</span><span class="typed token" data-binding="" data-verso-hover="8">1</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">2</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">3</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">4</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">5</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">6</span><span class="unknown token" data-binding="">]</span><span class="unknown token" data-binding="">,</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.8329" data-verso-hover="20">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">%</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">2</span><span class="inter-text"> </span><span class="unknown token" data-binding="">==</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">0</span><span class="unknown token" data-binding="">]</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">[</span><span class="inter-text"></span><span class="unknown token" data-binding="">4</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">16</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">,</span><span class="inter-text"> </span><span class="unknown token" data-binding="">36</span><span class="const token" data-binding="const-List.cons" data-verso-hover="7">]</span></span></code></div><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p>
+            <code>syntax</code> extends the <strong>grammar</strong>, <code>macro_rules</code> gives it <strong>meaning</strong></p>
+          <p class="fragment" data-fragment-index="1">
+            <code>macro</code> is just a macro for <code>syntax</code> + <code>macro_rules</code></p>
+          <p class="fragment" data-fragment-index="1">
+            <code>notation</code> is just a macro for a simple <code>macro</code></p>
+          <p class="fragment" data-fragment-index="1">
+            <code>infixl</code> is just a macro for a simple <code>notation</code></p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Hygiene <span class="cite">[Ullrich & de Moura, IJCAR'20]</span></h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro-7561">macro</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="21">"twice!"</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.128" data-verso-hover="1">e</span><span class="unknown token" data-binding="">:</span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.let-7595" data-verso-hover="22">let</span><span class="inter-text"> </span><span class="unknown token" data-binding="">y</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="unknown token" data-binding="">2</span><span class="unknown token" data-binding="">;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.128" data-verso-hover="1">e</span><span class="inter-text"> </span><span class="unknown token" data-binding="">*</span><span class="inter-text"> </span><span class="unknown token" data-binding="">y</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+
+</span><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-7616" data-verso-hover="6">#eval</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="unknown token" data-binding="">10</span><span class="inter-text"></span></span></code></span></span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.let-7622" data-verso-hover="22">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.3269" data-verso-hover="20">y</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">5</span><span class="unknown token" data-binding="">;</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termTwice!_-7634">twice!</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.3269" data-verso-hover="20">y</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="unknown token" data-binding="">10</span><span class="inter-text"></span></span></code></div><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p class="fragment" data-fragment-index="1">
+            Naive expansion would yield <code>let y := 5; let y := 2; y * y</code>, i.e. <code>4</code></p>
+          <p class="fragment" data-fragment-index="2">
+            The macro's <code>y</code> <strong>cannot capture</strong> the user's <code>y</code></p>
+          <p class="fragment" data-fragment-index="2">
+            Lean 4 adapts Racket's algorithm for automatic hygiene without any knowledge of the grammar's <em>binding structure</em> <span class="cite">[Flatt, POPL'16]</span></p>
+          <p class="fragment" data-fragment-index="2">
+            Especially important for custom <strong>tactics</strong>, i.e. proof automation:
+helper facts in a tactic macro do not leak into the caller's context</p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Macros Are Just Lean Functions</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.open-8158" data-verso-hover="23">open</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Lean</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.in-8158">in</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.partial-8171">partial</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.definition-8179">def</span><span class="inter-text"> </span><span class="const token" data-binding="const-printfAux" data-verso-hover="24">printfAux</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="25">acc</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Syntax.Term" data-verso-hover="26">Term</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-List" data-verso-hover="27">List</span><span class="inter-text"> </span><span class="const token" data-binding="const-Char" data-verso-hover="28">Char</span><span class="inter-text"> </span><span class="unknown token" data-binding="">→</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.MacroM" data-verso-hover="29">MacroM</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Syntax.Term" data-verso-hover="26">Term</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">[</span><span class="unknown token" data-binding="">]</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="const token" data-binding="const-Pure.pure" data-verso-hover="30">pure</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="25">acc</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">'%'</span><span class="inter-text"> </span><span class="unknown token" data-binding="">::</span><span class="inter-text"> </span><span class="unknown token" data-binding="">'d'</span><span class="inter-text"> </span><span class="unknown token" data-binding="">::</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.91" data-verso-hover="31">cs</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.MonadQuotation.withFreshMacroScope" data-verso-hover="32">withFreshMacroScope</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-8297">do</span><span class="inter-text">
+    </span><span class="unknown token" data-binding="">`(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-8306">fun</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Nat</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-printfAux" data-verso-hover="24">printfAux</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="25">acc</span><span class="inter-text"> </span><span class="unknown token" data-binding="">++</span><span class="inter-text"> </span><span class="unknown token" data-binding="">toString</span><span class="inter-text"> </span><span class="unknown token" data-binding="">x</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.91" data-verso-hover="31">cs</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">'%'</span><span class="inter-text"> </span><span class="unknown token" data-binding="">::</span><span class="inter-text"> </span><span class="unknown token" data-binding="">'s'</span><span class="inter-text"> </span><span class="unknown token" data-binding="">::</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.796" data-verso-hover="31">cs</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.MonadQuotation.withFreshMacroScope" data-verso-hover="32">withFreshMacroScope</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-8416">do</span><span class="inter-text">
+    </span><span class="unknown token" data-binding="">`(</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-8425">fun</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">x</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="unknown token" data-binding="">String</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-printfAux" data-verso-hover="24">printfAux</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="25">acc</span><span class="inter-text"> </span><span class="unknown token" data-binding="">++</span><span class="inter-text"> </span><span class="unknown token" data-binding="">x</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.796" data-verso-hover="31">cs</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1398" data-verso-hover="31">cs</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+    </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.let-8499" data-verso-hover="22">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1443" data-verso-hover="31">lit</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1398" data-verso-hover="31">cs</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-List.takeWhile" data-verso-hover="33">takeWhile</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">·</span><span class="inter-text"> </span><span class="unknown token" data-binding="">!=</span><span class="inter-text"> </span><span class="unknown token" data-binding="">'%'</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+    </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.let-8539" data-verso-hover="22">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1525" data-verso-hover="31">lit</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-8550" data-verso-hover="34">if</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1443" data-verso-hover="31">lit</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-List.isEmpty" data-verso-hover="35">isEmpty</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-8550" data-verso-hover="34">then</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1398" data-verso-hover="31">cs</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-List.take" data-verso-hover="36">take</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">1</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-8550" data-verso-hover="34">else</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1443" data-verso-hover="31">lit</span><span class="inter-text">
+    </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-8593">do</span><span class="inter-text"> </span><span class="const token" data-binding="const-printfAux" data-verso-hover="24">printfAux</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="25">acc</span><span class="inter-text"> </span><span class="unknown token" data-binding="">++</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="unknown token" data-binding="">(</span><span class="const token" data-binding="const-Lean.Quote.quote" data-verso-hover="37">quote</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="const token" data-binding="const-String.ofList" data-verso-hover="38">String.ofList</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1525" data-verso-hover="31">lit</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.1398" data-verso-hover="31">cs</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-List.drop" data-verso-hover="39">drop</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.1525" data-verso-hover="31">lit</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-List.length" data-verso-hover="40">length</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro-8674">macro</span><span class="unknown token" data-binding="">:</span><span class="keyword token" data-binding="kw-occ-precMax-8680" data-verso-hover="41">max</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="42">"printf! "</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.15439" data-verso-hover="43">s</span><span class="unknown token" data-binding="">:</span><span class="const token" data-binding="const-Lean.Parser.strLit" data-verso-hover="44">str</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.term" data-verso-hover="13">term</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-8711">do</span><span class="inter-text">
+  </span><span class="const token" data-binding="const-printfAux" data-verso-hover="45">printfAux</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="literal string token" data-binding="" data-verso-hover="46">""</span><span class="unknown token" data-binding="">)</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.15439" data-verso-hover="43">s</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.TSyntax.getString" data-verso-hover="47">getString</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-String.toList" data-verso-hover="48">toList</span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Type-Safe <code>printf</code></h2>
+          <p>
+            The format string is parsed <strong>at compile time</strong>, by ordinary Lean code</p>
+          <div class="code-with-panel">
+            <code class="hl lean block"><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.check-8871">#check</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="keyword token" data-binding="">fun</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.2" data-verso-hover="49">x</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.3" data-verso-hover="8">x_1</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="46">""</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.2" data-verso-hover="49">x</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="51">" is "</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="const token" data-binding="const-ToString.toString" data-verso-hover="52">toString</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.3" data-verso-hover="8">x_1</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="53">" years old"</span></span><span class="text"> : </span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-String" data-verso-hover="54">String</span><span class="inter-text"> </span><span class="unknown token" data-binding="">→</span><span class="inter-text"> </span><span class="const token" data-binding="const-Nat" data-verso-hover="55">Nat</span><span class="inter-text"> </span><span class="unknown token" data-binding="">→</span><span class="inter-text"> </span><span class="const token" data-binding="const-String" data-verso-hover="54">String</span></span></code></span></span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termPrintf!_-8878">printf!</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="56">"%s is %d years old"</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="keyword token" data-binding="">fun</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.2" data-verso-hover="49">x</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.3" data-verso-hover="8">x_1</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="46">""</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.2" data-verso-hover="49">x</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="51">" is "</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="const token" data-binding="const-ToString.toString" data-verso-hover="52">toString</span><span class="inter-text"> </span><span class="var token" data-binding="var-_pp_uniq.3" data-verso-hover="8">x_1</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAppend.hAppend" data-verso-hover="50">++</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="53">" years old"</span></span><span class="text"> : </span><span class="highlighted"><span class="inter-text"></span><span class="const token" data-binding="const-String" data-verso-hover="54">String</span><span class="inter-text"> </span><span class="unknown token" data-binding="">→</span><span class="inter-text"> </span><span class="const token" data-binding="const-Nat" data-verso-hover="55">Nat</span><span class="inter-text"> </span><span class="unknown token" data-binding="">→</span><span class="inter-text"> </span><span class="const token" data-binding="const-String" data-verso-hover="54">String</span></span></code></div><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <div class="code-with-panel fragment">
+            <code class="hl lean block"><span class="has-info information"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-8941" data-verso-hover="6">#eval</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="literal string token" data-binding="" data-verso-hover="57">"Lean is 13 years old"</span><span class="inter-text"></span></span></code></span></span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termPrintf!_-8947">printf!</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="56">"%s is %d years old"</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="58">"Lean"</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">13</span><span class="inter-text">
+</span><div class="command-output information"><code class="verso-message information"><span class="text"></span><span class="highlighted"><span class="inter-text"></span><span class="literal string token" data-binding="" data-verso-hover="57">"Lean is 13 years old"</span><span class="inter-text"></span></span></code></div><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <div class="code-with-panel fragment">
+            <code class="hl lean block"><span class="doc-comment token" data-binding="">/--
+error: Application type mismatch: The argument
+  "oops"
+has type
+  String
+but is expected to have type
+  Nat
+in the application
+  (fun x =&gt; "" ++ toString x) "oops"
+-/</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.guardMsgsCmd-9024" data-verso-hover="59">#guard_msgs</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.guardMsgsCmd-9024" data-verso-hover="59">in</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.eval-9211" data-verso-hover="6">#eval</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termPrintf!_-9217">printf!</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="60">"%d"</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="61">"oops"</span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Elaborators</h2>
+          <p>
+            Macros only see <strong>syntax</strong>. Elaborators see <strong>meaning</strong></p>
+          <ul>
+            <li>
+              <p>
+                Inspect and create <strong>typed terms</strong> (<code>Expr</code>)</p>
+              </li>
+            <li>
+              <p>
+                Ask for types, unify, synthesize type class instances</p>
+              </li>
+            <li>
+              <p>
+                Query and extend the <strong>environment</strong>: all declarations, attributes, …</p>
+              </li>
+            </ul>
+          <p>
+            A stack of monads gives access to these: <code>CoreM</code>, <code>MetaM</code>, <code>TermElabM</code>, <code>CommandElabM</code>, <code>TacticM</code></p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            A Custom Command</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.open-9614" data-verso-hover="23">open</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Lean</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Elab</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Command</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.in-9614">in</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.elab-9640">elab</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="62">"#count_theorems"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.command" data-verso-hover="63">command</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-9676">do</span><span class="inter-text">
+  </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doLetArrow-9681">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.141" data-verso-hover="64">env</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.MonadEnv.getEnv" data-verso-hover="65">getEnv</span><span class="inter-text">
+  </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doLet-9702">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.399" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Nat" data-verso-hover="66">Nat</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.141" data-verso-hover="64">env</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.Environment.constants" data-verso-hover="67">constants</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.SMap.fold" data-verso-hover="68">fold</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">init</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">0</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.fun-9748">fun</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.241" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">_</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.247" data-verso-hover="69">c</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+    </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-9765" data-verso-hover="34">if</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.247" data-verso-hover="69">c</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.«term_Matches_|»-9768">matches</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.ConstantInfo.thmInfo" data-verso-hover="70">.thmInfo</span><span class="inter-text"> </span><span class="unknown token" data-binding="">_</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-9765" data-verso-hover="34">then</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.241" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">+</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">1</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-termIfThenElse-9765" data-verso-hover="34">else</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.241" data-verso-hover="20">n</span><span class="inter-text">
+  </span><span class="const token" data-binding="const-Lean.logInfo" data-verso-hover="71">logInfo</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.termM!_-9817">m!</span><span class="unknown token" data-binding="">"{</span><span class="var token" data-binding="var-_uniq.399" data-verso-hover="20">n</span><span class="unknown token" data-binding="">} theorems in scope"</span><span class="inter-text">
+
+</span><span class="has-info information"><span class="keyword token" data-binding="kw-occ-«command#count_theorems»-9844">#count_theorems</span><span class="hover-info messages" style="display:none"><code class="verso-message information"><span class="text"></span><span class="text">89102</span><span class="text"> theorems in scope</span></code></span></span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          </section>
+        <section data-visibility="hidden">
+          <h2>
+            Proofs Are Interactive</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.example-9969">example</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="72">p</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="72">q</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.6" data-verso-hover="74">hp</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="72">p</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.8" data-verso-hover="75">hq</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="72">q</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="72">p</span><span class="inter-text"> </span><span class="unknown token" data-binding="">∧</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="72">q</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="tactic" data-tactic-range="10021-10023"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.byTactic-10021" data-verso-hover="76">by</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;p&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;q&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hp&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hq&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}],&quot;name&quot;:null,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;17\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;},\&quot;5\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[4,[6,[3,2,[7,17,\&quot;p\&quot;]]],[4,[4,\&quot; ∧\&quot;,1],[6,[3,2,[7,5,\&quot;q\&quot;]]]]]]]]}&quot;}]"><span class="goal"><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.6" data-verso-hover="78">hp</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.8" data-verso-hover="79">hq</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"> </span><span class="const token" data-binding="const-And" data-verso-hover="80">∧</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span></span></span></span></span></span><span class="inter-text">
+</span><span class="inter-text">  </span><span class="fragment slide-click-only"><span class="tactic" data-tactic-range="10026-10037"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.constructor-10026" data-verso-hover="81">constructor</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;p&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;q&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hp&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hq&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}],&quot;name&quot;:&quot;left&quot;,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;p&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;q&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hp&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hq&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}],&quot;name&quot;:&quot;right&quot;,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}]"><span class="goal"><span class="labeled-case" checked="checked"><label class="case-label"><input type="checkbox" id="--verso-unique-1" checked="checked"><span for="--verso-unique-1" class="goal-name">left</span></label><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.6" data-verso-hover="78">hp</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.8" data-verso-hover="79">hq</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"></span></span></span></span></span><span class="goal"><span class="labeled-case"><label class="case-label"><input type="checkbox" id="--verso-unique-2"><span for="--verso-unique-2" class="goal-name">right</span></label><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.6" data-verso-hover="78">hp</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.8" data-verso-hover="79">hq</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span></span></span></span></span><span class="inter-text">
+</span><span class="inter-text">  </span><span class="fragment slide-click-only"><span class="tactic" data-tactic-range="10052-10060"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.exact-10052" data-verso-hover="82">exact</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.6" data-verso-hover="74">hp</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;p&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;q&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hp&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.2\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hq&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}],&quot;name&quot;:&quot;right&quot;,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.4\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}]"><span class="goal"><span class="labeled-case" checked="checked"><label class="case-label"><input type="checkbox" id="--verso-unique-3" checked="checked"><span for="--verso-unique-3" class="goal-name">right</span></label><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.6" data-verso-hover="78">hp</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.2" data-verso-hover="77">p</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.8" data-verso-hover="79">hq</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.4" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span></span></span></span></span><span class="inter-text">
+</span><span class="inter-text">  </span><span class="fragment slide-click-only"><span class="tactic" data-tactic-range="10075-10083"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.exact-10075" data-verso-hover="82">exact</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.8" data-verso-hover="75">hq</span><span class="tactic-state" style="display:none">All goals completed! 🐙</span></span></span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p>
+            A <strong>tactic</strong> transforms the current <strong>proof state</strong></p>
+          <p>
+            Tactics are <strong>metaprograms</strong>: Lean code that builds proof terms</p>
+          </section>
+        <section data-visibility="hidden">
+          <h2>
+            Tactic Macros</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro-10308">macro</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="83">"triv"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.tactic" data-verso-hover="84">tactic</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">`(tactic|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.first-10345" data-verso-hover="85">first</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.tacticRfl-10353" data-verso-hover="86">rfl</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.assumption-10359" data-verso-hover="87">assumption</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.omega-10372" data-verso-hover="88">omega</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.decide-10380" data-verso-hover="89">decide</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.example-10389">example</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Nat" data-verso-hover="66">Nat</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">&lt;</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="20">n</span><span class="inter-text"> </span><span class="unknown token" data-binding="">+</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">1</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="tactic" data-tactic-range="10422-10424"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.byTactic-10422" data-verso-hover="76">by</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;n&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;const-Nat\&quot;,\&quot;cssClass\&quot;:\&quot;const\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Nat\&quot;]]]]}&quot;}],&quot;name&quot;:null,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;17\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.3511\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;},\&quot;81\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.3511\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[4,[6,[3,2,[7,17,\&quot;n\&quot;]]],[4,[4,\&quot; <\&quot;,1],[6,[3,2,[4,[6,[3,2,[7,81,\&quot;n\&quot;]]],[4,[4,\&quot; +\&quot;,1],[6,[3,2,[7,21,\&quot;1\&quot;]]]]]]]]]]]]}&quot;}]"><span class="goal"><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="8">n</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="const token" data-binding="const-Nat" data-verso-hover="55">Nat</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="8">n</span><span class="inter-text"> </span><span class="const token" data-binding="const-LT.lt" data-verso-hover="90">&lt;</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.3511" data-verso-hover="8">n</span><span class="inter-text"> </span><span class="const token" data-binding="const-HAdd.hAdd" data-verso-hover="91">+</span><span class="inter-text"> </span><span class="unknown token" data-binding="">1</span></span></span></span></span></span><span class="inter-text"> </span><span class="tactic" data-tactic-range="10425-10429"><span class="keyword token" data-binding="kw-occ-tacticTriv-10425">triv</span><span class="tactic-state" style="display:none">All goals completed! 🐙</span></span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.example-10430">example</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">2</span><span class="inter-text"> </span><span class="unknown token" data-binding="">^</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">10</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=</span><span class="inter-text"> </span><span class="typed token" data-binding="" data-verso-hover="8">1024</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="tactic" data-tactic-range="10457-10459"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.byTactic-10457" data-verso-hover="76">by</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[],&quot;name&quot;:null,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{},\&quot;fmt\&quot;:[6,[6,[3,2,[4,[6,[3,2,[4,[6,[3,2,[7,273,\&quot;2\&quot;]]],[4,[4,\&quot; ^\&quot;,1],[6,[3,2,[7,69,\&quot;10\&quot;]]]]]]],[4,[4,\&quot; =\&quot;,1],[6,[3,2,[7,5,\&quot;1024\&quot;]]]]]]]]}&quot;}]"><span class="goal"><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="unknown token" data-binding="">2</span><span class="inter-text"> </span><span class="const token" data-binding="const-HPow.hPow" data-verso-hover="92">^</span><span class="inter-text"> </span><span class="unknown token" data-binding="">10</span><span class="inter-text"> </span><span class="const token" data-binding="const-Eq" data-verso-hover="93">=</span><span class="inter-text"> </span><span class="unknown token" data-binding="">1024</span></span></span></span></span></span><span class="inter-text"> </span><span class="tactic" data-tactic-range="10460-10464"><span class="keyword token" data-binding="kw-occ-tacticTriv-10460">triv</span><span class="tactic-state" style="display:none">All goals completed! 🐙</span></span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p>
+            Existing tactics can also be <strong>extended</strong>:</p>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.macro_rules-10520">macro_rules</span><span class="inter-text"> </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(tactic|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.tacticTrivial-10544" data-verso-hover="94">trivial</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(tactic|</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Tactic.omega-10566" data-verso-hover="88">omega</span><span class="unknown token" data-binding="">)</span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          </section>
+        <section data-visibility="hidden">
+          <h2>
+            Writing a Tactic From Scratch</h2>
+          <div class="code-with-panel r-stretch">
+            <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.open-10689" data-verso-hover="23">open</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Lean</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Elab</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Tactic</span><span class="inter-text"> </span><span class="unknown token" data-binding="">Meta</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.in-10689">in</span><span class="inter-text">
+</span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.elab-10719">elab</span><span class="inter-text"> </span><span class="literal string token" data-binding="" data-verso-hover="95">"my_assumption"</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Parser.Category.tactic" data-verso-hover="96">tactic</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.do-10752">do</span><span class="inter-text">
+  </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doLetArrow-10757">let</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.156" data-verso-hover="97">goal</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Elab.Tactic.getMainGoal" data-verso-hover="98">getMainGoal</span><span class="inter-text">
+  </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doFor-10784" data-verso-hover="99">for</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.349" data-verso-hover="100">h</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doForDecl-10788">in</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.MonadLCtx.getLCtx" data-verso-hover="101">getLCtx</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doFor-10784" data-verso-hover="99">do</span><span class="inter-text">
+    </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doIf-10812">if</span><span class="inter-text"> </span><span class="unknown token" data-binding="">!</span><span class="var token" data-binding="var-_uniq.349" data-verso-hover="100">h</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.LocalDecl.isImplementationDetail" data-verso-hover="102">isImplementationDetail</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doIf-10812">then</span><span class="inter-text">
+      </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doIf-10852">if</span><span class="inter-text"> </span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="const token" data-binding="const-Lean.Meta.isDefEq" data-verso-hover="103">isDefEq</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.349" data-verso-hover="100">h</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.LocalDecl.type" data-verso-hover="104">type</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="unknown token" data-binding="">←</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.156" data-verso-hover="97">goal</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.MVarId.getType" data-verso-hover="105">getType</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doIf-10852">then</span><span class="inter-text">
+        </span><span class="var token" data-binding="var-_uniq.156" data-verso-hover="97">goal</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.MVarId.assign" data-verso-hover="106">assign</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.349" data-verso-hover="100">h</span><span class="unknown token" data-binding="">.</span><span class="const token" data-binding="const-Lean.LocalDecl.toExpr" data-verso-hover="107">toExpr</span><span class="inter-text">
+        </span><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.doReturn-10935" data-verso-hover="108">return</span><span class="inter-text">
+  </span><span class="keyword token" data-binding="kw-occ-Lean.termThrowError__-10944" data-verso-hover="109">throwError</span><span class="inter-text"> </span><span class="unknown token" data-binding="">"no matching hypothesis"</span><span class="inter-text">
+</span><div class="fragment"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.example-10993">example</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.13484" data-verso-hover="72">p</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="72">q</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.13488" data-verso-hover="110">hp</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.13484" data-verso-hover="72">p</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="var token" data-binding="var-_uniq.13490" data-verso-hover="111">hq</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="72">q</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="72">q</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:=</span><span class="inter-text"> </span><span class="tactic" data-tactic-range="11039-11041"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Term.byTactic-11039" data-verso-hover="76">by</span><span class="tactic-state" style="display:none" data-rich-format="[{&quot;goalPrefix&quot;:&quot;⊢ &quot;,&quot;hypotheses&quot;:[{&quot;names&quot;:[&quot;p&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;q&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;sort-14430969920833713138\&quot;,\&quot;cssClass\&quot;:\&quot;sort\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;Prop\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hp&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.13484\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;p\&quot;]]]]}&quot;},{&quot;names&quot;:[&quot;hq&quot;],&quot;ppType&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.13486\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}],&quot;name&quot;:null,&quot;ppConclusion&quot;:&quot;{\&quot;annotations\&quot;:{\&quot;1\&quot;:{\&quot;binding\&quot;:\&quot;var-_uniq.13486\&quot;,\&quot;cssClass\&quot;:\&quot;var\&quot;}},\&quot;fmt\&quot;:[6,[6,[3,2,[7,1,\&quot;q\&quot;]]]]}&quot;}]"><span class="goal"><span class="hypotheses"><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.13484" data-verso-hover="77">p</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="77">q</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="sort token" data-binding="sort-14430969920833713138" data-verso-hover="73">Prop</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.13488" data-verso-hover="78">hp</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.13484" data-verso-hover="77">p</span><span class="inter-text"></span></span></span><span class="hypothesis"><span class="name"><span class="var token" data-binding="var-_uniq.13490" data-verso-hover="79">hq</span></span><span class="colon">:</span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span><span class="conclusion"><span class="prefix">⊢ </span><span class="type"><span class="inter-text"></span><span class="var token" data-binding="var-_uniq.13486" data-verso-hover="77">q</span><span class="inter-text"></span></span></span></span></span></span><span class="inter-text">
+  </span><span class="tactic" data-tactic-range="11044-11057"><span class="keyword token" data-binding="kw-occ-tacticMy_assumption-11044">my_assumption</span><span class="tactic-state" style="display:none">All goals completed! 🐙</span></span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></div></code><div class="panel-divider"></div>
+            <div class="panel-cell">
+              <div class="info-panel"></div>
+              </div>
+            </div>
+          <p>
+            The kernel <strong>re-checks</strong> the resulting proof: a buggy tactic cannot prove false things</p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            More Extension Points</h2>
+          <ul>
+            <li>
+              <p>
+                <strong>Attributes</strong> and <strong>environment extensions</strong>: <code>@[simp]</code>, <code>@[grind]</code>, your own databases of lemmas</p>
+              </li>
+            <li>
+              <p>
+                <strong>Deriving handlers</strong>: <code>deriving Repr, BEq, Hashable, ToJson, …</code></p>
+              </li>
+            <li>
+              <p>
+                <strong>Linters</strong>: project-specific style and correctness checks</p>
+              </li>
+            <li>
+              <p>
+                <strong>Code actions</strong> and <strong>"Try this"</strong> suggestions in the editor</p>
+              </li>
+            <li>
+              <p>
+                <strong>Widgets</strong>: custom interactive UI in the infoview, written in Lean (plus a bit of JS)</p>
+              </li>
+            </ul>
+          </section>
+        <section data-background-color="#0073A3">
+          <h2>
+            Applications</h2>
+          <p>
+            <em>What People Have Built</em></p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Mathlib</h2>
+          <p>
+            Mathematical notation that looks like the textbook: <code>∑ i ∈ Finset.range n, i</code>, <code>∫ x in a..b, f x</code>, …</p>
+          <p>
+            Domain-specific automation, all written in Lean:</p>
+          <ul>
+            <li>
+              <p>
+                <strong>Tactics</strong>: <code>ring</code>, <code>field_simp</code>, <code>linarith</code>, <code>positivity</code>, <code>norm_num</code>, <code>gcongr</code>, …</p>
+              </li>
+            <li>
+              <p>
+                <strong>Attribute-driven proof search</strong>: <code>fun_prop</code>, <code>continuity</code>, <code>measurability</code> over lemmas users tag themselves</p>
+              </li>
+            <li>
+              <p>
+                <strong>Code generation</strong>: <code>@[to_additive]</code> derives additive versions of multiplicative theorems, <code>@[simps]</code> derives simp lemmas for definitions</p>
+              </li>
+            <li>
+              <p>
+                <strong>Linters</strong> enforcing Mathlib's conventions: <code>unusedTactic</code>, <code>flexible</code> (no <code>rw</code> after a non-terminal <code>simp</code>), <code>multiGoal</code>, <code>directoryDependency</code></p>
+              </li>
+            </ul>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Velvet: Verified Imperative Programs <span class="cite">[Gladshtein et al, CAV'26]</span></h2>
+          <div class="r-hstack velvet">
+            <pre>method insertionSort (arr : Array Int)
+  returns (res : Array Int)
+  requires arr.size &gt; 0
+  ensures SortedUpTo res res.size
+  ensures sameElems res arr
+do
+  let mut res := arr
+  let mut n : Nat := 1
+  while n ≠ res.size
+    invariant res.size = arr.size
+    invariant SortedUpTo res n
+    invariant sameElems res arr
+  do
+    ...
+    n := n + 1
+  return res
+
+prove_correct insertionSort by
+  velvet_vcgen [insertionSort] with try finish
+</pre><ul>
+              <li>
+                <p>
+                  Imperative code with contracts and loop invariants, <strong>embedded in Lean</strong></p>
+                </li>
+              <li>
+                <p>
+                  Programs compile and run; <code>#derive_tester_for</code> <strong>tests</strong> contracts before you prove them</p>
+                </li>
+              <li>
+                <p>
+                  SMT-style automation, with a fall-back to interactive proofs</p>
+                </li>
+              <li>
+                <p>
+                  A proved method yields an ordinary Lean theorem, <code>insertionSort.spec</code></p>
+                </li>
+              </ul>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Veil: Distributed Protocols <span class="cite">[Pîrlea et al, CAV'25]</span></h2>
+          <div class="r-hstack velvet veil">
+            <p>
+              <img src="images/veil-example.png" alt="Veil: ring leader election" style="height: 62vh;" class="explicit-size"></p>
+            <ul>
+              <li>
+                <p>
+                  A <strong>DSL</strong> for specifying and verifying distributed protocols, embedded in Lean</p>
+                </li>
+              <li>
+                <p>
+                  Properties as <code>safety</code> and <code>invariant</code> clauses in decidable fragments of first-order logic</p>
+                </li>
+              <li>
+                <p>
+                  <strong>Testing</strong> first: <code>#model_check</code> explores small instances, <code>sat</code>/<code>unsat trace</code> asks SMT about bounded executions; counterexamples show up in the infoview</p>
+                </li>
+              <li>
+                <p>
+                  <code>#check_invariants</code> proves inductive invariants <strong>push-button</strong> via SMT, with a fall-back to interactive proofs</p>
+                </li>
+              </ul>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            ProofWidgets: Custom Infoview UI <span class="cite">[Nawrocki et al, ITP'23]</span></h2>
+          <p>
+            <img src="images/proofwidgets-rbtree.png" alt="ProofWidgets: red-black trees in the infoview" style="height: 50vh;" class="explicit-size"></p>
+          <p>
+            A widget shows subterms of the goal <strong>as red-black trees</strong>, and you can click into them</p>
+          <pre>#html jsx%{&lt;b&gt;You can use HTML in Lean {.text s!"{1 + 3}"}!&lt;/b&gt;}
+</pre></section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Verso</h2>
+          <p>
+            A documentation authoring tool, as a <strong>Lean DSL</strong></p>
+          <p>
+            Code examples are <strong>elaborated</strong>: they cannot go stale, and you can click on them</p>
+          <p>
+            Used for the Lean reference manual, the Lean website, … and this talk</p>
+          <div class="own-source">
+            <p>
+              <span class="tok-kw">import</span> VersoSlides</p>
+            <p>
+               </p>
+            <p>
+              <span class="tok-kw">#doc</span> (<span class="tok-const">Slides</span>) <span class="tok-str">"Customizing the World with Lean"</span> <span class="tok-kw">=&gt;</span></p>
+            <p>
+               </p>
+            <p>
+              <span class="tok-comment">[...]</span></p>
+            <p>
+               </p>
+            <p>
+              <span class="tok-heading"># Verso</span></p>
+            <p>
+               </p>
+            <p>
+              A documentation authoring tool, as a <span class="tok-emph">*Lean DSL*</span></p>
+            <p>
+               </p>
+            <p>
+              Code examples are <span class="tok-emph">*elaborated*</span>: they cannot go stale, and you can click on them</p>
+            <p>
+               </p>
+            <p>
+              Used for the Lean reference manual, the Lean website, … and this talk</p>
+            <p>
+               </p>
+            <p>
+              <span class="tok-kw">:::</span><span class="tok-const">slideSource</span></p>
+            <p>
+              <span class="tok-kw">:::</span></p>
+            </div>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Verso: Replacing the Parser</h2>
+          <code class="hl lean block"><span class="keyword token" data-binding="kw-occ-Lean.Parser.Command.elab_rules-14863">elab_rules</span><span class="inter-text"> </span><span class="unknown token" data-binding="">:</span><span class="inter-text"> </span><span class="unknown token" data-binding="">command</span><span class="inter-text">
+  </span><span class="unknown token" data-binding="">|</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`(</span><span class="const token" data-binding="const-Lean.Parser.Category.command" data-verso-hover="112">command</span><span class="unknown token" data-binding="">|</span><span class="keyword token" data-binding="kw-occ-Verso.Doc.Concrete.replaceDoc-14898">#doc</span><span class="inter-text"> </span><span class="unknown token" data-binding="">(</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.89" data-verso-hover="113">genreSyntax</span><span class="unknown token" data-binding="">:</span><span class="keyword token" data-binding="kw-occ-antiquotName-14917">term</span><span class="inter-text"> </span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.82" data-verso-hover="114">title</span><span class="unknown token" data-binding="">:</span><span class="keyword token" data-binding="kw-occ-antiquotName-14931">str</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="unknown token" data-binding="">%</span><span class="unknown token" data-binding="">$</span><span class="var token" data-binding="var-_uniq.75" data-verso-hover="115">tok</span><span class="unknown token" data-binding="">)</span><span class="inter-text"> </span><span class="unknown token" data-binding="">=&gt;</span><span class="inter-text"> </span><span class="unknown token" data-binding="">…</span><span class="inter-text">
+    </span><span class="const token" data-binding="const-ParserSlide.replaceCategoryParser" data-verso-hover="116">replaceCategoryParser</span><span class="inter-text"> </span><span class="unknown token" data-binding="">`command</span><span class="inter-text"> </span><span class="const token" data-binding="const-ParserSlide.versoBlockCommandFn" data-verso-hover="117">versoBlockCommandFn</span><span class="inter-text">
+</span><span class="unknown token" data-binding=""></span></code><p>
+            <code>#doc</code> swaps out the parser for Lean's <code>command</code> category <strong>for the rest of the file</strong></p>
+          <p>
+            Each block of markup becomes a "command": Lean's <strong>incremental re-checking</strong> works for documents for free</p>
+          <p>
+            Inside Lean code blocks, the original parser is swapped back in</p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Verso: Every Other Hook</h2>
+          <ul>
+            <li>
+              <p>
+                <strong>Attributes</strong>: <code>@[directive]</code>, <code>@[role]</code>, <code>@[code_block]</code> register new markup, like <code>slideSource</code> before</p>
+              </li>
+            <li>
+              <p>
+                <strong>Elaborator</strong>: nested use of Lean's own elaborator, capture and post-processing of produced metadata</p>
+              </li>
+            <li>
+              <p>
+                <strong>Language server</strong>: own handlers for hover, go-to-definition, outline, folding and semantic highlighting</p>
+              </li>
+            <li>
+              <p>
+                <strong>Code actions</strong> and <strong>linters</strong>: renumber lists, fix directive nesting, typography suggestions</p>
+              </li>
+            </ul>
+          </section>
+        <section data-background-color="#0073A3">
+          <h2>
+            Demo</h2>
+          <p>
+            <em>From widget to hosted Verso doc</em></p>
+          </section>
+        <section>
+          <div class="slide-header"><img src="lean-logo.png" alt="Lean"></div>
+          <h2>
+            Conclusion</h2>
+          <p>
+            Lean is <strong>extensible from within itself</strong>: parser, macros, elaborators, tactics, UI</p>
+          <p class="space-above">
+            The same mechanisms power the core language and <strong>user libraries</strong></p>
+          <p class="space-above">
+            The kernel stays small: <strong>extensions cannot compromise soundness</strong></p>
+          </section>
+        <section class="title-slide">
+          <div class="top-area"><img class="logo" src="lean-logo-large.png" alt="Lean Logo"></div>
+          <div class="blue-band"><h1>Thank You</h1>
+          <div class="meta"></div>
+          <div class="date">lean-lang.org | leanprover.zulipchat.com</div>
+          </div></section>
+        </div>
+      </div>
+    <script src="lib/reveal.js/dist/reveal.js"></script>
+    <script src="lib/reveal.js/plugin/notes/notes.js"></script>
+    <script src="lib/reveal.js/plugin/highlight/highlight.js"></script>
+    <script src="lib/katex/dist/katex.min.js"></script>
+    <script src="lib/math.js"></script>
+    <script>
+      
+      Reveal.initialize({
+        disableLayout: true,
+        hash: true,
+        controls: false,
+        progress: true,
+        slideNumber: false,
+        center: false,
+        transition: 'none',
+        width: 960,
+        height: 700,
+        margin: 0.000000,
+        navigationMode: 'default',
+        autoSlide: 0,
+        autoSlideStoppable: true,
+        autoSlideMethod: null,
+        plugins: [ RevealNotes, RevealHighlight ]
+      });
+    </script>
+    <script src="lib/marked.min.js"></script>
+    <script src="lib/popper.js"></script>
+    <script src="lib/tippy.js"></script>
+    <script src="lib/tippy-panel-filter.js"></script>
+    <script src="lib/highlighting.js"></script>
+    <script src="lib/lean-comments.js"></script>
+    <script src="lib/code-block-bg.js"></script>
+    <script src="lib/pretty.js"></script>
+    <script src="lib/panel.js"></script>
+    <script src="lib/lightbox.js"></script>
+    <script src="lib/illuminate-reveal.js"></script>
+    </body>
+  </html>
